@@ -1,0 +1,13 @@
+E:\temp\ConsoleApplication1\ConsoleApplication1\bin\Debug\ConsoleApplication1.exe.config
+E:\temp\ConsoleApplication1\ConsoleApplication1\bin\Debug\ConsoleApplication1.exe
+E:\temp\ConsoleApplication1\ConsoleApplication1\bin\Debug\ConsoleApplication1.pdb
+E:\temp\ConsoleApplication1\ConsoleApplication1\obj\Debug\ConsoleApplication1.csprojResolveAssemblyReference.cache
+E:\temp\ConsoleApplication1\ConsoleApplication1\obj\Debug\ConsoleApplication1.exe
+E:\temp\ConsoleApplication1\ConsoleApplication1\obj\Debug\ConsoleApplication1.pdb
+E:\UnityProjects\BulkInsert\ConsoleApplication1\bin\Debug\ConsoleApplication1.exe.config
+E:\UnityProjects\BulkInsert\ConsoleApplication1\obj\Debug\ConsoleApplication1.exe
+E:\UnityProjects\BulkInsert\ConsoleApplication1\obj\Debug\ConsoleApplication1.pdb
+E:\UnityProjects\GasCheckAlarmSystem\Assets\StreamingAssets\ConsoleApplication1.exe.config
+E:\UnityProjects\GasCheckAlarmSystem\Assets\StreamingAssets\ConsoleApplication1.exe
+E:\UnityProjects\GasCheckAlarmSystem\Assets\StreamingAssets\ConsoleApplication1.pdb
+E:\UnityProjects\BulkInsert\ConsoleApplication1\obj\Debug\ConsoleApplication1.csprojResolveAssemblyReference.cache
