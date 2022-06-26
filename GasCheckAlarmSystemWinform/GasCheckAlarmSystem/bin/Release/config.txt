@@ -1,0 +1,1 @@
+{"isEnterPosDir":false,"isLog":true,"mainLight":1.5,"subLight":0.300000011920929,"isSetLightByUI":false,"commName":"COM10","baudRate":"9600"}
