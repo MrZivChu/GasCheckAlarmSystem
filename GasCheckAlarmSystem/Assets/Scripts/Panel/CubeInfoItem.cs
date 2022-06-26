@@ -20,48 +20,11 @@ public class CubeInfoItem : MonoBehaviour
         secondValueText.text = realtimeDataModel.SecondAlarmValue.ToString();
         gasValueText.text = realtimeDataModel.GasValue.ToString();
         gasTypeText.text = realtimeDataModel.GasKind;
-        color = FormatData.warningColorDic[realtimeDataModel.warningLevel];
-    }
-
-    Color color = new Color(1.0f, 1.0f, 1.0f);
-    float tempTime = 0;
-    float flashTime = 0.5f;
-    void Update()
-    {
-        if (realtimeDataModel != null)
-        {
-            if (realtimeDataModel.warningLevel == 2 || realtimeDataModel.warningLevel == 1)
-            {
-                tempTime += Time.deltaTime;
-                if (tempTime >= 0 && tempTime <= flashTime)
-                {
-                    ColorBlock cb = GetComponent<Button>().colors;
-                    cb.normalColor = color;
-                    cb.pressedColor = color;
-                    cb.highlightedColor = color;
-                    GetComponent<Button>().colors = cb;
-                }
-                else if (tempTime > flashTime && tempTime <= 2 * flashTime)
-                {
-                    ColorBlock cb = GetComponent<Button>().colors;
-                    cb.normalColor = Color.white;
-                    cb.pressedColor = Color.white;
-                    cb.highlightedColor = Color.white;
-                    GetComponent<Button>().colors = cb;
-                }
-                else if (tempTime > 2 * flashTime)
-                {
-                    tempTime = 0;
-                }
-            }
-            else
-            {
-                ColorBlock cb = GetComponent<Button>().colors;
-                cb.normalColor = color;
-                cb.pressedColor = color;
-                cb.highlightedColor = color;
-                GetComponent<Button>().colors = cb;
-            }
-        }
+        Color color = FormatData.warningColorDic[realtimeDataModel.warningLevel];
+        ColorBlock cb = GetComponent<Button>().colors;
+        cb.normalColor = color;
+        cb.pressedColor = color;
+        cb.highlightedColor = color;
+        GetComponent<Button>().colors = cb;
     }
 }

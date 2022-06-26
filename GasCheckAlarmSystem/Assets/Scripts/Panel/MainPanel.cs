@@ -82,7 +82,10 @@ public class MainPanel : UIEventHelper
 
         ProbeInSceneHelper.instance.LoadAllProbe();
         txt_productName.text = JsonHandleHelper.gameConfig.productName;
-        txt_userName.text = FormatData.currentUser.UserName + (FormatData.currentUser.Authority == 1 ? "  管理员" : "  普通用户");
+        if (FormatData.currentUser != null)
+        {
+            txt_userName.text = FormatData.currentUser.UserName + (FormatData.currentUser.Authority == 1 ? "  管理员" : "  普通用户");
+        }
     }
 
     void OnTogOpenShakeWarning(Toggle tog, bool isOn)

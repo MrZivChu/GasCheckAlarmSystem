@@ -27,7 +27,7 @@ public class EditProbeForGraphPanel : UIEventHelper
 
     void OnDelete(Button btn)
     {
-        if (FormatData.currentUser.Authority == 1)
+        if (FormatData.currentUser != null && FormatData.currentUser.Authority == 1)
         {
             MessageBox.Instance.PopYesNo("确认删除？", null, () =>
             {

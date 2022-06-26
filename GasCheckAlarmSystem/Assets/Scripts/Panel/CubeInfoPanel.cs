@@ -30,22 +30,10 @@ public class CubeInfoPanel : UIEventHelper
     private void InitData(RealtimeEventData realtimeEventData)
     {
         List<RealtimeDataModel> list = new List<RealtimeDataModel>();
-        list.AddRange(realtimeEventData.firstList.FindAll((item) =>
-        {
-            return !string.IsNullOrEmpty(item.Pos2D) ? true : false;
-        }));
-        list.AddRange(realtimeEventData.noResponseList.FindAll((item) =>
-        {
-            return !string.IsNullOrEmpty(item.Pos2D) ? true : false;
-        }));
-        list.AddRange(realtimeEventData.normalList.FindAll((item) =>
-        {
-            return !string.IsNullOrEmpty(item.Pos2D) ? true : false;
-        }));
-        list.AddRange(realtimeEventData.secondList.FindAll((item) =>
-        {
-            return !string.IsNullOrEmpty(item.Pos2D) ? true : false;
-        }));
+        list.AddRange(realtimeEventData.firstList);
+        list.AddRange(realtimeEventData.noResponseList);
+        list.AddRange(realtimeEventData.normalList);
+        list.AddRange(realtimeEventData.secondList);
         InitGrid(list);
     }
 
