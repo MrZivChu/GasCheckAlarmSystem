@@ -18,6 +18,7 @@ public class EditProbeForGraphPanel : UIEventHelper
     {
         RegisterBtnClick(deleteBtn, OnDelete);
         RegisterBtnClick(btn_cancel, OnCancel);
+        deleteBtn.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
     }
 
     void OnCancel(Button btn)
@@ -27,22 +28,15 @@ public class EditProbeForGraphPanel : UIEventHelper
 
     void OnDelete(Button btn)
     {
-        if (FormatData.currentUser != null && FormatData.currentUser.Authority == 1)
+        MessageBox.Instance.PopYesNo("确认删除？", null, () =>
         {
-            MessageBox.Instance.PopYesNo("确认删除？", null, () =>
+            RealtimeDataDAL.DeleteRealtimePos2DByID(currentModel.ProbeID);
+            MessageBox.Instance.PopOK("删除成功", () =>
             {
-                RealtimeDataDAL.DeleteRealtimePos2DByID(currentModel.ProbeID);
-                MessageBox.Instance.PopOK("删除成功", () =>
-                {
-                    gameObject.SetActive(false);
-                }, "确定");
                 gameObject.SetActive(false);
-            }, "取消", "确定");
-        }
-        else
-        {
-            MessageBox.Instance.PopOK("无权限删除", null, "确认");
-        }
+            }, "确定");
+            gameObject.SetActive(false);
+        }, "取消", "确定");
     }
 
     public void InitInfo(RealtimeDataModel model)

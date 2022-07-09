@@ -13,13 +13,10 @@ public class PlanarGraphPanel : UIEventHelper
     public Transform contentTrans;
     public SelectProbeForGraphPanel selectProbeForGraphPanel;
     public EditProbeForGraphPanel editProbeForGraphPanel;
-    public Button btn_upload;
 
     private void Start()
     {
         EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeData);
-        RegisterBtnClick(btn_upload, OnUploadImg);
-        LoadGraphImg();
     }
 
     void UpdateRealtimeData(object data)
@@ -113,59 +110,5 @@ public class PlanarGraphPanel : UIEventHelper
     {
         editProbeForGraphPanel.InitInfo(data.realtimeDataModel);
         editProbeForGraphPanel.gameObject.SetActive(true);
-    }
-
-    string graphImgPath = Application.streamingAssetsPath + "/graphImg.png";
-    void OnUploadImg(Button btn)
-    {
-        //using (System.Windows.Forms.OpenFileDialog od = new System.Windows.Forms.OpenFileDialog())
-        //{
-        //    od.Title = "请选择图片";
-        //    od.Multiselect = false;
-        //    od.Filter = "图片文件(*.jpg,*.png,*.bmp)|*.jpg;*.png;*.bmp";
-        //    if (od.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-        //    {
-        //        SaveFile(od.FileName, graphImgPath);
-        //    }
-        //}
-        LoadGraphImg();
-    }
-
-    void LoadGraphImg()
-    {
-        if (File.Exists(graphImgPath))
-        {
-            StartCoroutine(GetTexture(graphImgPath));
-        }
-    }
-
-    IEnumerator GetTexture(string url)
-    {
-        using (WWW www = new WWW(url))
-        {
-            yield return www;
-            if (www.isDone && www.error == null)
-            {
-                Texture2D texture2D = www.texture;
-                Sprite sprite = Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(0.5f, 0.5f));
-                contentTrans.GetComponent<Image>().sprite = sprite;
-            }
-        }
-    }
-
-    void SaveFile(string selectPath, string savePath)
-    {
-        using (FileStream fs = new FileStream(selectPath, FileMode.Open))
-        {
-            using (FileStream fs2 = new FileStream(savePath, FileMode.Create))
-            {
-                byte[] b = new byte[1024 * 1024];
-                int getv = 0;
-                while ((getv = fs.Read(b, 0, b.Length)) > 0)
-                {
-                    fs2.Write(b, 0, getv);
-                }
-            }
-        }
     }
 }

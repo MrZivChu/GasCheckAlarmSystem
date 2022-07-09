@@ -22,11 +22,15 @@ public class RealtimeDataMenuPanel : UIEventHelper
         RegisterBtnClick(btn_porbeSetting, OnProbeSetting);
         RegisterBtnClick(btn_porbeHistoryData, OnProbeHistoryData);
 
-        ChangeTopMenuStyle(btn_porbeSetting, btn_realtimeDataManager, btn_chartManager, btn_porbeHistoryData);
-        RealtimeDataRoot.SetActive(false);
-        chartRoot.SetActive(false);
-        porbeSettingRoot.SetActive(true);
-        probeHistoryDataRoot.SetActive(false);
+        btn_porbeSetting.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
+        if(FormatData.currentUser != null && FormatData.currentUser.Authority == 1)
+        {
+            OnProbeSetting(btn_porbeSetting);
+        }
+        else
+        {
+            OnRealtimeDataManager(btn_realtimeDataManager);
+        }
     }
 
     void OnProbeHistoryData(Button btn)

@@ -32,7 +32,6 @@ public class LoginPanel : UIEventHelper
 
     void OnLogin(Button btn)
     {
-        SceneManager.LoadScene("Main", LoadSceneMode.Single);
         string userName = input_name.text;
         string userPwd = input_pwd.text;
 

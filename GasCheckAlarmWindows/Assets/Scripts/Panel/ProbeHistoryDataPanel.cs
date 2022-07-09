@@ -45,6 +45,7 @@ public class ProbeHistoryDataPanel : UIEventHelper
         RegisterBtnClick(btn_nextPage, OnNextPage);
 
         RegisterInputFieldOnEndEdit(input_pageSize, OnPageSizeOnEndEdit);
+        btn_deleteAllData.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
     }
 
     void OnPageSizeOnEndEdit(InputField target, string content)

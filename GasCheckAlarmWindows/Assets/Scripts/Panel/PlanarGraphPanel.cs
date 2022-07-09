@@ -20,6 +20,7 @@ public class PlanarGraphPanel : UIEventHelper
         EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeData);
         RegisterBtnClick(btn_upload, OnUploadImg);
         LoadGraphImg();
+        btn_upload.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
     }
 
     void UpdateRealtimeData(object data)

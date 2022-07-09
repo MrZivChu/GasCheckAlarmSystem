@@ -9,7 +9,6 @@ using UnityEngine.UI;
 public class ProbeHistoryDataPanel : UIEventHelper
 {
     public Button btn_search;
-    public Button btn_saveExcel;
     public Button btn_deleteAllData;
 
     public Button btn_prePage;
@@ -35,12 +34,12 @@ public class ProbeHistoryDataPanel : UIEventHelper
     {
         instance = this;
         itemRes = Resources.Load("ProbeHistoryDataItem");
+        btn_deleteAllData.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
     }
 
     private void Start()
     {
         RegisterBtnClick(btn_search, OnSearchRealtimeData);
-        RegisterBtnClick(btn_saveExcel, OnSaveExcel);
         RegisterBtnClick(btn_deleteAllData, OnDeleteAllData);
 
         RegisterBtnClick(btn_prePage, OnPrePagel);
@@ -84,28 +83,6 @@ public class ProbeHistoryDataPanel : UIEventHelper
             pageIndex++;
             InitData();
         }
-    }
-
-    void OnSaveExcel(Button btn)
-    {
-        //System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
-        //sfd.Filter = "Excel文件(*.xlsx)|*.xlsx|所有文件|*.*";//设置文件类型
-        //sfd.FileName = "探头实时数据";//设置默认文件名
-        //sfd.DefaultExt = "xlsx";//设置默认格式（可以不设）
-        //sfd.AddExtension = true;//设置自动在文件名中添加扩展名
-        //if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-        //{
-        //    if (!string.IsNullOrEmpty(sfd.FileName))
-        //    {
-        //        System.DateTime startTime = System.DateTime.MinValue, endTime = System.DateTime.MinValue;
-        //        if (dateRange.FromDate.HasValue)
-        //            startTime = dateRange.FromDate.Date;
-        //        if (dateRange.ToDate.HasValue)
-        //            endTime = dateRange.ToDate.Date;
-        //        ExcelAccess.WriteExcel(sfd.FileName, "sheet1", historyDataModelList);
-        //        MessageBox.Instance.PopOK("保存成功", null, "确定");
-        //    }
-        //}
     }
 
     void OnDeleteAllData(Button btn)

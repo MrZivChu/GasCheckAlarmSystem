@@ -20,24 +20,17 @@ public class ProbeInfo3DPanel : UIEventHelper
 
     void OnDelete(Button btn)
     {
-        if (FormatData.currentUser.Authority == 1)
+        MessageBox.Instance.PopYesNo("确认删除？", null, () =>
         {
-            MessageBox.Instance.PopYesNo("确认删除？", null, () =>
-            {
-                WWWForm form = new WWWForm();
-                form.AddField("requestType", "DeleteProbeByID");
-                form.AddField("idList", currentModel.ID.ToString());
-                GameUtils.PostHttp("Probe.ashx", form, null, null);
+            WWWForm form = new WWWForm();
+            form.AddField("requestType", "DeleteProbeByID");
+            form.AddField("idList", currentModel.ID.ToString());
+            GameUtils.PostHttp("Probe.ashx", form, null, null);
 
-                EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
-                ProbeInSceneHelper.instance.DeleteProbe(currentModel);
-                MessageBox.Instance.PopOK("删除成功", null, "确定");
-            }, "取消", "确定");
-        }
-        else
-        {
-            MessageBox.Instance.PopOK("无权限删除", null, "确认");
-        }
+            EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
+            ProbeInSceneHelper.instance.DeleteProbe(currentModel);
+            MessageBox.Instance.PopOK("删除成功", null, "确定");
+        }, "取消", "确定");
     }
 
     public void InitInfo(ProbeModel model)

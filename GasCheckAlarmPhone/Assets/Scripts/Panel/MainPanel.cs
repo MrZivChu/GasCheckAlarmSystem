@@ -75,10 +75,9 @@ public class MainPanel : UIEventHelper
         RegisterTogClick(tog_closeShakeWarning, OnTogCloseShaketWarning);
 
         EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
-        if (FormatData.currentUser != null)
-        {
-            txt_userName.text = FormatData.currentUser.UserName + (FormatData.currentUser.Authority == 1 ? "  管理员" : "  普通用户");
-        }
+        tog_machineManager.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
+        tog_userManager.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
+        txt_userName.text = FormatData.currentUser != null ? (FormatData.currentUser.UserName + (FormatData.currentUser.Authority == 1 ? "  管理员" : "  普通用户")) : "--";
     }
 
     void OnTogOpenShakeWarning(Toggle tog, bool isOn)
@@ -126,14 +125,7 @@ public class MainPanel : UIEventHelper
     {
         if (isCheck)
         {
-            if (FormatData.currentUser != null && FormatData.currentUser.Authority == 1)
-            {
-                ChangePage(PageType.userManager);
-            }
-            else
-            {
-                MessageBox.Instance.PopOK("管理员权限才可查看", null, "确认");
-            }
+            ChangePage(PageType.userManager);
         }
     }
 
