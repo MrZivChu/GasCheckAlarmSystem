@@ -11,7 +11,8 @@ enum PageType
     userManager,
     realTimeDataManager,
     planarGraphPanel,
-    cubeInfo
+    cubeInfo,
+    qrCodeSpawn
 }
 
 public class MainPanel : UIEventHelper
@@ -34,6 +35,7 @@ public class MainPanel : UIEventHelper
     public Toggle tog_realTimeDataManager;
     public Toggle tog_planarGraph;
     public Toggle tog_cubeInfo;
+    public Toggle tog_qrCodeSpawn;
 
     public GameObject DeviceManagerPanel;
     public GameObject UserManagerPanel;
@@ -41,6 +43,7 @@ public class MainPanel : UIEventHelper
     public GameObject PlanarGraphPanel;
     public GameObject CubeInfoPanel;
     public GameObject ProbeOperateInMain;
+    public GameObject QrCodeSpawnPanel;
 
     public Button btn_fullScreen;
     public Button btn_exitGame;
@@ -61,6 +64,7 @@ public class MainPanel : UIEventHelper
 
     void Start()
     {
+        RegisterTogClick(tog_qrCodeSpawn, OnQrCodeSpawn);
         RegisterTogClick(tog_factoryCheck, OnFactoryCheck);
         RegisterTogClick(tog_machineManager, OnMachineManager);
         RegisterTogClick(tog_userManager, OnUserManager);
@@ -82,6 +86,7 @@ public class MainPanel : UIEventHelper
 
         ProbeInSceneHelper.instance.LoadAllProbe();
         txt_productName.text = JsonHandleHelper.gameConfig.productName;
+        tog_qrCodeSpawn.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
         tog_machineManager.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
         tog_userManager.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
         txt_userName.text = FormatData.currentUser != null ? (FormatData.currentUser.UserName + (FormatData.currentUser.Authority == 1 ? "  管理员" : "  普通用户")) : "--";
@@ -117,6 +122,14 @@ public class MainPanel : UIEventHelper
         if (Camera.main)
         {
             Camera.main.transform.SetPositionAndRotation(new Vector3(-115.34f, 96.91f, -7.36f), Quaternion.Euler(40.0f, 90.0f, 0.0f));
+        }
+    }
+
+    void OnQrCodeSpawn(Toggle btn, bool isCheck)
+    {
+        if (isCheck)
+        {
+            ChangePage(PageType.qrCodeSpawn);
         }
     }
 
@@ -178,6 +191,7 @@ public class MainPanel : UIEventHelper
     void ChangePage(PageType pageType)
     {
         pageType_ = pageType;
+        QrCodeSpawnPanel.SetActive(pageType == PageType.qrCodeSpawn);
         DeviceManagerPanel.SetActive(pageType == PageType.machineManager);
         UserManagerPanel.SetActive(pageType == PageType.userManager);
         RealtimeDataManagerPanel.SetActive(pageType == PageType.realTimeDataManager);
