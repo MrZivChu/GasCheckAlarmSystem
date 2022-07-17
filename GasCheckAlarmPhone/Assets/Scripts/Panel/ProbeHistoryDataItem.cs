@@ -9,7 +9,6 @@ public class ProbeHistoryDataItem : UIEventHelper
     public Text txt_index;
     public Text txt_probeName;
     public Text txt_machineName;
-    public Text txt_factoryName;
     public Text txt_gasKind;
     public Text txt_gasValue;
     public Text txt_firstAlarmValue;
@@ -29,7 +28,6 @@ public class ProbeHistoryDataItem : UIEventHelper
         txt_index.text = index.ToString();
         txt_probeName.text = model.ProbeName;
         txt_machineName.text = model.MachineName;
-        txt_factoryName.text = model.FactoryName;
         txt_gasKind.text = model.GasKind;
         if (model.MachineType == 4)
         {

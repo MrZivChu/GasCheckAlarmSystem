@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 enum PageType
@@ -124,7 +125,7 @@ public class MainPanel : UIEventHelper
     {
         if (isCheck)
         {
-            MessageBox.Instance.PopOK("管理员权限才可查看", null, "确认");
+            ChangePage(PageType.userManager);
         }
     }
 

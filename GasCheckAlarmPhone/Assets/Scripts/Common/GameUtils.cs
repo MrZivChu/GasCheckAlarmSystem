@@ -44,8 +44,6 @@ public static class GameUtils
             url += "?";
         }
         url += "&appId=" + AppConfig.APP_ID;
-        url += "&channelId=" + AppConfig.CHANNEL_ID;
-        url += "&clientFoceVersion=" + AppConfig.APP_ForceVERSION;
 
         WWW www = new WWW(url);
         yield return www;
@@ -60,7 +58,7 @@ public static class GameUtils
         }
     }
 
-    const string serverUrl = "http://127.0.0.1:808/";
+    const string serverUrl = "http://hyw8188710001.my3w.com/Handler/";
     /// <summary>
     /// post方式网络请求
     /// </summary>
@@ -77,7 +75,6 @@ public static class GameUtils
 
     private static IEnumerator HttpPost(string url, WWWForm form, System.Action<string> onSuccess, System.Action<string> onFailed)
     {
-        form.AddField("channelId", AppConfig.CHANNEL_ID.ToString());
         Dictionary<string, string> JsonDic = new Dictionary<string, string>();
         JsonDic.Add("Content-Type", "application/x-www-form-urlencoded");
         WWW www = new WWW(url, form.data, JsonDic);
@@ -108,7 +105,7 @@ public static class GameUtils
             else
             {
                 if (onFailed != null)
-                    onFailed(StaticText.STR_SERVER_FAILED + www.error);
+                    onFailed(www.url + " = " + www.error + " = " + www.text);
             }
         }
         www.Dispose();

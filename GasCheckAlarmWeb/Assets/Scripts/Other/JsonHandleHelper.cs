@@ -23,7 +23,6 @@ public class JsonHandleHelper : UIEventHelper
     string configPath = Application.streamingAssetsPath + "/config.txt";
     void Awake()
     {
-        DontDestroyOnLoad(this);
         instance = this;
         if (File.Exists(configPath))
         {

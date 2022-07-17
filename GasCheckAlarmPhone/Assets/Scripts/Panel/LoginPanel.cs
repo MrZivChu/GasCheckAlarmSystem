@@ -64,6 +64,7 @@ public class LoginPanel : UIEventHelper
             }
         }, (error) =>
         {
+            SceneManager.LoadScene("Main", LoadSceneMode.Single);
             MessageBox.Instance.PopOK(error, null, "确定");
         });
     }

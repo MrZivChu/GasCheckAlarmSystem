@@ -16,7 +16,7 @@ public class CameraController : MonoBehaviour
     Camera mainCamera;
     private void Awake()
     {
-        instance = this;
+        instance = this;        
     }
 
     private void Start()

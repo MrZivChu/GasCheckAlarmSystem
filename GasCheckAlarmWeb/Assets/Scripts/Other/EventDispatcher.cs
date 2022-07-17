@@ -43,7 +43,6 @@ namespace RunInMainThread
         private void Awake()
         {
             instance = this;
-            DontDestroyOnLoad(this.gameObject);
         }
 
         private void Update()

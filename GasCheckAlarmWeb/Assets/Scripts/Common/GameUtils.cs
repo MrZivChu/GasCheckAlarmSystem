@@ -60,7 +60,7 @@ public static class GameUtils
         }
     }
 
-    const string serverUrl = "http://127.0.0.1:808/";
+    const string serverUrl = "http://hyw8188710001.my3w.com/Handler/";
     /// <summary>
     /// post方式网络请求
     /// </summary>
