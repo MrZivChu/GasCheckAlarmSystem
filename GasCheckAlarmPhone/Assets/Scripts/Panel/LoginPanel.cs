@@ -45,15 +45,16 @@ public class LoginPanel : UIEventHelper
         form.AddField("requestType", "SelectUserByNamePwd");
         form.AddField("accountName", userName);
         form.AddField("accountPwd", userPwd);
-        GameUtils.PostHttp("User.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("User.ashx", form, (result) =>
         {
-            if (result.Contains("error:"))
+            string content = System.Text.Encoding.UTF8.GetString(result);
+            if (content.Contains("error:"))
             {
-                MessageBox.Instance.PopOK(result.Split(':')[1], null, "确定");
+                MessageBox.Instance.PopOK(content.Split(':')[1], null, "确定");
             }
             else
             {
-                List<UserModel> list = JsonMapper.ToObject<List<UserModel>>(result);
+                List<UserModel> list = JsonMapper.ToObject<List<UserModel>>(content);
                 FormatData.currentUser = list[0];
                 GameUtils.SetString(nameKey, userName);
                 if (rememberPwdTog.isOn)
@@ -64,7 +65,6 @@ public class LoginPanel : UIEventHelper
             }
         }, (error) =>
         {
-            SceneManager.LoadScene("Main", LoadSceneMode.Single);
             MessageBox.Instance.PopOK(error, null, "确定");
         });
     }

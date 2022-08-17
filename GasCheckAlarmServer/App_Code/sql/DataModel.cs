@@ -90,6 +90,16 @@ public class HistoryDataModel
     public int warningLevel = 0;
 }
 
+public class PointCheckModel
+{
+    public int ID;
+    public int ProbeID;
+    public string ProbeName;
+    public string UserName;
+    public string QrCodePath;
+    public DateTime CheckTime;
+}
+
 public class MachineSerialPortInfo
 {
     public int MachineID;

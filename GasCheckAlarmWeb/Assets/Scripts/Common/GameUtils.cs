@@ -60,7 +60,7 @@ public static class GameUtils
         }
     }
 
-    const string serverUrl = "http://hyw8188710001.my3w.com/Handler/";
+    const string serverUrl = "http://www.huaiantegang.com/Handler/";
     /// <summary>
     /// post方式网络请求
     /// </summary>

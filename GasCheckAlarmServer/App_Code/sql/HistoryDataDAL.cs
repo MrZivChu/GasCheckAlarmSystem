@@ -7,7 +7,7 @@ using System.Text;
 
 public class HistoryDataDAL
 {
-    public static List<HistoryDataModel> SelectAllHistoryDataByCondition(int pageIndex, int pageSize, string probeName, string gasKind, DateTime startTime, DateTime endTime, out int pageCount, out int rowCount)
+    public static List<HistoryDataModel> SelectAllHistoryDataByCondition(int pageIndex, int pageSize, string probeName, string gasKind, string startTime, string endTime, out int pageCount, out int rowCount)
     {
         pageCount = 0;
         rowCount = 0;
@@ -44,22 +44,15 @@ public class HistoryDataDAL
             sb2.Append(" and temp_row.GasKind = @GasKind ");
             para.Add(new SqlParameter("@GasKind", gasKind));
         }
-        if (startTime != DateTime.MinValue)
+        if (!string.IsNullOrEmpty(startTime) && !string.IsNullOrEmpty(endTime))
         {
-            sb1.Append(" and temp_row.CheckTime >= @StartTime ");
-            sb2.Append(" and temp_row.CheckTime >= @StartTime ");
-            startTime = startTime.AddDays(-1);
-            para.Add(new SqlParameter("@StartTime", startTime));
+            sb1.Append(" and temp_row.CheckTime >= @StartCheckTime and temp_row.CheckTime <= @EndCheckTime ");
+            sb2.Append(" and temp_row.CheckTime >= @StartCheckTime and temp_row.CheckTime <= @EndCheckTime ");
+            para.Add(new SqlParameter("@StartCheckTime", startTime));
+            para.Add(new SqlParameter("@EndCheckTime", endTime));
         }
-        if (endTime != DateTime.MinValue)
-        {
-            sb1.Append(" and temp_row.CheckTime <= @EndTime ");
-            sb2.Append(" and temp_row.CheckTime <= @EndTime ");
-            endTime = endTime.AddDays(1);
-            para.Add(new SqlParameter("@EndTime", endTime));
-        }
+
         StringBuilder sql = sb1.Append(sb2);
-        //UnityEngine.Debug.Log(sql.ToString());
         DataTable dt = SqlHelper.ExecProcPage(sql.ToString(), out pageCount, out rowCount, para);
         List<HistoryDataModel> modelList = new List<HistoryDataModel>();
         if (dt != null && dt.Rows.Count > 0)

@@ -31,6 +31,9 @@ public class ProbeModel
     public string FactoryName;
     public int MachineType;
     public string Pos2D;
+
+    //扩展字段
+    public bool isCheck = false;
 }
 
 public class RealtimeDataModel
@@ -91,6 +94,16 @@ public class HistoryDataModel
     public int warningLevel = 0;
 }
 
+public class PointCheckModel
+{
+    public int ID;
+    public int ProbeID;
+    public string ProbeName;
+    public string UserName;
+    public string QrCodePath;
+    public DateTime CheckTime;
+}
+
 public class MachineSerialPortInfo
 {
     public int MachineID;
@@ -135,5 +148,9 @@ public class FormatData
         {-1, new Color(0.5f, 0.5f, 0.5f)}
     };
 
-    public static UserModel currentUser;
+    public static UserModel currentUser = new UserModel()
+    {
+        UserName = "--",
+        Authority = 1
+};
 }

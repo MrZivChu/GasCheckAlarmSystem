@@ -13,7 +13,7 @@ public class QrCodeSpawnItem : MonoBehaviour
     {
         this.model = model;
         descText.text = model.ProbeName;
-        DrawQRCode(model.ProbeName);
+        DrawQRCode(model.ID.ToString());
     }
 
     public RawImage qrCode;

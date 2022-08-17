@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using HighlightingSystem;
+using UnityEngine.Networking;
 
 public static class GameUtils
 {
@@ -35,30 +36,22 @@ public static class GameUtils
 
     private static System.Collections.IEnumerator HttpGet(string url, System.Action<string> onSuccess, System.Action<string> onFailed)
     {
-        if (url.IndexOf('?') > 0)
+        using (WWW www = new WWW(url))
         {
-            if (!url.EndsWith("&")) url += "&";
-        }
-        else
-        {
-            url += "?";
-        }
-        url += "&appId=" + AppConfig.APP_ID;
+            yield return www;
 
-        WWW www = new WWW(url);
-        yield return www;
-
-        if (www.isDone && string.IsNullOrEmpty(www.error))
-        {
-            onSuccess(www.text);
-        }
-        else
-        {
-            onFailed(www.error);
+            if (www.isDone && string.IsNullOrEmpty(www.error))
+            {
+                onSuccess(www.text);
+            }
+            else
+            {
+                onFailed(www.error);
+            }
         }
     }
 
-    const string serverUrl = "http://hyw8188710001.my3w.com/Handler/";
+    public const string serverUrl = "http://www.huaiantegang.com";
     /// <summary>
     /// post方式网络请求
     /// </summary>
@@ -68,39 +61,20 @@ public static class GameUtils
     /// <param name="onFailed"></param>
     public static void PostHttp(string url, WWWForm form, System.Action<string> onSuccess, System.Action<string> onFailed)
     {
-        url = serverUrl + url;
+        url = serverUrl + "/Handler/" + url;
         UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
         es.StartCoroutine(HttpPost(url, form, onSuccess, onFailed));
     }
 
     private static IEnumerator HttpPost(string url, WWWForm form, System.Action<string> onSuccess, System.Action<string> onFailed)
     {
-        Dictionary<string, string> JsonDic = new Dictionary<string, string>();
-        JsonDic.Add("Content-Type", "application/x-www-form-urlencoded");
-        WWW www = new WWW(url, form.data, JsonDic);
-        yield return www;
-
-        if (www.isDone && string.IsNullOrEmpty(www.error))
+        using (WWW www = new WWW(url, form.data))
         {
-            if (onSuccess != null && !string.IsNullOrEmpty(www.text))
-                onSuccess(www.text);
-        }
-        else
-        {
-            if (www.error.Contains("Timed out"))
+            yield return www;
+            if (www.isDone && string.IsNullOrEmpty(www.error))
             {
-                if (onFailed != null)
-                    onFailed(StaticText.STR_TIMEOUT);
-            }
-            else if (www.error.Contains("Host unreachable"))
-            {
-                if (onFailed != null)
-                    onFailed(StaticText.STR_UNREACHABLE);
-            }
-            else if (www.error.StartsWith("Could not resolve host"))
-            {
-                if (onFailed != null)
-                    onFailed(StaticText.STR_NOT_RESOLVE);
+                if (onSuccess != null)
+                    onSuccess(www.text);
             }
             else
             {
@@ -108,8 +82,59 @@ public static class GameUtils
                     onFailed(www.url + " = " + www.error + " = " + www.text);
             }
         }
-        www.Dispose();
-        www = null;
+    }
+
+    // www.downloadHandler 是服务器往客户端发送的数据
+    // www.uploadHandler   是客户端往服务器发送的数据
+
+    public static void PostHttpWebRequest(string url, WWWForm form, System.Action<byte[]> onSuccess, System.Action<string> onFailed)
+    {
+        url = serverUrl + "/Handler/" + url;
+        UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
+        es.StartCoroutine(HttpPostWebRequest(url, form, onSuccess, onFailed));
+    }
+
+    private static IEnumerator HttpPostWebRequest(string url, WWWForm form, System.Action<byte[]> onSuccess, System.Action<string> onFailed)
+    {
+        using (UnityWebRequest www = UnityWebRequest.Post(url, form))
+        {
+            yield return www.SendWebRequest();
+            if (www.isDone && string.IsNullOrEmpty(www.error))
+            {
+                if (onSuccess != null)
+                    onSuccess(www.downloadHandler.data);
+            }
+            else
+            {
+                if (onFailed != null)
+                    onFailed(www.error + " " + www.isHttpError + " " + www.isNetworkError);
+            }
+        }
+    }
+
+    public static void GetHttpWebRequest(string url, System.Action<byte[]> onSuccess, System.Action<string> onFailed)
+    {
+        url = serverUrl + url;
+        UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
+        es.StartCoroutine(HttpGetWebRequest(url, onSuccess, onFailed));
+    }
+
+    private static IEnumerator HttpGetWebRequest(string url, System.Action<byte[]> onSuccess, System.Action<string> onFailed)
+    {
+        using (UnityWebRequest www = UnityWebRequest.Get(url))
+        {
+            yield return www.SendWebRequest();
+            if (www.isDone && string.IsNullOrEmpty(www.error))
+            {
+                if (onSuccess != null)
+                    onSuccess(www.downloadHandler.data);
+            }
+            else
+            {
+                if (onFailed != null)
+                    onFailed(www.error + " " + www.isHttpError + " " + www.isNetworkError);
+            }
+        }
     }
 
     #region PlayerPrefs

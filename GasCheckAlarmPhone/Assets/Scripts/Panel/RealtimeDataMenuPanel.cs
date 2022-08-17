@@ -18,12 +18,6 @@ public class RealtimeDataMenuPanel : UIEventHelper
         RegisterBtnClick(btn_realtimeDataManager, OnRealtimeDataManager);
         RegisterBtnClick(btn_chartManager, OnChartManager);
         RegisterBtnClick(btn_porbeHistoryData, OnProbeHistoryData);
-
-        ChangeTopMenuStyle(btn_realtimeDataManager, btn_chartManager, btn_porbeHistoryData);
-        RealtimeDataRoot.SetActive(false);
-        chartRoot.SetActive(false);
-        probeHistoryDataRoot.SetActive(false);
-
         OnRealtimeDataManager(btn_realtimeDataManager);
     }
 

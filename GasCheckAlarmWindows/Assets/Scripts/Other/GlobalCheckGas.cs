@@ -65,12 +65,18 @@ public class GlobalCheckGas : MonoBehaviour
             }
             else
             {
-                if (model.MachineType == 4)
+                if (model.GasKind == "氧气")
                 {
-                    if (model.GasValue == 1)
+                    model.GasValue = model.GasValue / 10.0f;
+                    if (model.GasValue > model.SecondAlarmValue)
                     {
                         model.warningLevel = 2;
                         realtimeEventData.secondList.Add(model);
+                    }
+                    else if (model.GasValue < model.FirstAlarmValue)
+                    {
+                        model.warningLevel = 1;
+                        realtimeEventData.firstList.Add(model);
                     }
                     else
                     {
@@ -80,20 +86,36 @@ public class GlobalCheckGas : MonoBehaviour
                 }
                 else
                 {
-                    if (model.GasValue >= model.SecondAlarmValue)
+                    if (model.MachineType == 4)
                     {
-                        model.warningLevel = 2;
-                        realtimeEventData.secondList.Add(model);
-                    }
-                    else if (model.GasValue >= model.FirstAlarmValue)
-                    {
-                        model.warningLevel = 1;
-                        realtimeEventData.firstList.Add(model);
+                        if (model.GasValue == 1)
+                        {
+                            model.warningLevel = 2;
+                            realtimeEventData.secondList.Add(model);
+                        }
+                        else
+                        {
+                            model.warningLevel = 0;
+                            realtimeEventData.normalList.Add(model);
+                        }
                     }
                     else
                     {
-                        model.warningLevel = 0;
-                        realtimeEventData.normalList.Add(model);
+                        if (model.GasValue >= model.SecondAlarmValue)
+                        {
+                            model.warningLevel = 2;
+                            realtimeEventData.secondList.Add(model);
+                        }
+                        else if (model.GasValue >= model.FirstAlarmValue)
+                        {
+                            model.warningLevel = 1;
+                            realtimeEventData.firstList.Add(model);
+                        }
+                        else
+                        {
+                            model.warningLevel = 0;
+                            realtimeEventData.normalList.Add(model);
+                        }
                     }
                 }
             }
