@@ -64,21 +64,6 @@ public class HyperlinkText : Text, IPointerClickHandler
 
     private HyperlinkText mHyperlinkText;
 
-
-    [SerializeField]
-    public string mName1 = "《服务协议》";
-
-
-    [SerializeField]
-    public string mName2 = "《隐私政策》";
-    public string GetHyperlinkInfo
-    {
-        get
-        {
-            return string.Format("huaiantegang.com版权所有 ICP证：<a href={0:link}>{1:name}</a>", "https://beian.miit.gov.cn", "苏ICP备2022031186号-1");
-        }
-    }
-
     protected override void Awake()
     {
         base.Awake();
@@ -107,7 +92,7 @@ public class HyperlinkText : Text, IPointerClickHandler
         }
 #endif
         //  m_OutputText = GetOutputText(text);
-        text = GetHyperlinkInfo;
+        //text = GetHyperlinkInfo;
         m_OutputText = GetOutputText(text);
 
     }

@@ -131,8 +131,8 @@ public class FormatData
     public static Dictionary<int, Color> warningColorDic = new Dictionary<int, Color>() {
         {2, new Color(1f, 0f, 0f)},
         {1, new Color(1f, 1f, 0f)},
-        {0, new Color(0f, 1f, 0f)},
-        {-1, new Color(0.5f, 0.5f, 0.5f)}
+        {0, new Color(0.5f, 1f, 0.5f)},
+        {-1, new Color(0.75f, 0.75f, 0.75f)}
     };
 
     public static UserModel currentUser = new UserModel()

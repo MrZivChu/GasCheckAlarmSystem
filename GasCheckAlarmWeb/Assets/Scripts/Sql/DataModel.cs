@@ -135,5 +135,9 @@ public class FormatData
         {-1, new Color(0.5f, 0.5f, 0.5f)}
     };
 
-    public static UserModel currentUser;
+    public static UserModel currentUser = new UserModel()
+    {
+        Authority = 1,
+        UserName = "--"
+    };
 }

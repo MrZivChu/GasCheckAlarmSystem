@@ -30,37 +30,15 @@ public class CubeInfoPanel : UIEventHelper
     private void InitData(RealtimeEventData realtimeEventData)
     {
         List<RealtimeDataModel> list = new List<RealtimeDataModel>();
+        list.AddRange(realtimeEventData.secondList);
         list.AddRange(realtimeEventData.firstList);
         list.AddRange(realtimeEventData.noResponseList);
         list.AddRange(realtimeEventData.normalList);
-        list.AddRange(realtimeEventData.secondList);
         InitGrid(list);
     }
 
     void InitGrid(List<RealtimeDataModel> list)
     {
-        float contentWidth = contentTrans.parent.GetComponent<RectTransform>().rect.size.x;
-        float contentHeight = contentTrans.parent.GetComponent<RectTransform>().rect.size.y;
-        float sumMianji = contentWidth * contentHeight;
-        bool search = true;
-        int colCount = 1;
-        float cellWidth = 0;
-        float cellHeight = 0;
-        while (search)
-        {
-            cellWidth = contentWidth / colCount;
-            cellHeight = cellWidth / 2;
-            if (cellWidth * cellHeight * list.Count > sumMianji)
-            {
-                colCount++;
-            }
-            else
-            {
-                search = false;
-            }
-        }
-        gridLayoutGroup.cellSize = new Vector2(cellWidth, cellHeight);
-        gridLayoutGroup.constraintCount = colCount;
         GameUtils.SpawnCellForTable<RealtimeDataModel>(contentTrans, list, (go, data, isSpawn, index) =>
         {
             GameObject currentObj = go;
