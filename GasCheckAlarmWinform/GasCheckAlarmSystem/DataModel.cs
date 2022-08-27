@@ -66,10 +66,3 @@ public class MachineSerialPortInfo
     public string EndProbeDecAddress;
     public List<ProbeSerialPortInfo> list;
 }
-
-public class FormatData
-{
-    public static Dictionary<int, int> baudRateFormat = new Dictionary<int, int>() {
-        { 0,4800 },{ 1,9600 },{ 2,9600 },{ 3,4800 },{ 4,4800 }
-    };
-}

@@ -22,6 +22,11 @@ using GasCheckAlarmSystem;
 
 public class SerialPortHelper
 {
+    public static Dictionary<int, int> baudRateFormat = new Dictionary<int, int>() {
+        { 0,9600 },{ 1,9600 },{ 2,9600 },{ 3,4800 },{ 4,4800 }
+    };
+
+
     SerialPort serialPort_;
     string portName_ = string.Empty;
     int baudRate_ = -1;
@@ -61,9 +66,9 @@ public class SerialPortHelper
                 {
                     MachineSerialPortInfo infoBase = new MachineSerialPortInfo();
                     infoBase.MachineAddress = item.Key;
-
                     if (item.Value.Count > 0)
                     {
+                        infoBase.MachineType = item.Value[0].MachineType;
                         int firstProbeDecAddress = Convert.ToInt32(item.Value[0].ProbeAddress);
                         int endProbeDecAddress = firstProbeDecAddress;
                         if (item.Value.Count > 1)
@@ -118,7 +123,7 @@ public class SerialPortHelper
         catch (Exception ex)
         {
             CloseCurrentSerialPort();
-            GasCheckAlarmSystem.Form1.instance.AddLog("SerialPortConnect 串口Open出错：" + ex.Message);
+            Form1.instance.AddLog("SerialPortConnect 串口Open出错：" + ex.Message);
             File.WriteAllText("D:\\SerialPortConnect.txt", ex.Message);
         }
     }
@@ -126,7 +131,7 @@ public class SerialPortHelper
     private void SerialPort_ErrorReceived(object sender, SerialErrorReceivedEventArgs e)
     {
         CloseCurrentSerialPort();
-        GasCheckAlarmSystem.Form1.instance.AddLog("SerialPort_ErrorReceived Error：" + e.EventType.ToString());
+        Form1.instance.AddLog("SerialPort_ErrorReceived Error：" + e.EventType.ToString());
         File.WriteAllText("D:\\SerialPort_ErrorReceived.txt", "串口接收数据出错：" + e.EventType.ToString());
     }
 
@@ -134,6 +139,7 @@ public class SerialPortHelper
     {
         try
         {
+            Form1.instance.AddLog("数据接收发生回调DataReceived");
             if (machineSerialPortInfo_ != null && machineSerialPortInfo_.list != null && machineSerialPortInfo_.list.Count > 0)
             {
                 if (protocol_ != null && serialPort_ != null)
@@ -158,6 +164,14 @@ public class SerialPortHelper
                         canTimeMachineResponseOutTime = false;
                     }
                 }
+                else
+                {
+                    Form1.instance.AddLog("发生异常，串口没有开启");
+                }
+            }
+            else
+            {
+                Form1.instance.AddLog("发生异常，没有数据");
             }
         }
         catch (Exception ex)
@@ -177,32 +191,32 @@ public class SerialPortHelper
                     if (machineSerialPortInfo_.MachineType == 0)
                     {
                         protocol_ = new StandardOneProtocol();
-                        GasCheckAlarmSystem.Form1.instance.AddLog("######开启标1协议######");
+                        Form1.instance.AddLog("######开启标1协议######");
                     }
                     else if (machineSerialPortInfo_.MachineType == 1)
                     {
                         protocol_ = new DZ40NewProtocol();
-                        GasCheckAlarmSystem.Form1.instance.AddLog("######开启DZ-40-New协议######");
+                        Form1.instance.AddLog("######开启DZ-40-New协议######");
                     }
                     else if (machineSerialPortInfo_.MachineType == 2)
                     {
                         protocol_ = new DZ40OldProtocol();
-                        GasCheckAlarmSystem.Form1.instance.AddLog("######开启DZ-40-Old协议######");
+                        Form1.instance.AddLog("######开启DZ-40-Old协议######");
                     }
                     else if (machineSerialPortInfo_.MachineType == 3)
                     {
                         protocol_ = new StandardProtocol();
-                        GasCheckAlarmSystem.Form1.instance.AddLog("######开启标准协议######");
+                        Form1.instance.AddLog("######开启标准协议######");
                     }
                     else if (machineSerialPortInfo_.MachineType == 4)
                     {
                         protocol_ = new HaiWanProtocol();
-                        GasCheckAlarmSystem.Form1.instance.AddLog("######开启海湾协议######");
+                        Form1.instance.AddLog("######开启海湾协议######");
                     }
                 }
                 else
                 {
-                    GasCheckAlarmSystem.Form1.instance.AddLog("######复用之前协议" + protocol_.GetProtocolName() + "######");
+                    Form1.instance.AddLog("######复用之前协议" + protocol_.GetProtocolName() + "######");
                 }
                 string sendContent = string.Empty;
                 protocol_.HandleSendData(machineSerialPortInfo_, out sendContent);
@@ -270,7 +284,7 @@ public class SerialPortHelper
                         machineSerialPortInfo_ = machineSerialPortInfoBaseList_[readMachineIndex];
                         if (machineSerialPortInfo_.MachineType == 0)
                         {
-                            GasCheckAlarmSystem.Form1.instance.AddLog("标1主机需要做个0.2s延迟请求");
+                            Form1.instance.AddLog("标1主机需要做个0.2s延迟请求");
                             GasCheckAlarmSystem.Timer timer = new GasCheckAlarmSystem.Timer(0.2f, QueryNextMachine);
                             TimerHelper.GetInstance().AddTimer(timer);
                         }
@@ -281,8 +295,8 @@ public class SerialPortHelper
                     }
                     else
                     {
-                        GasCheckAlarmSystem.Form1.instance.AddChangeLineLog();
-                        GasCheckAlarmSystem.Form1.instance.AddLog("$$$$$$$$准备刷新新一轮数据$$$$$$$$$\n");
+                        Form1.instance.AddChangeLineLog();
+                        Form1.instance.AddLog("$$$$$$$$准备刷新新一轮数据$$$$$$$$$\n");
                         tempQueryWholeMachineDataIntervalTime = 0;
                         canQueryWholeMachineData = true;
                     }
@@ -293,7 +307,7 @@ public class SerialPortHelper
                 tempMachineResponseOutTime += deltaTime;
                 if (tempMachineResponseOutTime >= machineResponseOutTime)
                 {
-                    GasCheckAlarmSystem.Form1.instance.AddLog("！！！！！！读取数据超时！！！！！！");
+                    Form1.instance.AddLog("！！！！！！读取数据超时！！！！！！");
                     tempMachineResponseOutTime = 0;
                     canTimeMachineResponseOutTime = false;
 
@@ -314,20 +328,24 @@ public class SerialPortHelper
 
     private void QueryNextMachine()
     {
-        GasCheckAlarmSystem.Form1.instance.AddChangeLineLog();
-        GasCheckAlarmSystem.Form1.instance.AddLog("**********************读取【Type=" + machineSerialPortInfo_.MachineType + "-地址=" + machineSerialPortInfo_.MachineAddress + "】主机数据**********************");
+        Form1.instance.AddChangeLineLog();
+        Form1.instance.AddLog("**********************读取【Type=" + machineSerialPortInfo_.MachineType + "-地址=" + machineSerialPortInfo_.MachineAddress + "】主机数据**********************");
 
         readMachineIndex++;
-        int baudRate = FormatData.baudRateFormat[machineSerialPortInfo_.MachineType];
+        int baudRate = baudRateFormat[machineSerialPortInfo_.MachineType];
         if (baudRate != baudRate_ || serialPort_ == null)
         {
             baudRate_ = baudRate;
-            GasCheckAlarmSystem.Form1.instance.AddLog("重新开启串口" + baudRate_);
+            Form1.instance.AddLog("重新开启串口：" + baudRate_);
             SerialPortConnect(portName_, baudRate_, 8, Parity.None, StopBits.One);
+        }
+        else
+        {
+            Form1.instance.AddLog("复用串口：" + baudRate_);
         }
         if (serialPort_ == null || (serialPort_ != null && !serialPort_.IsOpen))
         {
-            GasCheckAlarmSystem.Form1.instance.AddLog("串口开启失败，请求下一个主机数据");
+            Form1.instance.AddLog("串口开启失败，请求下一个主机数据");
             tempQueryNextMachineDataIntervalTime = 0;
             canQueryNextMachineData = true;
             protocol_ = null;
