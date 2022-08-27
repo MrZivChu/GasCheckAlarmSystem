@@ -23,7 +23,7 @@ using GasCheckAlarmSystem;
 public class SerialPortHelper
 {
     public static Dictionary<int, int> baudRateFormat = new Dictionary<int, int>() {
-        { 0,9600 },{ 1,9600 },{ 2,9600 },{ 3,4800 },{ 4,4800 }
+        { 0,4800 },{ 1,9600 },{ 2,9600 },{ 3,4800 },{ 4,4800 }
     };
 
 
@@ -144,6 +144,8 @@ public class SerialPortHelper
             {
                 if (protocol_ != null && serialPort_ != null)
                 {
+                    tempMachineResponseOutTime = 0;
+                    canTimeMachineResponseOutTime = false;
                     int bytesToReadCount = serialPort_.BytesToRead;
                     byte[] buffer = new byte[bytesToReadCount];
                     serialPort_.Read(buffer, 0, bytesToReadCount);
@@ -160,8 +162,6 @@ public class SerialPortHelper
                         {
                             SendData();
                         }
-                        tempMachineResponseOutTime = 0;
-                        canTimeMachineResponseOutTime = false;
                     }
                 }
                 else
@@ -222,6 +222,8 @@ public class SerialPortHelper
                 protocol_.HandleSendData(machineSerialPortInfo_, out sendContent);
                 if (!string.IsNullOrEmpty(sendContent))
                 {
+                    tempMachineResponseOutTime = 0;
+                    canTimeMachineResponseOutTime = true;
                     byte[] sendbuffer = HexHelper.StrToHexByte(sendContent);
                     serialPort_.Write(sendbuffer, 0, sendbuffer.Length);
                 }
@@ -352,8 +354,6 @@ public class SerialPortHelper
             return;
         }
         SendData();
-        tempMachineResponseOutTime = 0;
-        canTimeMachineResponseOutTime = true;
     }
 
     public void CloseCurrentSerialPort()

@@ -65,7 +65,7 @@ namespace GasCheckAlarmSystem
                 return;
             }
             probeSerialPortInfo_ = machineSerialPortInfo_.list[readProbeIndex_];
-            string firstHex = probeSerialPortInfo_.ProbeAddress.Substring(2, 2);
+            string firstHex = Convert.ToInt32(probeSerialPortInfo_.ProbeAddress.Substring(2, 2)).ToString("X2");
             string endHex = "000001";
 
             StringBuilder sb = new StringBuilder();
