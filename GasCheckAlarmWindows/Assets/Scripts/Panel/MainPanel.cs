@@ -4,17 +4,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-enum PageType
-{
-    machineManager,
-    userManager,
-    realTimeDataManager,
-    planarGraphPanel,
-    cubeInfo,
-    qrCodeSpawn,
-    deviceTag
-}
-
 public class MainPanel : UIEventHelper
 {
     public Text txt_allCount;
@@ -35,8 +24,6 @@ public class MainPanel : UIEventHelper
     public Toggle tog_closeShoutWarning;
     public Toggle tog_openShakeWarning;
     public Toggle tog_closeShakeWarning;
-
-    PageType pageType_ = PageType.deviceTag;
 
     void Start()
     {

@@ -17,7 +17,6 @@ public class LoginPanel : UIEventHelper
     void Start()
     {
         RegisterBtnClick(btn_login, OnLogin);
-
         bool hasNameKey = GameUtils.HasKey(nameKey);
         if (hasNameKey)
         {
@@ -34,7 +33,6 @@ public class LoginPanel : UIEventHelper
     {
         string userName = input_name.text;
         string userPwd = input_pwd.text;
-
         if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(userPwd))
         {
             MessageBox.Instance.PopOK("用户名或密码不能为空", null, "确定");

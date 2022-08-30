@@ -10,16 +10,22 @@ public class AudioManager : MonoBehaviour
         instance = this;
     }
 
+    bool isShoutWarning = true;
     public AudioSource warningShoutAudioSource;
     public void PlayWarningShout()
     {
         if (warningShoutAudioSource)
         {
-            if (MainPanel.instance.isShoutWarning)
+            if (isShoutWarning)
                 warningShoutAudioSource.Play();
             else
                 PauseWarningShout();
         }
+    }
+
+    public void SetIsShoutWarning(bool isShoutWarning)
+    {
+        this.isShoutWarning = isShoutWarning;
     }
 
     public void PauseWarningShout()

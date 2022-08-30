@@ -32,6 +32,7 @@ public class ProbeModel
     public int MachineType;
     public string Pos2D;
     public string SerialNumber;
+    public string TagName;
 
     //扩展字段
     public bool isCheck = false;
@@ -54,6 +55,7 @@ public class RealtimeDataModel
     public string FactoryName;
     public int MachineType;
     public string Pos2D;
+    public string TagName;
 
     //扩展字段
     public int warningLevel = 0;
@@ -147,6 +149,11 @@ public class FormatData
         {1, new Color(1f, 1f, 0f)},
         {0, new Color(0f, 1f, 0f)},
         {-1, new Color(0.5f, 0.5f, 0.5f)}
+    };
+
+    public static Dictionary<int, String> authorityNameDic = new Dictionary<int, String>() {
+        {0, "普通用户"},
+        {1, "管理员"}
     };
 
     public static UserModel currentUser = new UserModel()

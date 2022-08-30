@@ -10,7 +10,6 @@ public class CubeInfoPanel : UIEventHelper
 {
     public GameObject itemRes;
     public Transform contentTrans;
-    public GridLayoutGroup gridLayoutGroup;
 
     private void Start()
     {
@@ -39,28 +38,6 @@ public class CubeInfoPanel : UIEventHelper
 
     void InitGrid(List<RealtimeDataModel> list)
     {
-        float contentWidth = contentTrans.parent.GetComponent<RectTransform>().rect.size.x;
-        float contentHeight = contentTrans.parent.GetComponent<RectTransform>().rect.size.y;
-        float sumMianji = contentWidth * contentHeight;
-        bool search = true;
-        int colCount = 1;
-        float cellWidth = 0;
-        float cellHeight = 0;
-        while (search)
-        {
-            cellWidth = contentWidth / colCount;
-            cellHeight = cellWidth / 2;
-            if (cellWidth * cellHeight * list.Count > sumMianji)
-            {
-                colCount++;
-            }
-            else
-            {
-                search = false;
-            }
-        }
-        gridLayoutGroup.cellSize = new Vector2(cellWidth, cellHeight);
-        gridLayoutGroup.constraintCount = colCount;
         GameUtils.SpawnCellForTable<RealtimeDataModel>(contentTrans, list, (go, data, isSpawn, index) =>
         {
             GameObject currentObj = go;
