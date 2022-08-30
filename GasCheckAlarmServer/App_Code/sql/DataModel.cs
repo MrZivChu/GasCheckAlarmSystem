@@ -30,6 +30,8 @@ public class ProbeModel
     public string FactoryName;
     public int MachineType;
     public string Pos2D;
+    public string SerialNumber;
+    public string TagName;
 }
 
 public class RealtimeDataModel
@@ -49,6 +51,7 @@ public class RealtimeDataModel
     public string FactoryName;
     public int MachineType;
     public string Pos2D;
+    public string TagName;
 
     //扩展字段
     public int warningLevel = 0;
@@ -98,7 +101,17 @@ public class PointCheckModel
     public string UserName;
     public string QrCodePath;
     public DateTime CheckTime;
+    public string Description;
 }
+
+public class DeviceTagModel
+{
+    public int ID;
+    public string TagName;
+    public int ParentID;
+    public string Position;
+}
+
 
 public class MachineSerialPortInfo
 {

@@ -34,7 +34,15 @@ public class AddUserPanel : UIEventHelper
         string address = input_userNumber.text;
         string number = input_phone.text;
         int authority = dropdown_authority.value;
-        UserDAL.InsertUser(accountName, accountPwd, userName, address, number, authority);
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "InsertUser");
+        form.AddField("accountName", accountName);
+        form.AddField("accountPwd", accountPwd);
+        form.AddField("userName", userName);
+        form.AddField("userNumber", address);
+        form.AddField("phone", number);
+        form.AddField("authority", authority);
+        GameUtils.PostHttp("User.ashx", form, null, null);
         MessageBox.Instance.PopOK("新增成功", () =>
         {
             EventManager.Instance.DisPatch(NotifyType.UpdateUserList);

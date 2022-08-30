@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using LitJson;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,8 +13,9 @@ public class EditProbePanel : UIEventHelper
     public InputField input_unit;
     public InputField input_firstAlarmValue;
     public InputField input_secondAlarmValue;
-
+    public Dropdown dropdown_deviceTag;
     public Dropdown dropdown_machine;
+    public InputField input_serialNumber;
 
     public Button btn_cancel;
     public Button btn_ok;
@@ -38,10 +40,25 @@ public class EditProbePanel : UIEventHelper
             string unit = input_unit.text;
             string firstAlarmValue = input_firstAlarmValue.text;
             string secondAlarmValue = input_secondAlarmValue.text;
+            string serialNumber = input_serialNumber.text;
 
             int dd = dropdown_machine.value;
             MachineModel model = machineList[dd];
-            ProbeDAL.EditProbeByID(currentModel.ID, address, probeName, model.ID, gasKind, unit, firstAlarmValue, secondAlarmValue, model.MachineName);
+            WWWForm form = new WWWForm();
+            form.AddField("requestType", "EditProbeByID");
+            form.AddField("id", currentModel.ID);
+            form.AddField("mailAddress", address);
+            form.AddField("probeName", probeName);
+            form.AddField("machineID", model.ID);
+            form.AddField("gasKind", gasKind);
+            form.AddField("unit", unit);
+            form.AddField("firstAlarmValue", firstAlarmValue);
+            form.AddField("secondAlarmValue", secondAlarmValue);
+            form.AddField("machineName", model.MachineName);
+            form.AddField("serialNumber", serialNumber);
+            form.AddField("tagName", dropdown_deviceTag.captionText.text);
+            GameUtils.PostHttp("Probe.ashx", form, null, null);
+
             MessageBox.Instance.PopOK("修改成功", () =>
             {
                 EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
@@ -60,21 +77,63 @@ public class EditProbePanel : UIEventHelper
         input_unit.text = model.Unit;
         input_firstAlarmValue.text = model.FirstAlarmValue.ToString();
         input_secondAlarmValue.text = model.SecondAlarmValue.ToString();
+        input_serialNumber.text = model.SerialNumber;
+        InitMachine(model);
+        InitDeviceTag(model);
+    }
 
+    void InitMachine(ProbeModel model)
+    {
         dropdown_machine.ClearOptions();
-        machineList = MachineDAL.SelectAllMachineByCondition();
-        if (machineList != null && machineList.Count > 0)
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectAllMachineByCondition");
+        GameUtils.PostHttp("Machine.ashx", form, (result) =>
         {
-            List<string> optionList = new List<string>();
-            int selectIndex = 0;
-            for (int i = 0; i < machineList.Count; i++)
+            machineList = JsonMapper.ToObject<List<MachineModel>>(result);
+            if (machineList != null && machineList.Count > 0)
             {
-                optionList.Add(machineList[i].MachineName);
-                if (machineList[i].ID == model.MachineID)
-                    selectIndex = i;
+                List<string> optionList = new List<string>();
+                int selectIndex = 0;
+                for (int i = 0; i < machineList.Count; i++)
+                {
+                    optionList.Add(machineList[i].MachineName);
+                    if (machineList[i].ID == model.MachineID)
+                        selectIndex = i;
+                }
+                dropdown_machine.AddOptions(optionList);
+                dropdown_machine.value = selectIndex;
             }
-            dropdown_machine.AddOptions(optionList);
-            dropdown_machine.value = selectIndex;
-        }
+        }, null);
+    }
+
+    void InitDeviceTag(ProbeModel model)
+    {
+        dropdown_deviceTag.ClearOptions();
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectAllDeviceTag");
+        GameUtils.PostHttp("DeviceTag.ashx", form, (result) =>
+        {
+            List<DeviceTag> list = JsonMapper.ToObject<List<DeviceTag>>(result);
+            if (list != null && list.Count > 0)
+            {
+                List<string> optionList = new List<string>();
+                int selectIndex = 0;
+                for (int i = 0; i < list.Count; i++)
+                {
+                    DeviceTag deviceTag = list[i];
+                    List<DeviceTag> temp = list.FindAll(it => it.ParentID == deviceTag.ID);
+                    if (temp.Count == 0)
+                    {
+                        if (deviceTag.TagName == model.TagName)
+                        {
+                            selectIndex = optionList.Count;
+                        }
+                        optionList.Add(deviceTag.TagName);
+                    }
+                }
+                dropdown_deviceTag.AddOptions(optionList);
+                dropdown_deviceTag.value = selectIndex;
+            }
+        }, null);
     }
 }

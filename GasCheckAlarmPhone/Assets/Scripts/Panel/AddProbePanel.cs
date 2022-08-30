@@ -14,9 +14,11 @@ public class AddProbePanel : UIEventHelper
     public InputField input_firstAlarmValue;
     public InputField input_secondAlarmValue;
     public Dropdown dropdown_machine;
+    public InputField input_serialNumber;
 
     [HideInInspector]
     public Vector3 position = Vector3.zero;
+    [HideInInspector]
     public Vector3 direction = Vector3.zero;
 
     public Button btn_cancel;
@@ -65,6 +67,7 @@ public class AddProbePanel : UIEventHelper
         string unit = FormatData.unitList[dropdown_unit.value];
         string firstAlarmValue = input_firstAlarmValue.text;
         string secondAlarmValue = input_secondAlarmValue.text;
+        string serialNumber = input_serialNumber.text;
         int dd = dropdown_machine.value;
         MachineModel model = machineList[dd];
         string posDir = position.x.ToString("0.00") + "," + position.y.ToString("0.00") + "," + position.z.ToString("0.00") + ";" + direction.x.ToString("0.00") + "," + direction.y.ToString("0.00") + "," + direction.z.ToString("0.00");
@@ -83,6 +86,7 @@ public class AddProbePanel : UIEventHelper
         form.AddField("factoryID", model.FactoryID);
         form.AddField("factoryName", model.FactoryName);
         form.AddField("machineType", model.MachineType);
+        form.AddField("serialNumber", serialNumber);
         GameUtils.PostHttp("Probe.ashx", form, (result) =>
         {
             int insertID = Convert.ToInt32(result);

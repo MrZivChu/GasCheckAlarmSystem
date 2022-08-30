@@ -28,7 +28,7 @@ public class ProbeHistoryDataPanel : UIEventHelper
     void Awake()
     {
         itemRes = Resources.Load("ProbeHistoryDataItem");
-        btn_deleteAllData.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
+        btn_deleteAllData.gameObject.SetActive(FormatData.currentUser.Authority == 1);
     }
 
     private void Start()

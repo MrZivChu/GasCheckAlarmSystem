@@ -31,6 +31,7 @@ public class ProbeModel
     public string FactoryName;
     public int MachineType;
     public string Pos2D;
+    public string SerialNumber;
 
     //扩展字段
     public bool isCheck = false;

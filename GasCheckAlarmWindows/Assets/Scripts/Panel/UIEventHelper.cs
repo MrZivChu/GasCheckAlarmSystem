@@ -28,6 +28,36 @@ public class UIEventHelper : MonoBehaviour
         });
     }
 
+    public void RegisterMyBtnLongPress(MyButton btn, Action<MyButton> callback, bool isOnlyEvent = true)
+    {
+        if (isOnlyEvent)
+            btn.onLongPress.RemoveAllListeners();
+        btn.onLongPress.AddListener(() =>
+        {
+            callback(btn);
+        });
+    }
+
+    public void RegisterMyBtnClick(MyButton btn, Action<MyButton> callback, bool isOnlyEvent = true)
+    {
+        if (isOnlyEvent)
+            btn.onClick.RemoveAllListeners();
+        btn.onClick.AddListener(() =>
+        {
+            callback(btn);
+        });
+    }
+
+    public void RegisterMyBtnUp(MyButton btn, Action<MyButton> callback, bool isOnlyEvent = true)
+    {
+        if (isOnlyEvent)
+            btn.onButtonUp.RemoveAllListeners();
+        btn.onButtonUp.AddListener(() =>
+        {
+            callback(btn);
+        });
+    }
+
     public void RegisterTogClick(Toggle tog, Action<Toggle, bool> callback, bool isOnlyEvent = true)
     {
         if (isOnlyEvent)

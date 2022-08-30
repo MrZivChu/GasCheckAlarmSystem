@@ -10,6 +10,8 @@ public enum NotifyType
     UpdateUserList,
     UpdateRealtimeDataList,
     UpdateSerialPortStatus,
+    InsertDeviceTag,
+    DeleteDeviceTag,
 }
 
 public class EventManager

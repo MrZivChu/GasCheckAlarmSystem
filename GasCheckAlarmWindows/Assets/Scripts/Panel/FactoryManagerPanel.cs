@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using LitJson;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -9,29 +10,21 @@ public class FactoryManagerPanel : UIEventHelper
     public Button btn_add;
     public Button btn_delete;
     public Button btn_edit;
-    public Button btn_select;
-
+    public Button btn_search;
     public Toggle wholeToggle;
 
     public GameObject addFactoryPanel;
     public GameObject editFactoryPanel;
-
     public InputField input_factoryName;
 
     public Transform contentTrans;
-    Object itemRes;
-    void Awake()
-    {
-        itemRes = Resources.Load("FactoryItem");
-    }
-
+    public Object itemRes;
     private void Start()
     {
         RegisterBtnClick(btn_add, OnAddFactory);
         RegisterBtnClick(btn_delete, OnDeleteFactory);
         RegisterBtnClick(btn_edit, OnEditFactory);
-        RegisterBtnClick(btn_select, OnSelectFactory);
-
+        RegisterBtnClick(btn_search, OnSearchFactory);
         RegisterTogClick(wholeToggle, OnWholeToggle);
 
         EventManager.Instance.AddEventListener(NotifyType.UpdateFactoryList, UpdateFactoryListEvent);
@@ -42,11 +35,17 @@ public class FactoryManagerPanel : UIEventHelper
         InitData();
     }
 
-    void OnSelectFactory(Button btn)
+    void OnSearchFactory(Button btn)
     {
         string factoryName = input_factoryName.text;
-        List<FactoryModel> list = FactoryDAL.SelectAllFactoryByCondition(factoryName);
-        InitGrid(list);
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectAllFactoryByCondition");
+        form.AddField("factoryName", factoryName);
+        GameUtils.PostHttp("Factory.ashx", form, (result) =>
+        {
+            List<FactoryModel> list = JsonMapper.ToObject<List<FactoryModel>>(result);
+            InitGrid(list);
+        }, null);
     }
 
     void OnAddFactory(Button btn)
@@ -81,9 +80,15 @@ public class FactoryManagerPanel : UIEventHelper
                     sb.Append(idList[i] + ",");
                 }
                 sb = sb.Remove(sb.Length - 1, 1);
-                bool result = FactoryDAL.DeleteFactoryByID(sb.ToString());
-                EventManager.Instance.DisPatch(NotifyType.UpdateFactoryList);
-                MessageBox.Instance.PopOK("删除成功", null, "确定");
+                WWWForm form = new WWWForm();
+                form.AddField("requestType", "DeleteFactoryByID");
+                form.AddField("idList", sb.ToString());
+                GameUtils.PostHttp("Factory.ashx", form, (content) =>
+                {
+                    EventManager.Instance.DisPatch(NotifyType.UpdateFactoryList);
+                    MessageBox.Instance.PopOK("删除成功", null, "确定");
+                }, null);
+
             }, "取消", "确定");
         }
     }
@@ -137,8 +142,13 @@ public class FactoryManagerPanel : UIEventHelper
     List<FactoryItem> itemList = new List<FactoryItem>();
     private void InitData()
     {
-        List<FactoryModel> list = FactoryDAL.SelectAllFactoryByCondition();
-        InitGrid(list);
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectAllFactoryByCondition");
+        GameUtils.PostHttp("Factory.ashx", form, (result) =>
+        {
+            List<FactoryModel> list = JsonMapper.ToObject<List<FactoryModel>>(result);
+            InitGrid(list);
+        }, null);
     }
 
     void InitGrid(List<FactoryModel> list)

@@ -15,12 +15,12 @@ public class PointCheckDAL
         StringBuilder sb2 = new StringBuilder();
         sb1.Append(@"select @RowCount=count(*),@pageCount=ceiling((count(*)+0.0)/@pageSize) 
 		from (
-		select ProbeID,ProbeName,UserName,QrCodePath,CheckTime
+		select ProbeID,ProbeName,UserName,QrCodePath,CheckTime,Description
         from PointCheck) temp_row  
         where 1=1 ");
 
         sb2.Append(@"select top (select @pageSize) *   
-	from (select row_number() over(order by CheckTime desc) as rownumber,ID,ProbeID,ProbeName,UserName,QrCodePath,CheckTime from PointCheck) temp_row 
+	from (select row_number() over(order by CheckTime desc) as rownumber,ID,ProbeID,ProbeName,UserName,QrCodePath,CheckTime,Description from PointCheck) temp_row 
 	where 1=1 and rownumber>(@pageIndex-1)*@pageSize ");
 
         List<SqlParameter> para = new List<SqlParameter>()
@@ -64,6 +64,7 @@ public class PointCheckDAL
                 model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
                 model.UserName = dt.Rows[i]["UserName"].ToString();
                 model.QrCodePath = dt.Rows[i]["QrCodePath"].ToString();
+                model.Description = dt.Rows[i]["Description"].ToString();
                 model.CheckTime = Convert.ToDateTime(dt.Rows[i]["CheckTime"]);
                 modelList.Add(model);
             }
@@ -71,14 +72,15 @@ public class PointCheckDAL
         return modelList;
     }
 
-    public static bool InsertPointCheck(int probeID, string probeName, string userName, string qrCodePath)
+    public static bool InsertPointCheck(int probeID, string probeName, string userName, string qrCodePath,string description)
     {
-        string sql = @"insert into PointCheck (ProbeID,ProbeName,UserName,QrCodePath)values(@ProbeID,@ProbeName,@UserName,@QrCodePath)";
+        string sql = @"insert into PointCheck (ProbeID,ProbeName,UserName,QrCodePath,Description)values(@ProbeID,@ProbeName,@UserName,@QrCodePath,@Description)";
         List<SqlParameter> parameter = new List<SqlParameter>{
                  new SqlParameter("@ProbeID",probeID),
                  new SqlParameter("@ProbeName",probeName),
                  new SqlParameter("@UserName",userName),
-                 new SqlParameter("@QrCodePath",qrCodePath)
+                 new SqlParameter("@QrCodePath",qrCodePath),
+                 new SqlParameter("@Description",description)
             };
         int result = SqlHelper.ExecuteNonQuery(sql, parameter.ToArray());
         return result >= 1 ? true : false;

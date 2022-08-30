@@ -13,18 +13,17 @@ public struct SGameConfig
     public bool isSetLightByUI;
     public string commName;
     public string productName;
+    public string serverUrl;
 }
 
 public class JsonHandleHelper : UIEventHelper
 {
-    public Text productNameText;
-    public static JsonHandleHelper instance;
     public static SGameConfig gameConfig;
-    string configPath = Application.streamingAssetsPath + "/config.txt";
+    static string configPath = string.Empty;
     void Awake()
     {
         DontDestroyOnLoad(this);
-        instance = this;
+        configPath = Application.persistentDataPath + "/config.txt";
         if (File.Exists(configPath))
         {
             string content = File.ReadAllText(configPath);
@@ -39,6 +38,7 @@ public class JsonHandleHelper : UIEventHelper
             gameConfig.subLight = 0.3f;
             gameConfig.isSetLightByUI = false;
             gameConfig.productName = "钢铁有限责任公司\n气体监控系统";
+            gameConfig.serverUrl = "127.0.0.1";
             string json = LitJson.JsonMapper.ToJson(gameConfig);
             File.WriteAllText(configPath, json);
         }
@@ -48,19 +48,17 @@ public class JsonHandleHelper : UIEventHelper
             LightSetting.instance.SetMainLight(System.Convert.ToSingle(gameConfig.mainLight));
             LightSetting.instance.SetSubLight(System.Convert.ToSingle(gameConfig.subLight));
         }
-        productNameText.text = gameConfig.productName;
     }
 
-    public void UpdateConfig(string commName)
+    public static void UpdateConfig(string commName)
     {
         gameConfig.commName = commName;
         string json = LitJson.JsonMapper.ToJson(gameConfig);
         File.WriteAllText(configPath, json);
     }
 
-    private void OnApplicationQuit()
+    void OnApplicationQuit()
     {
-        print("OnApplicationQuit");
         CloseWinformExeProcess();
     }
 

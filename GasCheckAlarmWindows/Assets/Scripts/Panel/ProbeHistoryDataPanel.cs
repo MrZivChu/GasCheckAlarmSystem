@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using LitJson;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -20,51 +22,24 @@ public class ProbeHistoryDataPanel : UIEventHelper
 
     public InputField input_probeName;
     public InputField input_gasKind;
-    public InputField input_pageSize;
     public UI.Dates.DatePicker_DateRange dateRange;
 
     public Transform contentTrans;
-    Object itemRes;
-
-    List<HistoryDataModel> historyDataModelList;
-    public static ProbeHistoryDataPanel instance;
-
-    void Awake()
-    {
-        instance = this;
-        itemRes = Resources.Load("ProbeHistoryDataItem");
-    }
-
+    public UnityEngine.Object itemRes;
     private void Start()
     {
-        RegisterBtnClick(btn_search, OnSearchRealtimeData);
+        RegisterBtnClick(btn_search, OnSearch);
         RegisterBtnClick(btn_saveExcel, OnSaveExcel);
         RegisterBtnClick(btn_deleteAllData, OnDeleteAllData);
 
         RegisterBtnClick(btn_prePage, OnPrePagel);
         RegisterBtnClick(btn_nextPage, OnNextPage);
-
-        RegisterInputFieldOnEndEdit(input_pageSize, OnPageSizeOnEndEdit);
-        btn_deleteAllData.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
+        btn_deleteAllData.gameObject.SetActive(FormatData.currentUser.Authority == 1);
     }
 
-    void OnPageSizeOnEndEdit(InputField target, string content)
+    private void OnEnable()
     {
-        if (!int.TryParse(content, out pageSize))
-        {
-            pageSize = 13;
-            input_pageSize.text = pageSize.ToString();
-        }
-    }
-
-    private void Update()
-    {
-        txt_pageCount.text = pageIndex + "/" + pageCount;
-    }
-
-    public List<HistoryDataModel> GetHistoryDataModelList()
-    {
-        return historyDataModelList;
+        InitData();
     }
 
     void OnPrePagel(Button btn)
@@ -85,67 +60,59 @@ public class ProbeHistoryDataPanel : UIEventHelper
         }
     }
 
-    void OnSaveExcel(Button btn)
-    {
-        System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
-        sfd.Filter = "Excel文件(*.xlsx)|*.xlsx|所有文件|*.*";//设置文件类型
-        sfd.FileName = "探头实时数据";//设置默认文件名
-        sfd.DefaultExt = "xlsx";//设置默认格式（可以不设）
-        sfd.AddExtension = true;//设置自动在文件名中添加扩展名
-        if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-        {
-            if (!string.IsNullOrEmpty(sfd.FileName))
-            {
-                System.DateTime startTime = System.DateTime.MinValue, endTime = System.DateTime.MinValue;
-                if (dateRange.FromDate.HasValue)
-                    startTime = dateRange.FromDate.Date;
-                if (dateRange.ToDate.HasValue)
-                    endTime = dateRange.ToDate.Date;
-                ExcelAccess.WriteExcel(sfd.FileName, "sheet1", historyDataModelList);
-                MessageBox.Instance.PopOK("保存成功", null, "确定");
-            }
-        }
-    }
-
     void OnDeleteAllData(Button btn)
     {
-        HistoryDataDAL.DeleteAllHistoryData();
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "DeleteAllHistoryData");
+        GameUtils.PostHttp("HistoryData.ashx", form, null, null);
         InitData();
     }
 
-    void OnSearchRealtimeData(Button btn)
+    void OnSearch(Button btn)
     {
-        System.DateTime startTime = System.DateTime.MinValue, endTime = System.DateTime.MinValue;
-        if (dateRange.FromDate.HasValue)
-            startTime = dateRange.FromDate.Date;
-        if (dateRange.ToDate.HasValue)
-            endTime = dateRange.ToDate.Date;
         pageIndex = 1;
-        historyDataModelList = HistoryDataDAL.SelectAllHistoryDataByCondition(pageIndex, pageSize, input_probeName.text, input_gasKind.text, startTime, endTime, out pageCount, out rowCount);
-        InitGrid();
-    }
-
-    private void OnEnable()
-    {
         InitData();
     }
 
-    List<ProbeHistoryDataItem> itemList = new List<ProbeHistoryDataItem>();
+    List<HistoryDataModel> historyDataModelList;
     private void InitData()
     {
-        System.DateTime startTime = System.DateTime.MinValue, endTime = System.DateTime.MinValue;
+        string startTime = string.Empty;
         if (dateRange.FromDate.HasValue)
-            startTime = dateRange.FromDate.Date;
+            startTime = dateRange.FromDate.Date.ToString("yyyy-MM-dd");
+        string endTime = string.Empty;
         if (dateRange.ToDate.HasValue)
-            endTime = dateRange.ToDate.Date;
+            endTime = dateRange.ToDate.Date.AddDays(1).ToString("yyyy-MM-dd");
 
-        historyDataModelList = HistoryDataDAL.SelectAllHistoryDataByCondition(pageIndex, pageSize, input_probeName.text, input_gasKind.text, startTime, endTime, out pageCount, out rowCount);
-        InitGrid();
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectAllHistoryDataByCondition");
+        form.AddField("pageIndex", pageIndex);
+        form.AddField("pageSize", pageSize);
+        form.AddField("probeName", input_probeName.text);
+        form.AddField("gasKind", input_gasKind.text);
+        form.AddField("startTime", startTime);
+        form.AddField("endTime", endTime);
+        form.AddField("pageCount", pageCount);
+        form.AddField("rowCount", rowCount);
+        GameUtils.PostHttp("HistoryData.ashx", form, (result) =>
+        {
+            historyDataModelList = new List<HistoryDataModel>();
+            if (result.Contains("*"))
+            {
+                string pageResult = result.Split('*')[0];
+                pageCount = Convert.ToInt32(pageResult.Split(',')[0]);
+                rowCount = Convert.ToInt32(pageResult.Split(',')[1]);
+                result = result.Split('*')[1];
+                historyDataModelList = JsonMapper.ToObject<List<HistoryDataModel>>(result);
+
+            }
+            InitGrid(historyDataModelList);
+            txt_pageCount.text = pageIndex + "/" + pageCount;
+        }, null);
     }
 
-    void InitGrid()
+    void InitGrid(List<HistoryDataModel> historyDataModelList)
     {
-        itemList.Clear();
         GameUtils.SpawnCellForTable<HistoryDataModel>(contentTrans, historyDataModelList, (go, data, isSpawn, index) =>
         {
             GameObject currentObj = go;
@@ -159,8 +126,32 @@ public class ProbeHistoryDataPanel : UIEventHelper
             ProbeHistoryDataItem item = currentObj.GetComponent<ProbeHistoryDataItem>();
             item.InitData(pageSize * (pageIndex - 1) + index + 1, data);
             item.SetBackgroundColor(index % 2 == 0 ? new Color(239 / 255.0f, 243 / 255.0f, 250 / 255.0f) : new Color(1, 1, 1));
-            itemList.Add(item);
             currentObj.SetActive(true);
         });
+    }
+
+    void OnSaveExcel(Button btn)
+    {
+        if (historyDataModelList != null && historyDataModelList.Count > 0)
+        {
+            System.Windows.Forms.SaveFileDialog sfd = new System.Windows.Forms.SaveFileDialog();
+            sfd.Filter = "Excel文件(*.xlsx)|*.xlsx|所有文件|*.*";//设置文件类型
+            sfd.FileName = "探头实时数据";//设置默认文件名
+            sfd.DefaultExt = "xlsx";//设置默认格式（可以不设）
+            sfd.AddExtension = true;//设置自动在文件名中添加扩展名
+            if (sfd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (!string.IsNullOrEmpty(sfd.FileName))
+                {
+                    System.DateTime startTime = System.DateTime.MinValue, endTime = System.DateTime.MinValue;
+                    if (dateRange.FromDate.HasValue)
+                        startTime = dateRange.FromDate.Date;
+                    if (dateRange.ToDate.HasValue)
+                        endTime = dateRange.ToDate.Date;
+                    ExcelAccess.WriteExcel(sfd.FileName, "sheet1", historyDataModelList);
+                    MessageBox.Instance.PopOK("保存成功", null, "确定");
+                }
+            }
+        }
     }
 }

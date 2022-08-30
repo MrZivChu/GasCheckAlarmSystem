@@ -32,7 +32,7 @@ public class PointCheck : IHttpHandler
             if (list.Count > 0)
             {
                 string data = JsonConvert.SerializeObject(list);
-                content += "*" + data;
+                content += "|" + data;
             }
         }
         else if (requestType == "InsertPointCheck")
@@ -41,7 +41,8 @@ public class PointCheck : IHttpHandler
             string probeName = context.Request["probeName"];
             string userName = context.Request["userName"];
             string qrCodePath = context.Request["qrCodePath"];
-            PointCheckDAL.InsertPointCheck(probeID, probeName, userName, qrCodePath);
+            string description = context.Request["description"];
+            PointCheckDAL.InsertPointCheck(probeID, probeName, userName, qrCodePath, description);
         }
         else if (requestType == "UploadFile")
         {

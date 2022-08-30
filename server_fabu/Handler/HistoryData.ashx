@@ -23,8 +23,8 @@ public class HistoryData : IHttpHandler
             int pageSize = Convert.ToInt32(context.Request["pageSize"]);
             string probeName = context.Request["probeName"];
             string gasKind = context.Request["gasKind"];
-            DateTime startTime = Convert.ToDateTime(context.Request["startTime"]);
-            DateTime endTime = Convert.ToDateTime(context.Request["endTime"]);
+            string startTime = context.Request["startTime"];
+            string endTime = context.Request["endTime"];
             int pageCount = Convert.ToInt32(context.Request["pageCount"]);
             int rowCount = Convert.ToInt32(context.Request["rowCount"]);
             List<HistoryDataModel> list = HistoryDataDAL.SelectAllHistoryDataByCondition(pageIndex, pageSize, probeName, gasKind, startTime, endTime, out pageCount, out rowCount);

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using LitJson;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -33,7 +34,15 @@ public class AddMachinePanel : UIEventHelper
         int machineProtocol = dropdown_protocol.value;
         int dd = dropdown_factory.value;
         FactoryModel model = factoryList[dd];
-        MachineDAL.InsertMachine(machineAddress, machineName, model.ID, model.FactoryName, machineProtocol);
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "InsertMachine");
+        form.AddField("mailAddress", machineAddress);
+        form.AddField("machineName", machineName);
+        form.AddField("factoryID", model.ID);
+        form.AddField("factoryName", model.FactoryName);
+        form.AddField("machineProtocol", machineProtocol);
+        GameUtils.PostHttp("Machine.ashx", form, null, null);
+
         MessageBox.Instance.PopOK("新增成功", () =>
         {
             EventManager.Instance.DisPatch(NotifyType.UpdateMachineList);
@@ -44,20 +53,22 @@ public class AddMachinePanel : UIEventHelper
     List<FactoryModel> factoryList;
     private void OnEnable()
     {
-        input_machineName.text = string.Empty;
-        input_machineAddress.text = string.Empty;
-
         dropdown_factory.ClearOptions();
-        factoryList = FactoryDAL.SelectAllFactoryByCondition();
-        if (factoryList != null && factoryList.Count > 0)
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectAllFactoryByCondition");
+        GameUtils.PostHttp("Factory.ashx", form, (result) =>
         {
-            List<string> optionList = new List<string>();
-            for (int i = 0; i < factoryList.Count; i++)
+            factoryList = JsonMapper.ToObject<List<FactoryModel>>(result);
+            if (factoryList != null && factoryList.Count > 0)
             {
-                optionList.Add(factoryList[i].FactoryName);
+                List<string> optionList = new List<string>();
+                for (int i = 0; i < factoryList.Count; i++)
+                {
+                    optionList.Add(factoryList[i].FactoryName);
+                }
+                dropdown_factory.AddOptions(optionList);
+                dropdown_factory.value = 0;
             }
-            dropdown_factory.AddOptions(optionList);
-            dropdown_factory.value = 0;
-        }
+        }, null);
     }
 }

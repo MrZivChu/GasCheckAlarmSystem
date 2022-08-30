@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class LoginPanel : UIEventHelper
 {
     public Button btn_login;
+    public Text productNameText;
     public InputField input_name;
     public InputField input_pwd;
     public Toggle rememberPwdTog;
@@ -16,6 +17,7 @@ public class LoginPanel : UIEventHelper
     string pwdKey = "userPwd";
     void Start()
     {
+        productNameText.text = JsonHandleHelper.gameConfig.productName;
         RegisterBtnClick(btn_login, OnLogin);
 
         bool hasNameKey = GameUtils.HasKey(nameKey);
@@ -41,20 +43,38 @@ public class LoginPanel : UIEventHelper
             return;
         }
 
-        List<UserModel> userList = UserDAL.SelectUserByNamePwd(userName, userPwd);
-        if (userList.Count > 0)
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectUserByNamePwd");
+        form.AddField("accountName", userName);
+        form.AddField("accountPwd", userPwd);
+        GameUtils.PostHttpWebRequest("User.ashx", form, (result) =>
         {
-            FormatData.currentUser = userList[0];
-            GameUtils.SetString(nameKey, userName);
-            if (rememberPwdTog.isOn)
-                GameUtils.SetString(pwdKey, userPwd);
+            string content = System.Text.Encoding.UTF8.GetString(result);
+            if (content.Contains("error:"))
+            {
+                MessageBox.Instance.PopOK(content.Split(':')[1], null, "确定");
+            }
             else
-                GameUtils.RemoveKey(pwdKey);
-            SceneManager.LoadScene("Env", LoadSceneMode.Single);
-        }
-        else
+            {
+                List<UserModel> list = JsonMapper.ToObject<List<UserModel>>(content);
+                if (list.Count > 0)
+                {
+                    FormatData.currentUser = list[0];
+                    GameUtils.SetString(nameKey, userName);
+                    if (rememberPwdTog.isOn)
+                        GameUtils.SetString(pwdKey, userPwd);
+                    else
+                        GameUtils.RemoveKey(pwdKey);
+                    SceneManager.LoadScene("Main", LoadSceneMode.Single);
+                }
+                else
+                {
+                    MessageBox.Instance.PopOK("不存在此用户", null, "确定");
+                }
+            }
+        }, (error) =>
         {
-            MessageBox.Instance.PopOK("不存在此用户", null, "确定");
-        }
+            MessageBox.Instance.PopOK(error, null, "确定");
+        });
     }
 }

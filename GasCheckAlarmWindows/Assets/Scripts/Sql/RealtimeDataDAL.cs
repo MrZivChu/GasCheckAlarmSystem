@@ -8,7 +8,7 @@ public class RealtimeDataDAL
 {
     public static List<RealtimeDataModel> SelectAllRealtimeDataByCondition(string probeName = "",string gasKind = "")
     {
-        string sql = @"select ID,ProbeID,CheckTime,GasValue,ProbeName,GasKind,Unit,FirstAlarmValue,SecondAlarmValue,MachineName,MachineID,FactoryID,FactoryName,MachineType,Pos2D from RealtimeData where 1=1 ";
+        string sql = @"select ID,ProbeID,CheckTime,GasValue,ProbeName,GasKind,Unit,FirstAlarmValue,SecondAlarmValue,MachineName,MachineID,FactoryID,FactoryName,MachineType,Pos2D,TagName from RealtimeData where 1=1 ";
         if (!string.IsNullOrEmpty(probeName))
             sql += " and ProbeName like '%" + probeName + "%' ";
         if (!string.IsNullOrEmpty(gasKind))
@@ -36,6 +36,7 @@ public class RealtimeDataDAL
                 model.FactoryName = dt.Rows[i]["FactoryName"].ToString();
                 model.MachineType = Convert.ToInt32(dt.Rows[i]["MachineType"]);
                 model.Pos2D = dt.Rows[i]["Pos2D"].ToString();
+                model.TagName = dt.Rows[i]["TagName"].ToString();
                 modelList.Add(model);
             }
         }

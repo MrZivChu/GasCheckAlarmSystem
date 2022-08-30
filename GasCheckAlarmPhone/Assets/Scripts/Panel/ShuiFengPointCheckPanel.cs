@@ -7,7 +7,7 @@ using System;
 using LitJson;
 using System.IO;
 
-public class QrCodeController : MonoBehaviour
+public class ShuiFengPointCheckPanel : MonoBehaviour
 {
     public Image okImg;
     public RawImage cameraTexture;

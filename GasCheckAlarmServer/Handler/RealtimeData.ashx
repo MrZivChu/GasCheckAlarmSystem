@@ -23,10 +23,7 @@ public class RealtimeData : IHttpHandler
             string probeName = context.Request["probeName"];
             string gasKind = context.Request["gasKind"];
             List<RealtimeDataModel> list = RealtimeDataDAL.SelectAllRealtimeDataByCondition(probeName, gasKind);
-            if (list.Count > 0)
-            {
-                content = JsonConvert.SerializeObject(list);
-            }
+            content = JsonConvert.SerializeObject(list);
         }
         else if (requestType == "EditRealtimePos2DByID")
         {

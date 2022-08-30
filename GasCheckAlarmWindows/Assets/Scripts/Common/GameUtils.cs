@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using HighlightingSystem;
+using UnityEngine.Networking;
 
 public static class GameUtils
 {
@@ -68,67 +69,112 @@ public static class GameUtils
     /// <param name="fields"></param>
     /// <param name="onSuccess"></param>
     /// <param name="onFailed"></param>
-    public static void PostHttp(string url, string fields, System.Action<string> onSuccess, System.Action<string> onFailed)
+    public static void PostHttp(string url, WWWForm form, System.Action<string> onSuccess, System.Action<string> onFailed)
     {
-        Dictionary<string, string> dict = new Dictionary<string, string>();
-        if (!string.IsNullOrEmpty(fields))
+        if (Application.isEditor)
         {
-            string[] str = fields.Split('&');
-            for (int i = 0; i + 1 < str.Length; i += 2)
-            {
-                dict[str[i]] = str[i + 1];
-            }
-        }
-        UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
-        es.StartCoroutine(HttpPost(url, dict, onSuccess, onFailed));
-    }
-
-    private static IEnumerator HttpPost(string url, Dictionary<string, string> fields, System.Action<string> onSuccess, System.Action<string> onFailed)
-    {
-        WWWForm form = new WWWForm();
-        form.AddField("appId", AppConfig.APP_ID.ToString());
-        form.AddField("channelId", AppConfig.CHANNEL_ID.ToString());
-        form.AddField("clientFoceVersion", AppConfig.APP_ForceVERSION);
-        if (fields != null)
-        {
-            foreach (var item in fields)
-            {
-                form.AddField(item.Key, item.Value);
-            }
-        }
-        WWW www = new WWW(url, form);
-        yield return www;
-
-        if (www.isDone && string.IsNullOrEmpty(www.error))
-        {
-            if (onSuccess != null)
-                onSuccess(www.text);
+            url = "http://www.huaiantegang.com/Handler/" + url;
         }
         else
         {
-            if (www.error.Contains("Timed out"))
+            url = JsonHandleHelper.gameConfig.serverUrl + "/Handler/" + url;
+        }
+        UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
+        es.StartCoroutine(HttpPost(url, form, onSuccess, onFailed));
+    }
+
+    private static IEnumerator HttpPost(string url, WWWForm form, System.Action<string> onSuccess, System.Action<string> onFailed)
+    {
+        using (WWW www = new WWW(url, form.data))
+        {
+            yield return www;
+            if (www.isDone && string.IsNullOrEmpty(www.error))
             {
-                if (onFailed != null)
-                    onFailed(StaticText.STR_TIMEOUT);
-            }
-            else if (www.error.Contains("Host unreachable"))
-            {
-                if (onFailed != null)
-                    onFailed(StaticText.STR_UNREACHABLE);
-            }
-            else if (www.error.StartsWith("Could not resolve host"))
-            {
-                if (onFailed != null)
-                    onFailed(StaticText.STR_NOT_RESOLVE);
+                if (onSuccess != null)
+                    onSuccess(www.text);
             }
             else
             {
                 if (onFailed != null)
-                    onFailed(StaticText.STR_SERVER_FAILED);
+                {
+                    string error = www.url + " = " + www.error + " = " + www.text;
+                    Debug.Log(error);
+                    onFailed(error);
+                }
             }
         }
-        www.Dispose();
-        www = null;
+    }
+
+    // www.downloadHandler 是服务器往客户端发送的数据
+    // www.uploadHandler   是客户端往服务器发送的数据
+    public static void PostHttpWebRequest(string url, WWWForm form, System.Action<byte[]> onSuccess, System.Action<string> onFailed)
+    {
+        if (Application.isEditor)
+        {
+            url = "http://www.huaiantegang.com/Handler/" + url;
+        }
+        else
+        {
+            url = JsonHandleHelper.gameConfig.serverUrl + "/Handler/" + url;
+        }
+        UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
+        es.StartCoroutine(HttpPostWebRequest(url, form, onSuccess, onFailed));
+    }
+
+    private static IEnumerator HttpPostWebRequest(string url, WWWForm form, System.Action<byte[]> onSuccess, System.Action<string> onFailed)
+    {
+        using (UnityWebRequest www = UnityWebRequest.Post(url, form))
+        {
+            yield return www.SendWebRequest();
+            if (www.isDone && string.IsNullOrEmpty(www.error))
+            {
+                if (onSuccess != null)
+                    onSuccess(www.downloadHandler.data);
+            }
+            else
+            {
+                if (onFailed != null)
+                {
+                    string error = www.error + " " + www.isHttpError + " " + www.isNetworkError;
+                    onFailed(error);
+                }
+            }
+        }
+    }
+
+    public static void GetHttpWebRequest(string url, System.Action<byte[]> onSuccess, System.Action<string> onFailed)
+    {
+        if (Application.isEditor)
+        {
+            url = "http://www.huaiantegang.com/" + url;
+        }
+        else
+        {
+            url = JsonHandleHelper.gameConfig.serverUrl + url;
+        }
+        UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
+        es.StartCoroutine(HttpGetWebRequest(url, onSuccess, onFailed));
+    }
+
+    private static IEnumerator HttpGetWebRequest(string url, System.Action<byte[]> onSuccess, System.Action<string> onFailed)
+    {
+        using (UnityWebRequest www = UnityWebRequest.Get(url))
+        {
+            yield return www.SendWebRequest();
+            if (www.isDone && string.IsNullOrEmpty(www.error))
+            {
+                if (onSuccess != null)
+                    onSuccess(www.downloadHandler.data);
+            }
+            else
+            {
+                if (onFailed != null)
+                {
+                    string error = www.error + " " + www.isHttpError + " " + www.isNetworkError;
+                    onFailed(error);
+                }
+            }
+        }
     }
 
     #region PlayerPrefs
@@ -188,12 +234,6 @@ public static class GameUtils
     #endregion
 
 
-    /// <summary>
-    /// 设置对象高亮
-    /// </summary>
-    /// <param name="go"></param>
-    /// <param name="isLight"></param>
-    /// <param name="color"></param>
     public static void SetObjectHighLight(GameObject go, bool isLight, Color startColor = new Color(), Color endColor = new Color())
     {
         if (isLight)

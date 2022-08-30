@@ -106,7 +106,7 @@ public class ProbeInSceneHelper : UIEventHelper
             Dictionary<ProbeInfo, ProbeInfo3DPanel> value = probe3DDic[model.ProbeID];
             foreach (var item in value)
             {
-                item.Value.RefreshRealtimeData(model.GasValue);
+                item.Value.RefreshRealtimeData((float)model.GasValue);
                 if (model.GasValue > model.SecondAlarmValue)
                 {
                     GameUtils.SetObjectHighLight(item.Key.gameObject, true, Color.red, Color.white);

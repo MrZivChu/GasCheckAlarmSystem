@@ -5,49 +5,34 @@ using UnityEngine.UI;
 
 public class PointCheckMenuPanel : UIEventHelper
 {
-    public Button btn_pointCheck;
-    public Button btn_pointCheckManager;
-
-    public GameObject pointCheckRoot;
-    public GameObject pointCheckManagerRoot;
+    public List<Button> btnList;
+    public List<GameObject> panelList;
 
     void Start()
     {
-        RegisterBtnClick(btn_pointCheck, OnPointCheck);
-        RegisterBtnClick(btn_pointCheckManager, OnPointCheckManager);
-
-        btn_pointCheck.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 0);
-        btn_pointCheckManager.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
-        if (btn_pointCheck.gameObject.activeSelf)
+        for (int i = 0; i < btnList.Count; i++)
         {
-            OnPointCheck(btn_pointCheck);
+            RegisterBtnClick<int>(btnList[i], i, OnBtnClick);
         }
-        else
+        OnBtnClick(btnList[0], 0);
+    }
+
+    void OnBtnClick(Button btn, int index)
+    {
+        for (int i = 0; i < panelList.Count; i++)
         {
-            OnPointCheckManager(btn_pointCheckManager);
+            if (i == index)
+            {
+                panelList[i].SetActive(true);
+                btnList[i].GetComponent<Image>().color = new Color(1, 1, 1);
+                btnList[i].transform.GetChild(0).GetComponent<Text>().color = new Color(41 / 255.0f, 141 / 255.0f, 125 / 255.0f);
+            }
+            else
+            {
+                panelList[i].SetActive(false);
+                btnList[i].GetComponent<Image>().color = new Color(5 / 255.0f, 147 / 255.0f, 122 / 255.0f);
+                btnList[i].transform.GetChild(0).GetComponent<Text>().color = new Color(1, 1, 1);
+            }
         }
-    }
-
-    void OnPointCheck(Button btn)
-    {
-        ChangeTopMenuStyle(btn_pointCheck, btn_pointCheckManager);
-        pointCheckRoot.SetActive(true);
-        pointCheckManagerRoot.SetActive(false);
-    }
-
-    void OnPointCheckManager(Button btn)
-    {
-        ChangeTopMenuStyle(btn_pointCheckManager, btn_pointCheck);
-        pointCheckRoot.SetActive(false);
-        pointCheckManagerRoot.SetActive(true);
-    }
-
-    void ChangeTopMenuStyle(Button selectBtn, Button normalBtn1)
-    {
-        selectBtn.GetComponent<Image>().color = new Color(1, 1, 1);
-        selectBtn.transform.GetChild(0).GetComponent<Text>().color = new Color(41 / 255.0f, 141 / 255.0f, 125 / 255.0f);
-
-        normalBtn1.GetComponent<Image>().color = new Color(5 / 255.0f, 147 / 255.0f, 122 / 255.0f);
-        normalBtn1.transform.GetChild(0).GetComponent<Text>().color = new Color(1, 1, 1);
     }
 }

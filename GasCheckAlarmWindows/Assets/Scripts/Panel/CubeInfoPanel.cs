@@ -10,7 +10,6 @@ public class CubeInfoPanel : UIEventHelper
 {
     public GameObject itemRes;
     public Transform contentTrans;
-    public GridLayoutGroup gridLayoutGroup;
     public InputField nameInput;
 
     private void Start()

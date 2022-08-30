@@ -52,8 +52,17 @@ public class UserManagerPanel : UIEventHelper
         string userNumber = input_userNumber.text;
         string phone = input_phone.text;
         int authority = dropdown_authority.value == 1 ? 0 : (dropdown_authority.value == 2 ? 1 : 2);
-        List<UserModel> list = UserDAL.SelectAllUserByCondition(userName, userNumber, phone, authority);
-        InitGrid(list);
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectAllUserByCondition");
+        form.AddField("userName", userName);
+        form.AddField("userNumber", userNumber);
+        form.AddField("Phone", phone);
+        form.AddField("authority", authority);
+        GameUtils.PostHttp("User.ashx", form, (result) =>
+        {
+            List<UserModel> list = JsonMapper.ToObject<List<UserModel>>(result);
+            InitGrid(list);
+        }, null);
     }
 
     void OnAddUser(Button btn)
@@ -88,7 +97,11 @@ public class UserManagerPanel : UIEventHelper
                     sb.Append(idList[i] + ",");
                 }
                 sb = sb.Remove(sb.Length - 1, 1);
-                bool result = UserDAL.DeleteUserByID(sb.ToString());
+                WWWForm form = new WWWForm();
+                form.AddField("requestType", "DeleteUserByID");
+                form.AddField("idList", sb.ToString());
+                GameUtils.PostHttp("User.ashx", form, null, null);
+
                 EventManager.Instance.DisPatch(NotifyType.UpdateUserList);
                 MessageBox.Instance.PopOK("删除成功", null, "确定");
 
@@ -145,8 +158,13 @@ public class UserManagerPanel : UIEventHelper
     List<UserItem> itemList = new List<UserItem>();
     private void InitData()
     {
-        List<UserModel> list = UserDAL.SelectAllUser();
-        InitGrid(list);
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectAllUser");
+        GameUtils.PostHttp("User.ashx", form, (result) =>
+        {
+            List<UserModel> list = JsonMapper.ToObject<List<UserModel>>(result);
+            InitGrid(list);
+        }, null);
     }
 
     private void InitGrid(List<UserModel> list)

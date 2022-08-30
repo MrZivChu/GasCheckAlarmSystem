@@ -20,10 +20,7 @@ public class Factory : IHttpHandler
         {
             string factoryName = context.Request["factoryName"];
             List<FactoryModel> list = FactoryDAL.SelectAllFactoryByCondition(factoryName);
-            if (list.Count > 0)
-            {
-                content = JsonConvert.SerializeObject(list);
-            }
+            content = JsonConvert.SerializeObject(list);
         }
         else if (requestType == "DeleteFactoryByID")
         {

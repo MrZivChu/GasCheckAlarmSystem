@@ -23,39 +23,46 @@ public class PointCheck : IHttpHandler
             int pageSize = Convert.ToInt32(context.Request["pageSize"]);
             string userName = context.Request["userName"];
             string probeName = context.Request["probeName"];
-            string checkTime = context.Request["checkTime"];
+            string startTime = context.Request["startTime"];
+            string endTime = context.Request["endTime"];
             int pageCount = Convert.ToInt32(context.Request["pageCount"]);
             int rowCount = Convert.ToInt32(context.Request["rowCount"]);
-            List<PointCheckModel> list = PointCheckDAL.SelectAllPointCheckByCondition(pageIndex, pageSize, userName, probeName, checkTime, out pageCount, out rowCount);
+            List<PointCheckModel> list = PointCheckDAL.SelectAllPointCheckByCondition(pageIndex, pageSize, userName, probeName, startTime, endTime, out pageCount, out rowCount);
+            content = pageCount + "," + rowCount;
             if (list.Count > 0)
             {
                 string data = JsonConvert.SerializeObject(list);
-                content = pageCount + "," + rowCount + "*" + data;
+                content += "|" + data;
             }
         }
         else if (requestType == "InsertPointCheck")
         {
-            SaveFile(context);
-            //int probeID = Convert.ToInt32(context.Request["probeID"]);
-            //string probeName = context.Request["probeName"];
-            //string userName = context.Request["userName"];
-            //string qrCodePath = context.Request["qrCodePath"];            
-            //PointCheckDAL.InsertPointCheck(probeID, probeName, userName, qrCodePath);
+            int probeID = Convert.ToInt32(context.Request["probeID"]);
+            string probeName = context.Request["probeName"];
+            string userName = context.Request["userName"];
+            string qrCodePath = context.Request["qrCodePath"];
+            string description = context.Request["description"];
+            PointCheckDAL.InsertPointCheck(probeID, probeName, userName, qrCodePath, description);
+        }
+        else if (requestType == "UploadFile")
+        {
+            string floder = DateTime.Now.ToString("yyyyMMdd");
+            string filePath = context.Server.MapPath("../QrCodeImgs/") + floder + "/";
+            if (!Directory.Exists(filePath))
+            {
+                Directory.CreateDirectory(filePath);
+            }
+            HttpFileCollection hfc = context.Request.Files;
+            IList<HttpPostedFile> list = hfc.GetMultiple("file");
+            for (int i = 0; i < list.Count; i++)
+            {
+                HttpPostedFile ff = list[i];
+                ff.SaveAs(filePath + ff.FileName);
+                content = floder + "/" + ff.FileName;
+            }
         }
         context.Response.Write(content);
         context.Response.End();
-    }
-
-    void SaveFile(HttpContext context)
-    {
-        HttpRequest hr = context.Request;
-        HttpFileCollection hfc = hr.Files;
-        IList<HttpPostedFile> list = hfc.GetMultiple("file");
-        for (int i = 0; i < list.Count; i++)
-        {
-            HttpPostedFile ff = list[i];
-            ff.SaveAs("QrCodeImgs:\\" + ff.FileName);
-        }
     }
 
     public bool IsReusable

@@ -32,9 +32,6 @@ public class PointCheckItem : UIEventHelper
             texture.Apply();
             Sprite sp = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2());
             image.sprite = sp;
-        }, (error) =>
-        {
-
-        });
+        }, null);
     }
 }

@@ -28,10 +28,7 @@ public class Machine : IHttpHandler
                 factoryID = -1;
             }
             List<MachineModel> list = MachineDAL.SelectAllMachineByCondition(machineName, factoryID);
-            if (list.Count > 0)
-            {
-                content = JsonConvert.SerializeObject(list);
-            }
+            content = JsonConvert.SerializeObject(list);
         }
         else if (requestType == "DeleteMachineByID")
         {

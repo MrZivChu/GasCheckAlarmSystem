@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using LitJson;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -9,8 +10,7 @@ public class ProbeManagerPanel : UIEventHelper
     public Button btn_add;
     public Button btn_delete;
     public Button btn_edit;
-    public Button btn_select;
-
+    public Button btn_search;
     public Toggle wholeToggle;
 
     public GameObject addProbePanel;
@@ -20,21 +20,14 @@ public class ProbeManagerPanel : UIEventHelper
     public InputField input_gasKind;
 
     public Transform contentTrans;
-    Object itemRes;
-    void Awake()
-    {
-        itemRes = Resources.Load("ProbeItem");
-    }
-
+    public Object itemRes;
     private void Start()
     {
         RegisterBtnClick(btn_add, OnAddProbe);
         RegisterBtnClick(btn_delete, OnDeleteProbe);
         RegisterBtnClick(btn_edit, OnEditProbe);
-        RegisterBtnClick(btn_select, OnSelectProbe);
-
+        RegisterBtnClick(btn_search, OnSearchProbe);
         RegisterTogClick(wholeToggle, OnWholeToggle);
-
         EventManager.Instance.AddEventListener(NotifyType.UpdateProbeList, UpdateProbeListEvent);
     }
 
@@ -43,29 +36,39 @@ public class ProbeManagerPanel : UIEventHelper
         InitData();
     }
 
-    void OnSelectProbe(Button btn)
+    void OnSearchProbe(Button btn)
     {
         string probeName = input_probeName.text;
         string gasKind = input_gasKind.text;
-        List<ProbeModel> list = ProbeDAL.SelectAllProbeByCondition(probeName, gasKind);
-        InitGrid(list);
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectAllProbeByCondition");
+        form.AddField("probeName", probeName);
+        form.AddField("gasKind", gasKind);
+        GameUtils.PostHttp("Probe.ashx", form, (result) =>
+        {
+            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(result);
+            InitGrid(list);
+        }, null);
     }
 
     void OnAddProbe(Button btn)
     {
-        addProbePanel.SetActive(true);
+        if (addProbePanel != null)
+        {
+            addProbePanel.SetActive(true);
+        }
     }
 
     void OnDeleteProbe(Button btn)
     {
         List<ProbeModel> idList = new List<ProbeModel>();
-        if (itemList != null && itemList.Count > 0)
+        if (probeItemList != null && probeItemList.Count > 0)
         {
-            for (int i = 0; i < itemList.Count; i++)
+            for (int i = 0; i < probeItemList.Count; i++)
             {
-                if (itemList[i].GetToggleStatus())
+                if (probeItemList[i].GetToggleStatus())
                 {
-                    idList.Add(itemList[i].currentModel);
+                    idList.Add(probeItemList[i].currentModel);
                 }
             }
         }
@@ -81,13 +84,16 @@ public class ProbeManagerPanel : UIEventHelper
                 for (int i = 0; i < idList.Count; i++)
                 {
                     sb.Append(idList[i].ID + ",");
-                    ProbeInSceneHelper.instance.DeleteProbe(idList[i]);
                 }
                 sb = sb.Remove(sb.Length - 1, 1);
-                ProbeDAL.DeleteProbeByID(sb.ToString());
-                EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
-                MessageBox.Instance.PopOK("删除成功", null, "确定");
-
+                WWWForm form = new WWWForm();
+                form.AddField("requestType", "DeleteProbeByID");
+                form.AddField("idList", sb.ToString());
+                GameUtils.PostHttp("Probe.ashx", form, (content) =>
+                {
+                    EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
+                    MessageBox.Instance.PopOK("删除成功", null, "确定");
+                }, null);
             }, "取消", "确定");
         }
     }
@@ -95,13 +101,13 @@ public class ProbeManagerPanel : UIEventHelper
     void OnEditProbe(Button btn)
     {
         List<ProbeItem> selectItemList = new List<ProbeItem>();
-        if (itemList != null && itemList.Count > 0)
+        if (probeItemList != null && probeItemList.Count > 0)
         {
-            for (int i = 0; i < itemList.Count; i++)
+            for (int i = 0; i < probeItemList.Count; i++)
             {
-                if (itemList[i].GetToggleStatus())
+                if (probeItemList[i].GetToggleStatus())
                 {
-                    selectItemList.Add(itemList[i]);
+                    selectItemList.Add(probeItemList[i]);
                 }
             }
         }
@@ -124,11 +130,11 @@ public class ProbeManagerPanel : UIEventHelper
 
     void OnWholeToggle(Toggle tog, bool isOn)
     {
-        if (itemList != null && itemList.Count > 0)
+        if (probeItemList != null && probeItemList.Count > 0)
         {
-            for (int i = 0; i < itemList.Count; i++)
+            for (int i = 0; i < probeItemList.Count; i++)
             {
-                itemList[i].SetToggle(isOn);
+                probeItemList[i].SetToggle(isOn);
             }
         }
     }
@@ -138,16 +144,21 @@ public class ProbeManagerPanel : UIEventHelper
         InitData();
     }
 
-    List<ProbeItem> itemList = new List<ProbeItem>();
+    List<ProbeItem> probeItemList = new List<ProbeItem>();
     private void InitData()
     {
-        List<ProbeModel> list = ProbeDAL.SelectAllProbeByCondition();
-        InitGrid(list);
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectAllProbeByCondition");
+        GameUtils.PostHttp("Probe.ashx", form, (result) =>
+        {
+            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(result);
+            InitGrid(list);
+        }, null);
     }
 
     void InitGrid(List<ProbeModel> list)
     {
-        itemList.Clear();
+        probeItemList.Clear();
         GameUtils.SpawnCellForTable<ProbeModel>(contentTrans, list, (go, data, isSpawn, index) =>
         {
             GameObject currentObj = go;
@@ -161,7 +172,7 @@ public class ProbeManagerPanel : UIEventHelper
             ProbeItem item = currentObj.GetComponent<ProbeItem>();
             item.InitData(data);
             item.SetBackgroundColor(index % 2 == 0 ? new Color(239 / 255.0f, 243 / 255.0f, 250 / 255.0f) : new Color(1, 1, 1));
-            itemList.Add(item);
+            probeItemList.Add(item);
             currentObj.SetActive(true);
         });
     }

@@ -13,6 +13,7 @@ public class EditProbePanel : UIEventHelper
     public InputField input_unit;
     public InputField input_firstAlarmValue;
     public InputField input_secondAlarmValue;
+    public InputField input_serialNumber;
 
     public Dropdown dropdown_machine;
 
@@ -39,6 +40,7 @@ public class EditProbePanel : UIEventHelper
             string unit = input_unit.text;
             string firstAlarmValue = input_firstAlarmValue.text;
             string secondAlarmValue = input_secondAlarmValue.text;
+            string serialNumber = input_serialNumber.text;
 
             int dd = dropdown_machine.value;
             MachineModel model = machineList[dd];
@@ -54,6 +56,7 @@ public class EditProbePanel : UIEventHelper
             form.AddField("firstAlarmValue", firstAlarmValue);
             form.AddField("secondAlarmValue", secondAlarmValue);
             form.AddField("machineName", model.MachineName);
+            form.AddField("serialNumber", serialNumber);
             GameUtils.PostHttp("Probe.ashx", form, null, null);
 
             MessageBox.Instance.PopOK("修改成功", () =>
@@ -74,6 +77,7 @@ public class EditProbePanel : UIEventHelper
         input_unit.text = model.Unit;
         input_firstAlarmValue.text = model.FirstAlarmValue.ToString();
         input_secondAlarmValue.text = model.SecondAlarmValue.ToString();
+        input_serialNumber.text = model.SerialNumber;
 
         dropdown_machine.ClearOptions();
 

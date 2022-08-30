@@ -24,7 +24,12 @@ public class EditFactoryPanel : UIEventHelper
     void OnOk(Button btn)
     {
         string factoryName = input_factoryName.text;
-        FactoryDAL.EditFactoryByID(currentModel.ID, factoryName);
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "EditFactoryByID");
+        form.AddField("id", currentModel.ID);
+        form.AddField("factoryName", factoryName);
+        GameUtils.PostHttp("Factory.ashx", form, null, null);
+
         MessageBox.Instance.PopOK("修改成功", () =>
         {
             EventManager.Instance.DisPatch(NotifyType.UpdateFactoryList);

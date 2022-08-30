@@ -23,16 +23,15 @@ public class AddFactoryPanel : UIEventHelper
     void OnOk(Button btn)
     {
         string factoryName = input_factoryName.text;
-        FactoryDAL.InsertFactory(factoryName);
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "InsertFactory");
+        form.AddField("factoryName", factoryName);
+        GameUtils.PostHttp("Factory.ashx", form, null, null);
+
         MessageBox.Instance.PopOK("新增成功", () =>
         {
             EventManager.Instance.DisPatch(NotifyType.UpdateFactoryList);
             gameObject.SetActive(false);
         }, "确定");
-    }
-
-    private void OnEnable()
-    {
-        input_factoryName.text = string.Empty;
     }
 }

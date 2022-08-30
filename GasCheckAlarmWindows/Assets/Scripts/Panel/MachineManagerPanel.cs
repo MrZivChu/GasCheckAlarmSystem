@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using LitJson;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -9,7 +10,7 @@ public class MachineManagerPanel : UIEventHelper
     public Button btn_add;
     public Button btn_delete;
     public Button btn_edit;
-    public Button btn_select;
+    public Button btn_search;
 
     public Toggle wholeToggle;
 
@@ -20,19 +21,13 @@ public class MachineManagerPanel : UIEventHelper
     public Dropdown dropdown_factory;
 
     public Transform contentTrans;
-    Object itemRes;
-    void Awake()
-    {
-        itemRes = Resources.Load("MachineItem");
-    }
-
+    public Object itemRes;
     private void Start()
     {
         RegisterBtnClick(btn_add, OnAddMachine);
         RegisterBtnClick(btn_delete, OnDeleteMachine);
         RegisterBtnClick(btn_edit, OnEditMachine);
-        RegisterBtnClick(btn_select, OnSelectMachine);
-
+        RegisterBtnClick(btn_search, OnSearchMachine);
         RegisterTogClick(wholeToggle, OnWholeToggle);
 
         EventManager.Instance.AddEventListener(NotifyType.UpdateMachineList, UpdateMachineListEvent);
@@ -43,17 +38,27 @@ public class MachineManagerPanel : UIEventHelper
         InitData();
     }
 
-    void OnSelectMachine(Button btn)
+    void OnSearchMachine(Button btn)
     {
         string machineName = input_machineName.text;
         int dd = dropdown_factory.value;
-        List<MachineModel> list = MachineDAL.SelectAllMachineByCondition(machineName,dd == 0 ? -1 : factoryList[dd - 1].ID);
-        InitGrid(list);
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectAllMachineByCondition");
+        form.AddField("machineName", machineName);
+        form.AddField("factoryID", dd == 0 ? -1 : factoryList[dd - 1].ID);
+        GameUtils.PostHttp("Machine.ashx", form, (result) =>
+        {
+            List<MachineModel> list = JsonMapper.ToObject<List<MachineModel>>(result);
+            InitGrid(list);
+        }, null);
     }
 
     void OnAddMachine(Button btn)
     {
-        addMachinePanel.SetActive(true);
+        if (addMachinePanel)
+        {
+            addMachinePanel.SetActive(true);
+        }
     }
 
     void OnDeleteMachine(Button btn)
@@ -83,9 +88,14 @@ public class MachineManagerPanel : UIEventHelper
                     sb.Append(idList[i] + ",");
                 }
                 sb = sb.Remove(sb.Length - 1, 1);
-                bool result = MachineDAL.DeleteMachineByID(sb.ToString());
-                EventManager.Instance.DisPatch(NotifyType.UpdateMachineList);
-                MessageBox.Instance.PopOK("删除成功", null, "确定");
+                WWWForm form = new WWWForm();
+                form.AddField("requestType", "DeleteMachineByID");
+                form.AddField("idList", sb.ToString());
+                GameUtils.PostHttp("Machine.ashx", form, (content) =>
+                {
+                    EventManager.Instance.DisPatch(NotifyType.UpdateMachineList);
+                    MessageBox.Instance.PopOK("删除成功", null, "确定");
+                }, null);
 
             }, "取消", "确定");
         }
@@ -141,25 +151,35 @@ public class MachineManagerPanel : UIEventHelper
     private void InitData()
     {
         InitDropdown();
-        List<MachineModel> list = MachineDAL.SelectAllMachineByCondition();
-        InitGrid(list);
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectAllMachineByCondition");
+        GameUtils.PostHttp("Machine.ashx", form, (result) =>
+        {
+            List<MachineModel> list = JsonMapper.ToObject<List<MachineModel>>(result);
+            InitGrid(list);
+        }, null);
     }
 
     List<FactoryModel> factoryList;
     void InitDropdown()
     {
         dropdown_factory.ClearOptions();
-        factoryList = FactoryDAL.SelectAllFactoryByCondition();
-        if (factoryList != null && factoryList.Count > 0)
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectAllFactoryByCondition");
+        GameUtils.PostHttp("Factory.ashx", form, (result) =>
         {
-            List<string> optionList = new List<string>() { "请选择" };
-            for (int i = 0; i < factoryList.Count; i++)
+            factoryList = JsonMapper.ToObject<List<FactoryModel>>(result);
+            if (factoryList != null && factoryList.Count > 0)
             {
-                optionList.Add(factoryList[i].FactoryName);
+                List<string> optionList = new List<string>() { "请选择" };
+                for (int i = 0; i < factoryList.Count; i++)
+                {
+                    optionList.Add(factoryList[i].FactoryName);
+                }
+                dropdown_factory.AddOptions(optionList);
+                dropdown_factory.value = 0;
             }
-            dropdown_factory.AddOptions(optionList);
-            dropdown_factory.value = 0;
-        }
+        }, null);
     }
 
     void InitGrid(List<MachineModel> list)

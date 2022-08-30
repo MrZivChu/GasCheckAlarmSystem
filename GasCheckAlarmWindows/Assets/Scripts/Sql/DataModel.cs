@@ -22,8 +22,8 @@ public class ProbeModel
     public string ProbeName;
     public string GasKind;
     public string Unit;
-    public float FirstAlarmValue;
-    public float SecondAlarmValue;
+    public double FirstAlarmValue;
+    public double SecondAlarmValue;
     public string MachineName;
     public int MachineID;
     public string PosDir;
@@ -31,6 +31,8 @@ public class ProbeModel
     public string FactoryName;
     public int MachineType;
     public string Pos2D;
+    public string TagName;
+    public string SerialNumber;
 }
 
 public class RealtimeDataModel
@@ -39,20 +41,29 @@ public class RealtimeDataModel
     public int ProbeID;
     public string ProbeName;
     public DateTime CheckTime;
-    public float GasValue;
+    public double GasValue;
     public string GasKind;
     public string Unit;
-    public float FirstAlarmValue;
-    public float SecondAlarmValue;
+    public double FirstAlarmValue;
+    public double SecondAlarmValue;
     public string MachineName;
     public int MachineID;
     public int FactoryID;
     public string FactoryName;
     public int MachineType;
     public string Pos2D;
+    public string TagName;
 
     //扩展字段
     public int warningLevel = 0;
+}
+
+public class DeviceTag
+{
+    public int ID;
+    public string TagName;
+    public int ParentID;
+    public string Position;
 }
 
 public class MachineModel
@@ -99,8 +110,8 @@ public class MachineSerialPortInfo
     public string MachineName;
     public string ProbeName;
     public int ProbeID;
-    public float FirstAlarmValue;
-    public float SecondAlarmValue;
+    public double FirstAlarmValue;
+    public double SecondAlarmValue;
     public string GasKind;
 }
 
@@ -131,8 +142,13 @@ public class FormatData
     public static Dictionary<int, Color> warningColorDic = new Dictionary<int, Color>() {
         {2, new Color(1f, 0f, 0f)},
         {1, new Color(1f, 1f, 0f)},
-        {0, new Color(0.5f, 1f, 0.5f)},
+        {0, new Color(0.2f, 0.6f, 0.2f,0.5f)},
         {-1, new Color(0.75f, 0.75f, 0.75f)}
+    };
+
+    public static Dictionary<int, String> authorityNameDic = new Dictionary<int, String>() {
+        {0, "普通用户"},
+        {1, "管理员"}
     };
 
     public static UserModel currentUser = new UserModel()

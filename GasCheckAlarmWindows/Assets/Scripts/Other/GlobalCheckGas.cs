@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LitJson;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,19 +14,19 @@ public class RealtimeEventData
 
 public class GlobalCheckGas : MonoBehaviour
 {
-    public static GlobalCheckGas instance;
-
     private void Awake()
     {
-        instance = this;
+        DontDestroyOnLoad(this);
     }
     private void Start()
     {
         //程序启动执行一次删除历史数据的操作
-        HistoryDataDAL.DeleteHistoryDataBeforeWeek();
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "DeleteHistoryDataBeforeWeek");
+        GameUtils.PostHttp("HistoryData.ashx", form, null, null);
     }
 
-    float refreshTime = 1;
+    float refreshTime = 1;//1秒
     float tempRefreshTime = 0;
     float tempDeleteHistoryDataTime = 0;
     float deleteHistoryDataTime = 60 * 60 * 24 * 1;
@@ -35,15 +36,23 @@ public class GlobalCheckGas : MonoBehaviour
         if (tempRefreshTime > refreshTime)
         {
             tempRefreshTime = 0;
-            RealtimeEventData data = HandleRealtimeData(RealtimeDataDAL.SelectAllRealtimeDataByCondition());
-            JudgeWarningShout(data);
-            EventManager.Instance.DisPatch(NotifyType.UpdateRealtimeDataList, data);
+            WWWForm form = new WWWForm();
+            form.AddField("requestType", "SelectAllRealtimeDataByCondition");
+            GameUtils.PostHttp("RealtimeData.ashx", form, (result) =>
+            {
+                List<RealtimeDataModel> rsult = JsonMapper.ToObject<List<RealtimeDataModel>>(result);
+                RealtimeEventData data = HandleRealtimeData(rsult);
+                JudgeWarningShout(data);
+                EventManager.Instance.DisPatch(NotifyType.UpdateRealtimeDataList, data);
+            }, null);
         }
         tempDeleteHistoryDataTime += Time.deltaTime;
         if (tempDeleteHistoryDataTime >= deleteHistoryDataTime)
         {
             tempDeleteHistoryDataTime = 0;
-            HistoryDataDAL.DeleteHistoryDataBeforeWeek();
+            WWWForm form = new WWWForm();
+            form.AddField("requestType", "DeleteHistoryDataBeforeWeek");
+            GameUtils.PostHttp("HistoryData.ashx", form, null, null);
         }
     }
 
@@ -55,10 +64,12 @@ public class GlobalCheckGas : MonoBehaviour
         realtimeEventData.normalList = new List<RealtimeDataModel>();
         realtimeEventData.noResponseList = new List<RealtimeDataModel>();
 
+        //level：-1超时 0正常 1低报 2高报
+        int overTimeMax = list.Count * 2;
         foreach (var model in list)
         {
             TimeSpan ts = DateTime.Now - model.CheckTime;
-            if (ts.TotalSeconds > 200)
+            if (ts.TotalSeconds > overTimeMax)
             {
                 model.warningLevel = -1;
                 realtimeEventData.noResponseList.Add(model);

@@ -31,7 +31,14 @@ public class EditUserPanel : UIEventHelper
         string userNumber = input_userNumber.text;
         string phone = input_phone.text;
         int authority = dropdown_authority.value;
-        UserDAL.EditUserByID(currentModel.ID, userName, userNumber, phone, authority);
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "EditUserByID");
+        form.AddField("id", currentModel.ID);
+        form.AddField("userName", userName);
+        form.AddField("userNumber", userNumber);
+        form.AddField("phone", phone);
+        form.AddField("authority", authority);
+        GameUtils.PostHttp("User.ashx", form, null, null);
         MessageBox.Instance.PopOK("修改成功", () =>
         {
             EventManager.Instance.DisPatch(NotifyType.UpdateUserList);

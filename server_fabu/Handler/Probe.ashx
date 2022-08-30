@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
 using Newtonsoft.Json;
+using System.IO;
 
 public class Probe : IHttpHandler
 {
@@ -22,15 +23,18 @@ public class Probe : IHttpHandler
             string probeName = context.Request["probeName"];
             string gasKind = context.Request["gasKind"];
             List<ProbeModel> list = ProbeDAL.SelectAllProbeByCondition(probeName, gasKind);
-            if (list.Count > 0)
-            {
-                content = JsonConvert.SerializeObject(list);
-            }
+            content = JsonConvert.SerializeObject(list);
         }
         else if (requestType == "SelectProbeByID")
         {
             int id = Convert.ToInt32(context.Request["id"]);
             ProbeModel model = ProbeDAL.SelectProbeByID(id);
+            content = JsonConvert.SerializeObject(model);
+        }
+        else if (requestType == "SelectProbeBySerialNumber")
+        {
+            string serialNumber = context.Request["serialNumber"];
+            ProbeModel model = ProbeDAL.SelectProbeBySerialNumber(serialNumber);
             content = JsonConvert.SerializeObject(model);
         }
         else if (requestType == "DeleteProbeByID")
@@ -49,7 +53,9 @@ public class Probe : IHttpHandler
             string firstAlarmValue = context.Request["firstAlarmValue"];
             string secondAlarmValue = context.Request["secondAlarmValue"];
             string machineName = context.Request["machineName"];
-            ProbeDAL.EditProbeByID(id, mailAddress, probeName, machineID, gasKind, unit, firstAlarmValue, secondAlarmValue, machineName);
+            string serialNumber = context.Request["serialNumber"];
+            string tagName = context.Request["tagName"];
+            ProbeDAL.EditProbeByID(id, mailAddress, probeName, machineID, gasKind, unit, firstAlarmValue, secondAlarmValue, machineName, tagName, serialNumber);
         }
         else if (requestType == "EditProbePosDirByID")
         {
@@ -71,8 +77,26 @@ public class Probe : IHttpHandler
             int factoryID = Convert.ToInt32(context.Request["factoryID"]);
             string factoryName = context.Request["factoryName"];
             int machineType = Convert.ToInt32(context.Request["machineType"]);
-            int id = ProbeDAL.InsertProbe(mailAddress, probeName, gasKind, unit, firstAlarmValue, secondAlarmValue, posdir, machineID, machineName, factoryID, factoryName, machineType);
+            string tagName = context.Request["tagName"];
+            string serialNumber = context.Request["serialNumber"];
+            int id = ProbeDAL.InsertProbe(mailAddress, probeName, gasKind, unit, firstAlarmValue, secondAlarmValue, posdir, machineID, machineName, factoryID, factoryName, machineType, tagName, serialNumber);
             content = id.ToString();
+        }
+        else if (requestType == "UploadPlanarGraphFile")
+        {
+            string filePath = context.Server.MapPath("../PlanarGraph/");
+            if (!Directory.Exists(filePath))
+            {
+                Directory.CreateDirectory(filePath);
+            }
+            HttpFileCollection hfc = context.Request.Files;
+            IList<HttpPostedFile> list = hfc.GetMultiple("file");
+            for (int i = 0; i < list.Count; i++)
+            {
+                HttpPostedFile ff = list[i];
+                ff.SaveAs(filePath + ff.FileName);
+                content = ff.FileName;
+            }
         }
         context.Response.Write(content);
         context.Response.End();
