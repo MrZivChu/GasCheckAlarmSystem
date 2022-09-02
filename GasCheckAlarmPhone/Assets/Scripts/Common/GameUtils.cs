@@ -46,7 +46,8 @@ public static class GameUtils
             }
             else
             {
-                onFailed(www.error);
+                string error = www.url + " = " + www.error + " = " + www.text;
+                onFailed(error);
             }
         }
     }
@@ -74,12 +75,17 @@ public static class GameUtils
             if (www.isDone && string.IsNullOrEmpty(www.error))
             {
                 if (onSuccess != null)
+                {
                     onSuccess(www.text);
+                }
             }
             else
             {
                 if (onFailed != null)
-                    onFailed(www.url + " = " + www.error + " = " + www.text);
+                {
+                    string error = www.url + " = " + www.error + " = " + www.text;
+                    onFailed(error);
+                }
             }
         }
     }
@@ -102,12 +108,17 @@ public static class GameUtils
             if (www.isDone && string.IsNullOrEmpty(www.error))
             {
                 if (onSuccess != null)
+                {
                     onSuccess(www.downloadHandler.data);
+                }
             }
             else
             {
                 if (onFailed != null)
-                    onFailed(www.error + " " + www.isHttpError + " " + www.isNetworkError);
+                {
+                    string error = www.error + " " + www.isHttpError + " " + www.isNetworkError;
+                    onFailed(error);
+                }
             }
         }
     }

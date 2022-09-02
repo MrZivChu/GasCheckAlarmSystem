@@ -6,10 +6,9 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PointCheckPanel : UIEventHelper
+public class PointCheckManagerPanel : UIEventHelper
 {
     public Button btn_search;
-
     public Button btn_prePage;
     public Button btn_nextPage;
     public Text txt_pageCount;
@@ -23,12 +22,7 @@ public class PointCheckPanel : UIEventHelper
     public UI.Dates.DatePicker_DateRange dateRange;
 
     public Transform contentTrans;
-    UnityEngine.Object itemRes;
-
-    void Awake()
-    {
-        itemRes = Resources.Load("PointCheckItem");
-    }
+    public UnityEngine.Object itemRes;
 
     private void Start()
     {
@@ -88,12 +82,12 @@ public class PointCheckPanel : UIEventHelper
         GameUtils.PostHttp("PointCheck.ashx", form, (result) =>
         {
             List<PointCheckModel> pointCheckModelList = new List<PointCheckModel>();
-            if (result.Contains("*"))
+            if (result.Contains("|"))
             {
-                string pageResult = result.Split('*')[0];
+                string pageResult = result.Split('|')[0];
                 pageCount = Convert.ToInt32(pageResult.Split(',')[0]);
                 rowCount = Convert.ToInt32(pageResult.Split(',')[1]);
-                result = result.Split('*')[1];
+                result = result.Split('|')[1];
                 pointCheckModelList = JsonMapper.ToObject<List<PointCheckModel>>(result);
             }
             InitGrid(pointCheckModelList);

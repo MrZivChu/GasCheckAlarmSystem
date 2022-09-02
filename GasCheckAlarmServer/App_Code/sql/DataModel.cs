@@ -96,12 +96,14 @@ public class HistoryDataModel
 public class PointCheckModel
 {
     public int ID;
-    public int ProbeID;
-    public string ProbeName;
+    public int DeviceID;
+    public int DeviceType;
+    public string DeviceName;
     public string UserName;
     public string QrCodePath;
     public DateTime CheckTime;
     public string Description;
+    public string Result;
 }
 
 public class DeviceTagModel

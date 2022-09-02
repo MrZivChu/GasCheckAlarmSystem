@@ -11,6 +11,7 @@ public class PointCheckItem : UIEventHelper
     public Text txt_probeName;
     public Text txt_userName;
     public Text txt_checkTime;
+    public Text txt_desc;
     public Image image;
 
     void Start()
@@ -21,9 +22,10 @@ public class PointCheckItem : UIEventHelper
     {
         currentModel = model;
         txt_index.text = index.ToString();
-        txt_probeName.text = model.ProbeName;
+        txt_probeName.text = model.DeviceName;
         txt_userName.text = model.UserName;
         txt_checkTime.text = model.CheckTime.ToString("MM-dd HH:mm:ss");
+        txt_desc.text = model.Description;
 
         GameUtils.GetHttpWebRequest("/QrCodeImgs/" + model.QrCodePath, (data) =>
         {

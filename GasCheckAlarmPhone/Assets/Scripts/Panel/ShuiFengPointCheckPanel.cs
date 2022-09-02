@@ -83,7 +83,7 @@ public class ShuiFengPointCheckPanel : MonoBehaviour
         for (int i = 0; i < probeList.Count; i++)
         {
             ProbeModel probeModel = probeList[i];
-            PointCheckModel pointCheckModel = pointCheckModelList.Find((item) => { return item.ProbeID == probeModel.ID; });
+            PointCheckModel pointCheckModel = pointCheckModelList.Find((item) => { return item.DeviceID == probeModel.ID; });
             probeModel.isCheck = pointCheckModel != null;
         }
         probeList.Sort((a, b) =>

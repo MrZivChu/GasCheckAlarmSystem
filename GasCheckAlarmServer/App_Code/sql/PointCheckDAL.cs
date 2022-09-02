@@ -7,7 +7,7 @@ using System.Text;
 
 public class PointCheckDAL
 {
-    public static List<PointCheckModel> SelectAllPointCheckByCondition(int pageIndex, int pageSize, string userName, string probeName, string startTime, string endTime, out int pageCount, out int rowCount)
+    public static List<PointCheckModel> SelectAllPointCheckByCondition(int pageIndex, int pageSize, string userName, string deviceName, int deviceType, string startTime, string endTime, out int pageCount, out int rowCount)
     {
         pageCount = 0;
         rowCount = 0;
@@ -15,12 +15,12 @@ public class PointCheckDAL
         StringBuilder sb2 = new StringBuilder();
         sb1.Append(@"select @RowCount=count(*),@pageCount=ceiling((count(*)+0.0)/@pageSize) 
 		from (
-		select ProbeID,ProbeName,UserName,QrCodePath,CheckTime,Description
+		select ID,DeviceID,DeviceName,UserName,QrCodePath,CheckTime,Description,Result,DeviceType
         from PointCheck) temp_row  
         where 1=1 ");
 
         sb2.Append(@"select top (select @pageSize) *   
-	from (select row_number() over(order by CheckTime desc) as rownumber,ID,ProbeID,ProbeName,UserName,QrCodePath,CheckTime,Description from PointCheck) temp_row 
+	from (select row_number() over(order by CheckTime desc) as rownumber,ID,DeviceID,DeviceName,UserName,QrCodePath,CheckTime,Description,Result,DeviceType from PointCheck) temp_row 
 	where 1=1 and rownumber>(@pageIndex-1)*@pageSize ");
 
         List<SqlParameter> para = new List<SqlParameter>()
@@ -30,12 +30,14 @@ public class PointCheckDAL
             new SqlParameter("@pageCount",pageCount),
             new SqlParameter("@rowCount",rowCount),
         };
-
-        if (!string.IsNullOrEmpty(probeName))
+        sb1.Append(" and temp_row.DeviceType = @DeviceType ");
+        sb2.Append(" and temp_row.DeviceType = @DeviceType ");
+        para.Add(new SqlParameter("@DeviceType", deviceType));
+        if (!string.IsNullOrEmpty(deviceName))
         {
-            sb1.Append(" and temp_row.ProbeName = @ProbeName ");
-            sb2.Append(" and temp_row.ProbeName = @ProbeName ");
-            para.Add(new SqlParameter("@ProbeName", probeName));
+            sb1.Append(" and temp_row.DeviceName = @DeviceName ");
+            sb2.Append(" and temp_row.DeviceName = @DeviceName ");
+            para.Add(new SqlParameter("@DeviceName", deviceName));
         }
         if (!string.IsNullOrEmpty(userName))
         {
@@ -51,7 +53,6 @@ public class PointCheckDAL
             para.Add(new SqlParameter("@EndCheckTime", endTime));
         }
         StringBuilder sql = sb1.Append(sb2);
-        //UnityEngine.Debug.Log(sql.ToString());
         DataTable dt = SqlHelper.ExecProcPage(sql.ToString(), out pageCount, out rowCount, para);
         List<PointCheckModel> modelList = new List<PointCheckModel>();
         if (dt != null && dt.Rows.Count > 0)
@@ -60,30 +61,34 @@ public class PointCheckDAL
             {
                 PointCheckModel model = new PointCheckModel();
                 model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
-                model.ProbeID = Convert.ToInt32(dt.Rows[i]["ProbeID"]);
-                model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
+                model.DeviceID = Convert.ToInt32(dt.Rows[i]["DeviceID"]);
+                model.DeviceType = Convert.ToInt32(dt.Rows[i]["DeviceType"]);
+                model.DeviceName = dt.Rows[i]["DeviceName"].ToString();
                 model.UserName = dt.Rows[i]["UserName"].ToString();
                 model.QrCodePath = dt.Rows[i]["QrCodePath"].ToString();
                 model.Description = dt.Rows[i]["Description"].ToString();
                 model.CheckTime = Convert.ToDateTime(dt.Rows[i]["CheckTime"]);
+                model.Result = dt.Rows[i]["Result"].ToString();
                 modelList.Add(model);
             }
         }
         return modelList;
     }
 
-    public static bool InsertPointCheck(int probeID, string probeName, string userName, string qrCodePath,string description)
+    public static bool InsertPointCheck(int deviceID, string deviceName, string userName, string qrCodePath, string description, string result, int deviceType)
     {
-        string sql = @"insert into PointCheck (ProbeID,ProbeName,UserName,QrCodePath,Description)values(@ProbeID,@ProbeName,@UserName,@QrCodePath,@Description)";
+        string sql = @"insert into PointCheck (DeviceID,DeviceName,UserName,QrCodePath,Description,Result,DeviceType)values(@DeviceID,@DeviceName,@UserName,@QrCodePath,@Description,@Result,@DeviceType)";
         List<SqlParameter> parameter = new List<SqlParameter>{
-                 new SqlParameter("@ProbeID",probeID),
-                 new SqlParameter("@ProbeName",probeName),
+                 new SqlParameter("@DeviceID",deviceID),
+                 new SqlParameter("@DeviceName",deviceName),
                  new SqlParameter("@UserName",userName),
                  new SqlParameter("@QrCodePath",qrCodePath),
-                 new SqlParameter("@Description",description)
+                 new SqlParameter("@Description",description),
+                 new SqlParameter("@Result",result),
+                 new SqlParameter("@DeviceType",deviceType),
             };
-        int result = SqlHelper.ExecuteNonQuery(sql, parameter.ToArray());
-        return result >= 1 ? true : false;
+        int index = SqlHelper.ExecuteNonQuery(sql, parameter.ToArray());
+        return index >= 1 ? true : false;
     }
 
 }

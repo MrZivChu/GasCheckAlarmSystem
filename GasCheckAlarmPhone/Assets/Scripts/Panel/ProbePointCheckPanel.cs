@@ -62,9 +62,11 @@ public class ProbePointCheckPanel : MonoBehaviour
                 int rowCount = 0;
                 form = new WWWForm();
                 form.AddField("requestType", "SelectAllPointCheckByCondition");
+                form.AddField("deviceType", 0);
+                form.AddField("userName", string.Empty);
+                form.AddField("deviceName", string.Empty);
                 form.AddField("pageIndex", 1);
                 form.AddField("pageSize", 100);
-                form.AddField("userName", string.Empty);
                 form.AddField("startTime", DateTime.Now.ToString("yyyy-MM-dd"));
                 form.AddField("endTime", DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"));
                 form.AddField("pageCount", pageCount);
@@ -80,7 +82,6 @@ public class ProbePointCheckPanel : MonoBehaviour
                     InitGrid(list, pointCheckModelList);
                 }, null);
             }
-
         }, null);
     }
 
@@ -104,7 +105,7 @@ public class ProbePointCheckPanel : MonoBehaviour
             {
                 probeDic[probeModel.SerialNumber] = probeModel;
             }
-            PointCheckModel pointCheckModel = pointCheckModelList.Find((item) => { return item.ProbeID == probeModel.ID; });
+            PointCheckModel pointCheckModel = pointCheckModelList.Find((item) => { return item.DeviceID == probeModel.ID; });
             probeModel.isCheck = pointCheckModel != null;
         }
         probeList.Sort((a, b) =>
@@ -132,13 +133,15 @@ public class ProbePointCheckPanel : MonoBehaviour
     WebCamTexture webCamTextrue;
     void OnSaoMa()
     {
-        WebCamDevice[] devices = WebCamTexture.devices;
-        string deviceName = devices[0].name;
-        webCamTextrue = new WebCamTexture(deviceName, 600, 600);
-        cameraTexture.texture = webCamTextrue;
-        webCamTextrue.Play();
-        barcodeReader = new BarcodeReader();
-
+        if (webCamTextrue == null)
+        {
+            WebCamDevice[] devices = WebCamTexture.devices;
+            string deviceName = devices[0].name;
+            webCamTextrue = new WebCamTexture(deviceName, 600, 600);
+            webCamTextrue.Play();
+            cameraTexture.texture = webCamTextrue;
+            barcodeReader = new BarcodeReader();
+        }
         interval = 0;
         isGoScanning = true;
     }
@@ -147,11 +150,10 @@ public class ProbePointCheckPanel : MonoBehaviour
     {
         Color32[] data = webCamTextrue.GetPixels32();
         Result result = barcodeReader.Decode(data, webCamTextrue.width, webCamTextrue.height);
-        if (result != null)
+        //if (result != null)
         {
-            Debug.Log(result.Text);
             isGoScanning = false;
-            //OnSaoMaComplete("serialNumber1");
+            OnSaoMaComplete("1000");
         }
     }
 
@@ -174,6 +176,7 @@ public class ProbePointCheckPanel : MonoBehaviour
 
     void OnConfirmCancel()
     {
+        currentProbeModel = null;
         confirmPanel.SetActive(false);
     }
 
@@ -193,6 +196,7 @@ public class ProbePointCheckPanel : MonoBehaviour
             confirmPanel.SetActive(false);
         }, (error) =>
         {
+            currentProbeModel = null;
             confirmPanel.SetActive(false);
             MessageBox.Instance.PopOK(error, null, "确定");
         });
@@ -204,13 +208,16 @@ public class ProbePointCheckPanel : MonoBehaviour
         {
             WWWForm form = new WWWForm();
             form.AddField("requestType", "InsertPointCheck");
-            form.AddField("probeID", currentProbeModel.ID);
-            form.AddField("probeName", currentProbeModel.ProbeName);
+            form.AddField("deviceID", currentProbeModel.ID);
+            form.AddField("deviceName", currentProbeModel.ProbeName);
             form.AddField("userName", FormatData.currentUser.UserName);
             form.AddField("qrCodePath", saomaImgServerPath);
             form.AddField("description", description);
+            form.AddField("result", "");
+            form.AddField("deviceType", 0);
             GameUtils.PostHttp("PointCheck.ashx", form, (content) =>
             {
+                UpdateList();
                 MessageBox.Instance.PopOK("点检成功", null, "确定");
             }, null);
         }
