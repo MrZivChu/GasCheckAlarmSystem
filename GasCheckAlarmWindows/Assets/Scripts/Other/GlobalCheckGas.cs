@@ -58,7 +58,7 @@ public class GlobalCheckGas : MonoBehaviour
         foreach (var model in list)
         {
             TimeSpan ts = DateTime.Now - model.CheckTime;
-            if (ts.TotalSeconds > 200)
+            if (ts.TotalSeconds > list.Count * 2)
             {
                 model.warningLevel = -1;
                 realtimeEventData.noResponseList.Add(model);
