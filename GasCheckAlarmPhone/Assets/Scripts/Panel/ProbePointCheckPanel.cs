@@ -36,7 +36,7 @@ public class ProbePointCheckPanel : MonoBehaviour
         if (isGoScanning)
         {
             interval += Time.deltaTime;
-            if (interval >= 6.5f)
+            if (interval >= 0.5f)
             {
                 SaoMaRunning();
                 interval = 0;
@@ -122,7 +122,7 @@ public class ProbePointCheckPanel : MonoBehaviour
                 currentObj.transform.localScale = Vector3.one;
                 currentObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
             }
-            PointCheckDayItem item = currentObj.GetComponent<PointCheckDayItem>();
+            ProbePointCheckItem item = currentObj.GetComponent<ProbePointCheckItem>();
             item.InitData(data);
             item.SetBackgroundColor(data.isCheck ? new Color(0.01f, 0.57f, 0.47f) : new Color(0.5f, 0.5f, 0.5f));
             currentObj.SetActive(true);

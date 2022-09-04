@@ -36,6 +36,17 @@ public class RealtimeData : IHttpHandler
             int id = Convert.ToInt32(context.Request["id"]);
             RealtimeDataDAL.DeleteRealtimePos2DByID(id);
         }
+        else if (requestType == "EditRealtimeDataByID")
+        {
+            int probeID = Convert.ToInt32(context.Request["probeID"]);
+            DateTime checkTime = Convert.ToDateTime(context.Request["checkTime"]);
+            float gasValue = Convert.ToSingle(context.Request["gasValue"]);
+            RealtimeDataDAL.EditRealtimeDataByID(probeID, checkTime, gasValue);
+        }
+        else if (requestType == "ResetGasValue")
+        {
+            RealtimeDataDAL.ResetGasValue();
+        }
         context.Response.Write(content);
         context.Response.End();
     }

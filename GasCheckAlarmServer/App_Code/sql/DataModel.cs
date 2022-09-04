@@ -106,6 +106,17 @@ public class PointCheckModel
     public string Result;
 }
 
+public class WaterSealModel
+{
+    public int ID;
+    public string Medium;
+    public string Number;
+    public string InstallPosition;
+    public string Category;
+    public int DesignPressure;
+    public string SerialNumber;
+}
+
 public class DeviceTagModel
 {
     public int ID;
@@ -123,6 +134,22 @@ public class MachineSerialPortInfo
     public string MachineName;
     public string ProbeName;
     public int ProbeID;
+    public float FirstAlarmValue;
+    public float SecondAlarmValue;
+    public string GasKind;
+}
+
+public class ProbeSerialPortInfo
+{
+    public int ProbeID;
+    public string ProbeName;
+    public int MachineID;
+    public string MachineName;
+    public int MachineType;
+    public string MachineAddress;
+    public int FactoryID;
+    public string FactoryName;
+    public string ProbeAddress;
     public float FirstAlarmValue;
     public float SecondAlarmValue;
     public string GasKind;

@@ -82,6 +82,17 @@ public class FactoryModel
     public string FactoryName;
 }
 
+public class WaterSealModel
+{
+    public int ID;
+    public string Medium;
+    public string Number;
+    public string InstallPosition;
+    public string Category;
+    public int DesignPressure;
+    public string SerialNumber;
+}
+
 public class HistoryDataModel
 {
     public int ID;

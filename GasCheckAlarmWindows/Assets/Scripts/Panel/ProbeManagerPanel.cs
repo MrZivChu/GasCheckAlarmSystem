@@ -10,14 +10,10 @@ public class ProbeManagerPanel : UIEventHelper
     public Button btn_add;
     public Button btn_delete;
     public Button btn_edit;
-    public Button btn_search;
     public Toggle wholeToggle;
 
     public GameObject addProbePanel;
     public GameObject editProbePanel;
-
-    public InputField input_probeName;
-    public InputField input_gasKind;
 
     public Transform contentTrans;
     public Object itemRes;
@@ -26,7 +22,6 @@ public class ProbeManagerPanel : UIEventHelper
         RegisterBtnClick(btn_add, OnAddProbe);
         RegisterBtnClick(btn_delete, OnDeleteProbe);
         RegisterBtnClick(btn_edit, OnEditProbe);
-        RegisterBtnClick(btn_search, OnSearchProbe);
         RegisterTogClick(wholeToggle, OnWholeToggle);
         EventManager.Instance.AddEventListener(NotifyType.UpdateProbeList, UpdateProbeListEvent);
     }
@@ -34,21 +29,6 @@ public class ProbeManagerPanel : UIEventHelper
     void UpdateProbeListEvent(object data)
     {
         InitData();
-    }
-
-    void OnSearchProbe(Button btn)
-    {
-        string probeName = input_probeName.text;
-        string gasKind = input_gasKind.text;
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllProbeByCondition");
-        form.AddField("probeName", probeName);
-        form.AddField("gasKind", gasKind);
-        GameUtils.PostHttp("Probe.ashx", form, (result) =>
-        {
-            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(result);
-            InitGrid(list);
-        }, null);
     }
 
     void OnAddProbe(Button btn)

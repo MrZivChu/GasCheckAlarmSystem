@@ -22,63 +22,11 @@ public static class GameUtils
     /// </summary>
     public static bool WifiIsAvailable { get { return Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork; } }
 
-    /// <summary>
-    /// Get方式网络请求
-    /// </summary>
-    /// <param name="url"></param>
-    /// <param name="onSuccess"></param>
-    /// <param name="onFailed"></param>
-    public static void GetHttp(string url, System.Action<string> onSuccess, System.Action<string> onFailed)
-    {
-        UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
-        es.StartCoroutine(HttpGet(url, onSuccess, onFailed));
-    }
 
-    private static System.Collections.IEnumerator HttpGet(string url, System.Action<string> onSuccess, System.Action<string> onFailed)
-    {
-        if (url.IndexOf('?') > 0)
-        {
-            if (!url.EndsWith("&")) url += "&";
-        }
-        else
-        {
-            url += "?";
-        }
-        url += "&appId=" + AppConfig.APP_ID;
-        url += "&channelId=" + AppConfig.CHANNEL_ID;
-        url += "&clientFoceVersion=" + AppConfig.APP_ForceVERSION;
-
-        WWW www = new WWW(url);
-        yield return www;
-
-        if (www.isDone && string.IsNullOrEmpty(www.error))
-        {
-            onSuccess(www.text);
-        }
-        else
-        {
-            onFailed(www.error);
-        }
-    }
-
-
-    /// <summary>
-    /// post方式网络请求
-    /// </summary>
-    /// <param name="url"></param>
-    /// <param name="fields"></param>
-    /// <param name="onSuccess"></param>
-    /// <param name="onFailed"></param>
+    const string serverUrl = "http://www.huaiantegang.com";
     public static void PostHttp(string url, WWWForm form, System.Action<string> onSuccess, System.Action<string> onFailed)
     {
-        if (Application.isEditor)
-        {
-            url = "http://www.huaiantegang.com/Handler/" + url;
-        }
-        else
-        {
-            url = JsonHandleHelper.gameConfig.serverUrl + "/Handler/" + url;
-        }
+        url = serverUrl + "/Handler/" + url;
         UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
         es.StartCoroutine(HttpPost(url, form, onSuccess, onFailed));
     }
@@ -109,14 +57,7 @@ public static class GameUtils
     // www.uploadHandler   是客户端往服务器发送的数据
     public static void PostHttpWebRequest(string url, WWWForm form, System.Action<byte[]> onSuccess, System.Action<string> onFailed)
     {
-        if (Application.isEditor)
-        {
-            url = "http://www.huaiantegang.com/Handler/" + url;
-        }
-        else
-        {
-            url = JsonHandleHelper.gameConfig.serverUrl + "/Handler/" + url;
-        }
+        url = serverUrl + "/Handler/" + url;
         UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
         es.StartCoroutine(HttpPostWebRequest(url, form, onSuccess, onFailed));
     }
@@ -144,14 +85,7 @@ public static class GameUtils
 
     public static void GetHttpWebRequest(string url, System.Action<byte[]> onSuccess, System.Action<string> onFailed)
     {
-        if (Application.isEditor)
-        {
-            url = "http://www.huaiantegang.com/" + url;
-        }
-        else
-        {
-            url = JsonHandleHelper.gameConfig.serverUrl + url;
-        }
+        url = serverUrl + url;
         UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
         es.StartCoroutine(HttpGetWebRequest(url, onSuccess, onFailed));
     }

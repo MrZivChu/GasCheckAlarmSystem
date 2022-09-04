@@ -8,7 +8,7 @@ using System.Data;
 
 public class SqlHelper
 {
-    public static string connstr = "server=127.0.0.1;database=GasCheckAlarm;Integrated Security=false;User ID=sa;Password=1";
+    public static string connstr = "server=hds16173015.my3w.com;database=hds16173015_db;Integrated Security=false;User ID=hds16173015;Password=!@#Dz123";
 
     public static int ExecuteNonQuery(string cmdText,
         params SqlParameter[] parameters)

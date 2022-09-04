@@ -17,21 +17,28 @@ public class PointCheckManagerPanel : UIEventHelper
     int rowCount = 1;
     int pageSize = 16;
 
-    public InputField input_probeName;
+    public InputField input_deviceName;
     public InputField input_userName;
+    public Dropdown dropdown_deviceType;
     public UI.Dates.DatePicker_DateRange dateRange;
 
     public Transform contentTrans;
     public UnityEngine.Object itemRes;
-
     private void Start()
     {
         RegisterBtnClick(btn_search, OnSearch);
         RegisterBtnClick(btn_prePage, OnPrePagel);
         RegisterBtnClick(btn_nextPage, OnNextPage);
+        RegisterDropDownOnValueChanged(dropdown_deviceType, OnDropdownChanged);
     }
 
     void OnSearch(Button btn)
+    {
+        pageIndex = 1;
+        InitData();
+    }
+
+    void OnDropdownChanged(Dropdown dropdown, int value)
     {
         pageIndex = 1;
         InitData();
@@ -74,7 +81,8 @@ public class PointCheckManagerPanel : UIEventHelper
         form.AddField("pageIndex", pageIndex);
         form.AddField("pageSize", pageSize);
         form.AddField("userName", input_userName.text);
-        form.AddField("probeName", input_probeName.text);
+        form.AddField("deviceName", input_deviceName.text);
+        form.AddField("deviceType", dropdown_deviceType.value);
         form.AddField("startTime", startTime);
         form.AddField("endTime", endTime);
         form.AddField("pageCount", pageCount);
@@ -109,7 +117,26 @@ public class PointCheckManagerPanel : UIEventHelper
             }
             PointCheckItem item = currentObj.GetComponent<PointCheckItem>();
             item.InitData(pageSize * (pageIndex - 1) + index + 1, data);
+            RegisterBtnClick<PointCheckModel>(currentObj.GetComponent<Button>(), data, ClickItem);
+            item.SetBackgroundColor(index % 2 == 0 ? new Color(239 / 255.0f, 243 / 255.0f, 250 / 255.0f) : new Color(1, 1, 1));
             currentObj.SetActive(true);
         }, false);
+    }
+
+
+    public WaterSealDetailPanel waterSealDetailPanel;
+    public ProbeDetailPanel probeDetailPanel;
+    void ClickItem(Button btn, PointCheckModel model)
+    {
+        if (model.DeviceType == 0)
+        {
+            probeDetailPanel.OnInit(model);
+            probeDetailPanel.gameObject.SetActive(true);
+        }
+        else
+        {
+            waterSealDetailPanel.OnInit(model);
+            waterSealDetailPanel.gameObject.SetActive(true);
+        }
     }
 }

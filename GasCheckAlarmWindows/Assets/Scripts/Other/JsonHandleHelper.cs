@@ -13,7 +13,6 @@ public struct SGameConfig
     public bool isSetLightByUI;
     public string commName;
     public string productName;
-    public string serverUrl;
 }
 
 public class JsonHandleHelper : UIEventHelper
@@ -38,7 +37,6 @@ public class JsonHandleHelper : UIEventHelper
             gameConfig.subLight = 0.3f;
             gameConfig.isSetLightByUI = false;
             gameConfig.productName = "钢铁有限责任公司\n气体监控系统";
-            gameConfig.serverUrl = "127.0.0.1";
             string json = LitJson.JsonMapper.ToJson(gameConfig);
             File.WriteAllText(configPath, json);
         }

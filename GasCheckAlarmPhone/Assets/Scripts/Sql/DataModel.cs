@@ -110,6 +110,20 @@ public class PointCheckModel
     public int DeviceType;
 }
 
+public class WaterSealModel
+{
+    public int ID;
+    public string Medium;
+    public string Number;
+    public string InstallPosition;
+    public string Category;
+    public int DesignPressure;
+    public string SerialNumber;
+
+    //扩展字段
+    public bool isCheck = false;
+}
+
 public class MachineSerialPortInfo
 {
     public int MachineID;

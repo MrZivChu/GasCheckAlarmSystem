@@ -106,6 +106,17 @@ public class PointCheckModel
     public string Result;
 }
 
+public class WaterSealModel
+{
+    public int ID;
+    public string Medium;
+    public string Number;
+    public string InstallPosition;
+    public string Category;
+    public int DesignPressure;
+    public string SerialNumber;
+}
+
 public class DeviceTagModel
 {
     public int ID;

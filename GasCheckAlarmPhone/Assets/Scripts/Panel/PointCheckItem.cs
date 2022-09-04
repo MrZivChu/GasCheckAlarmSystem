@@ -36,4 +36,10 @@ public class PointCheckItem : UIEventHelper
             image.sprite = sp;
         }, null);
     }
+
+    public Image img_background;
+    public void SetBackgroundColor(Color color)
+    {
+        img_background.color = color;
+    }
 }

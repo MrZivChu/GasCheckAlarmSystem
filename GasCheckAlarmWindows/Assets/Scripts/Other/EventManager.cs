@@ -5,6 +5,7 @@ using UnityEngine;
 public enum NotifyType
 {
     UpdateProbeList,
+    UpdateWaterSealList,
     UpdateMachineList,
     UpdateFactoryList,
     UpdateUserList,
