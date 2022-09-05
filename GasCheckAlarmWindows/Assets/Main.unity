@@ -20571,6 +20571,7 @@ MonoBehaviour:
   input_phone: {fileID: 1016681325}
   dropdown_authority: {fileID: 1223433729}
   contentTrans: {fileID: 1523960651}
+  itemRes: {fileID: 29, guid: 6beb8ad48f17f044c819ccf4d02877eb, type: 3}
 --- !u!1 &336951684
 GameObject:
   m_ObjectHideFlags: 0
@@ -52960,6 +52961,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   contentTrans: {fileID: 603836685}
+  itemRes: {fileID: 1364807629591253036, guid: 32d0af9b37f2101479d7fe3fe480ba84, type: 3}
 --- !u!1 &792536126
 GameObject:
   m_ObjectHideFlags: 0

@@ -21,7 +21,6 @@
 
 # Visual Studio cache directory
 .vs/
-fabu/
 
 # Gradle cache directory
 .gradle/
@@ -61,3 +60,4 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+/fabu
