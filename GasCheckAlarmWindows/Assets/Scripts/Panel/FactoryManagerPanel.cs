@@ -38,14 +38,8 @@ public class FactoryManagerPanel : UIEventHelper
     void OnSearchFactory(Button btn)
     {
         string factoryName = input_factoryName.text;
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllFactoryByCondition");
-        form.AddField("factoryName", factoryName);
-        GameUtils.PostHttp("Factory.ashx", form, (result) =>
-        {
-            List<FactoryModel> list = JsonMapper.ToObject<List<FactoryModel>>(result);
-            InitGrid(list);
-        }, null);
+        List<FactoryModel> list = FactoryDAL.SelectAllFactoryByCondition(factoryName);
+        InitGrid(list);
     }
 
     void OnAddFactory(Button btn)
@@ -80,15 +74,11 @@ public class FactoryManagerPanel : UIEventHelper
                     sb.Append(idList[i] + ",");
                 }
                 sb = sb.Remove(sb.Length - 1, 1);
-                WWWForm form = new WWWForm();
-                form.AddField("requestType", "DeleteFactoryByID");
-                form.AddField("idList", sb.ToString());
-                GameUtils.PostHttp("Factory.ashx", form, (content) =>
+                FactoryDAL.DeleteFactoryByID(sb.ToString());
+                MessageBox.Instance.PopOK("删除成功", () =>
                 {
                     EventManager.Instance.DisPatch(NotifyType.UpdateFactoryList);
-                    MessageBox.Instance.PopOK("删除成功", null, "确定");
-                }, null);
-
+                }, "确定");
             }, "取消", "确定");
         }
     }
@@ -142,13 +132,8 @@ public class FactoryManagerPanel : UIEventHelper
     List<FactoryItem> itemList = new List<FactoryItem>();
     private void InitData()
     {
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllFactoryByCondition");
-        GameUtils.PostHttp("Factory.ashx", form, (result) =>
-        {
-            List<FactoryModel> list = JsonMapper.ToObject<List<FactoryModel>>(result);
-            InitGrid(list);
-        }, null);
+        List<FactoryModel> list = FactoryDAL.SelectAllFactoryByCondition();
+        InitGrid(list);
     }
 
     void InitGrid(List<FactoryModel> list)

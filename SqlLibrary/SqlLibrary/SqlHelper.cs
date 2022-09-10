@@ -5,11 +5,10 @@ using System.Text;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Data;
-using UnityEngine;
 
 public class SqlHelper
 {
-    public static string connectionString = "server=127.0.0.1;database=GasCheckAlarm;Integrated Security=false;User ID=sa;Password=1";
+    public static string connectionString = "server = {0}; database = {1}; Integrated Security = false; User ID = {2}; Password = {3}";
 
     public static int ExecuteNonQuery(string cmdText,
         params SqlParameter[] parameters)
@@ -23,6 +22,7 @@ public class SqlHelper
                 if (parameters != null && parameters.Length > 0)
                     cmd.Parameters.AddRange(parameters);
                 int result = cmd.ExecuteNonQuery();
+                cmd.Parameters.Clear();
                 return result;
             }
         }
@@ -39,7 +39,9 @@ public class SqlHelper
                 cmd.CommandText = cmdText;
                 if (parameters != null && parameters.Length > 0)
                     cmd.Parameters.AddRange(parameters);
-                return cmd.ExecuteScalar();
+                object result = cmd.ExecuteScalar();
+                cmd.Parameters.Clear();
+                return result;
             }
         }
     }
@@ -59,6 +61,7 @@ public class SqlHelper
                 {
                     DataTable dt = new DataTable();
                     adapter.Fill(dt);
+                    cmd.Parameters.Clear();
                     return dt;
                 }
             }
@@ -76,7 +79,9 @@ public class SqlHelper
                 cmd.CommandText = cmdText;
                 if (parameters != null && parameters.Length > 0)
                     cmd.Parameters.AddRange(parameters);
-                return cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                SqlDataReader result = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                cmd.Parameters.Clear();
+                return result;
             }
         }
     }
@@ -101,7 +106,9 @@ public class SqlHelper
                 {
                     cmd.Parameters.AddRange(parameters);
                 }
-                return cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                SqlDataReader result = cmd.ExecuteReader(CommandBehavior.CloseConnection);
+                cmd.Parameters.Clear();
+                return result;
             }
         }
     }
@@ -130,6 +137,7 @@ public class SqlHelper
                 {
                     DataSet dt = new DataSet();
                     adapter.Fill(dt);
+                    cmd.Parameters.Clear();
                     return dt;
                 }
             }
@@ -155,6 +163,7 @@ public class SqlHelper
                     adapter.Fill(dt);
                     pageCount = Convert.ToInt32(cmd.Parameters[2].Value);
                     rowCount = Convert.ToInt32(cmd.Parameters[3].Value);
+                    cmd.Parameters.Clear();
                     return dt;
                 }
             }

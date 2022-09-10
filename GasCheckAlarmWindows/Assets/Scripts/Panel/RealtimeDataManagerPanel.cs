@@ -8,11 +8,7 @@ using UnityEngine.UI;
 public class RealtimeDataManagerPanel : UIEventHelper
 {
     public Transform contentTrans;
-    UnityEngine.Object itemRes;
-    void Awake()
-    {
-        itemRes = Resources.Load("RealtimeDataItem");
-    }
+    public UnityEngine.Object itemRes;
 
     private void Start()
     {

@@ -30,11 +30,7 @@ public class EditProbeForGraphPanel : UIEventHelper
     {
         MessageBox.Instance.PopYesNo("确认删除？", null, () =>
         {
-            WWWForm form = new WWWForm();
-            form.AddField("requestType", "DeleteRealtimePos2DByID");
-            form.AddField("id", currentModel.ProbeID);
-            GameUtils.PostHttp("RealtimeData.ashx", form, null, null);
-
+            RealtimeDataDAL.DeleteRealtimePos2DByID(currentModel.ProbeID);
             MessageBox.Instance.PopOK("删除成功", () =>
             {
                 gameObject.SetActive(false);

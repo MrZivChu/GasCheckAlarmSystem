@@ -21,9 +21,7 @@ public class GlobalCheckGas : MonoBehaviour
     private void Start()
     {
         //程序启动执行一次删除历史数据的操作
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "DeleteHistoryDataBeforeWeek");
-        GameUtils.PostHttp("HistoryData.ashx", form, null, null);
+        HistoryDataDAL.DeleteHistoryDataBeforeWeek();
     }
 
     float refreshTime = 1;//1秒
@@ -36,23 +34,16 @@ public class GlobalCheckGas : MonoBehaviour
         if (tempRefreshTime > refreshTime)
         {
             tempRefreshTime = 0;
-            WWWForm form = new WWWForm();
-            form.AddField("requestType", "SelectAllRealtimeDataByCondition");
-            GameUtils.PostHttp("RealtimeData.ashx", form, (result) =>
-            {
-                List<RealtimeDataModel> rsult = JsonMapper.ToObject<List<RealtimeDataModel>>(result);
-                RealtimeEventData data = HandleRealtimeData(rsult);
-                JudgeWarningShout(data);
-                EventManager.Instance.DisPatch(NotifyType.UpdateRealtimeDataList, data);
-            }, null);
+            List<RealtimeDataModel> rsult = RealtimeDataDAL.SelectAllRealtimeDataByCondition();
+            RealtimeEventData data = HandleRealtimeData(rsult);
+            JudgeWarningShout(data);
+            EventManager.Instance.DisPatch(NotifyType.UpdateRealtimeDataList, data);
         }
         tempDeleteHistoryDataTime += Time.deltaTime;
         if (tempDeleteHistoryDataTime >= deleteHistoryDataTime)
         {
             tempDeleteHistoryDataTime = 0;
-            WWWForm form = new WWWForm();
-            form.AddField("requestType", "DeleteHistoryDataBeforeWeek");
-            GameUtils.PostHttp("HistoryData.ashx", form, null, null);
+            HistoryDataDAL.DeleteHistoryDataBeforeWeek();
         }
     }
 

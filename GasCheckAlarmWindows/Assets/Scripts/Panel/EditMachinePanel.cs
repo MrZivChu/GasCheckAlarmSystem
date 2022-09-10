@@ -33,15 +33,7 @@ public class EditMachinePanel : UIEventHelper
 
             int dd = dropdown_factory.value;
             FactoryModel model = factoryList[dd];
-            WWWForm form = new WWWForm();
-            form.AddField("requestType", "EditMachineByID");
-            form.AddField("id", currentModel.ID);
-            form.AddField("mailAddress", machineAddress);
-            form.AddField("machineName", machineName);
-            form.AddField("factoryID", model.ID);
-            form.AddField("factoryName", model.FactoryName);
-            GameUtils.PostHttp("Machine.ashx", form, null, null);
-
+            MachineDAL.EditMachineByID(currentModel.ID, machineAddress, machineName, model.ID, model.FactoryName);
             MessageBox.Instance.PopOK("修改成功", () =>
             {
                 EventManager.Instance.DisPatch(NotifyType.UpdateMachineList);
@@ -56,26 +48,20 @@ public class EditMachinePanel : UIEventHelper
         currentModel = model;
         input_machineName.text = model.MachineName;
         input_machineAddress.text = model.MailAddress;
-
         dropdown_factory.ClearOptions();
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllFactoryByCondition");
-        GameUtils.PostHttp("Factory.ashx", form, (result) =>
+        factoryList = FactoryDAL.SelectAllFactoryByCondition();
+        if (factoryList != null && factoryList.Count > 0)
         {
-            factoryList = JsonMapper.ToObject<List<FactoryModel>>(result);
-            if (factoryList != null && factoryList.Count > 0)
+            List<string> optionList = new List<string>();
+            int selectIndex = 0;
+            for (int i = 0; i < factoryList.Count; i++)
             {
-                List<string> optionList = new List<string>();
-                int selectIndex = 0;
-                for (int i = 0; i < factoryList.Count; i++)
-                {
-                    optionList.Add(factoryList[i].FactoryName);
-                    if (factoryList[i].ID == model.FactoryID)
-                        selectIndex = i;
-                }
-                dropdown_factory.AddOptions(optionList);
-                dropdown_factory.value = selectIndex;
+                optionList.Add(factoryList[i].FactoryName);
+                if (factoryList[i].ID == model.FactoryID)
+                    selectIndex = i;
             }
-        }, null);
+            dropdown_factory.AddOptions(optionList);
+            dropdown_factory.value = selectIndex;
+        }
     }
 }

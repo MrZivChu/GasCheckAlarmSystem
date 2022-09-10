@@ -62,9 +62,7 @@ public class ProbeHistoryDataPanel : UIEventHelper
 
     void OnDeleteAllData(Button btn)
     {
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "DeleteAllHistoryData");
-        GameUtils.PostHttp("HistoryData.ashx", form, null, null);
+        HistoryDataDAL.DeleteAllHistoryData();
         InitData();
     }
 
@@ -84,31 +82,8 @@ public class ProbeHistoryDataPanel : UIEventHelper
         if (dateRange.ToDate.HasValue)
             endTime = dateRange.ToDate.Date.AddDays(1).ToString("yyyy-MM-dd");
 
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllHistoryDataByCondition");
-        form.AddField("pageIndex", pageIndex);
-        form.AddField("pageSize", pageSize);
-        form.AddField("probeName", input_probeName.text);
-        form.AddField("gasKind", input_gasKind.text);
-        form.AddField("startTime", startTime);
-        form.AddField("endTime", endTime);
-        form.AddField("pageCount", pageCount);
-        form.AddField("rowCount", rowCount);
-        GameUtils.PostHttp("HistoryData.ashx", form, (result) =>
-        {
-            historyDataModelList = new List<HistoryDataModel>();
-            if (result.Contains("*"))
-            {
-                string pageResult = result.Split('*')[0];
-                pageCount = Convert.ToInt32(pageResult.Split(',')[0]);
-                rowCount = Convert.ToInt32(pageResult.Split(',')[1]);
-                result = result.Split('*')[1];
-                historyDataModelList = JsonMapper.ToObject<List<HistoryDataModel>>(result);
-
-            }
-            InitGrid(historyDataModelList);
-            txt_pageCount.text = pageIndex + "/" + pageCount;
-        }, null);
+        historyDataModelList = HistoryDataDAL.SelectAllHistoryDataByCondition(pageIndex, pageSize, input_probeName.text, input_gasKind.text, startTime, endTime, out pageCount, out rowCount);
+        InitGrid(historyDataModelList);
     }
 
     void InitGrid(List<HistoryDataModel> historyDataModelList)

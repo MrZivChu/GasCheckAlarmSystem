@@ -34,24 +34,13 @@ public class AddWaterSealPanel : UIEventHelper
         string number = input_Number.text;
         string installPosition = input_InstallPosition.text;
         string category = input_Category.text;
-        string designPressure = input_DesignPressure.text;
+        int designPressure = Convert.ToInt32(input_DesignPressure.text);
         string serialNumber = input_SerialNumber.text;
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "InsertWaterSeal");
-        form.AddField("medium", medium);
-        form.AddField("number", number);
-        form.AddField("installPosition", installPosition);
-        form.AddField("category", category);
-        form.AddField("designPressure", designPressure);
-        form.AddField("serialNumber", serialNumber);
-        GameUtils.PostHttp("WaterSeal.ashx", form, (result) =>
+        WaterSealDAL.InsertWaterSeal(medium, number, installPosition, category, designPressure, serialNumber);
+        MessageBox.Instance.PopOK("新增成功", () =>
         {
-            int insertID = Convert.ToInt32(result);
-            MessageBox.Instance.PopOK("新增成功", () =>
-            {
-                EventManager.Instance.DisPatch(NotifyType.UpdateWaterSealList);
-                gameObject.SetActive(false);
-            }, "确定");
-        }, null);
+            EventManager.Instance.DisPatch(NotifyType.UpdateWaterSealList);
+            gameObject.SetActive(false);
+        }, "确定");
     }
 }

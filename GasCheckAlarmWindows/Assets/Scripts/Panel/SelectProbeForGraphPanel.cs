@@ -29,12 +29,7 @@ public class SelectProbeForGraphPanel : UIEventHelper
 
     void OnOk(Button btn)
     {
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "EditRealtimePos2DByID");
-        form.AddField("id", probeModel.ID);
-        form.AddField("pos2D", uiPos.x + "," + uiPos.y);
-        GameUtils.PostHttp("RealtimeData.ashx", form, null, null);
-
+        RealtimeDataDAL.EditRealtimePos2DByID(probeModel.ID, uiPos.x + "," + uiPos.y);
         MessageBox.Instance.PopOK("新增成功", () =>
         {
             gameObject.SetActive(false);
@@ -49,17 +44,12 @@ public class SelectProbeForGraphPanel : UIEventHelper
 
     private void InitData()
     {
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllProbeByCondition");
-        GameUtils.PostHttp("Probe.ashx", form, (result) =>
+        List<ProbeModel> list = ProbeDAL.SelectAllProbeByCondition();
+        list = list.FindAll((item) =>
         {
-            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(result);
-            list = list.FindAll((item) =>
-            {
-                return string.IsNullOrEmpty(item.Pos2D) ? true : false;
-            });
-            InitGrid(list);
-        }, null);
+            return string.IsNullOrEmpty(item.Pos2D) ? true : false;
+        });
+        InitGrid(list);
     }
 
     void InitGrid(List<ProbeModel> list)

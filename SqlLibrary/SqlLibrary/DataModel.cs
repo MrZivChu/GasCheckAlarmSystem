@@ -21,8 +21,8 @@ public class ProbeModel
     public string ProbeName;
     public string GasKind;
     public string Unit;
-    public float FirstAlarmValue;
-    public float SecondAlarmValue;
+    public double FirstAlarmValue;
+    public double SecondAlarmValue;
     public string MachineName;
     public int MachineID;
     public string PosDir;
@@ -30,8 +30,8 @@ public class ProbeModel
     public string FactoryName;
     public int MachineType;
     public string Pos2D;
-    public string SerialNumber;
     public string TagName;
+    public string SerialNumber;
 }
 
 public class RealtimeDataModel
@@ -40,11 +40,11 @@ public class RealtimeDataModel
     public int ProbeID;
     public string ProbeName;
     public DateTime CheckTime;
-    public float GasValue;
+    public double GasValue;
     public string GasKind;
     public string Unit;
-    public float FirstAlarmValue;
-    public float SecondAlarmValue;
+    public double FirstAlarmValue;
+    public double SecondAlarmValue;
     public string MachineName;
     public int MachineID;
     public int FactoryID;
@@ -55,6 +55,14 @@ public class RealtimeDataModel
 
     //扩展字段
     public int warningLevel = 0;
+}
+
+public class DeviceTagModel
+{
+    public int ID;
+    public string TagName;
+    public int ParentID;
+    public string Position;
 }
 
 public class MachineModel
@@ -71,6 +79,30 @@ public class FactoryModel
 {
     public int ID;
     public string FactoryName;
+}
+
+public class WaterSealModel
+{
+    public int ID;
+    public string Medium;
+    public string Number;
+    public string InstallPosition;
+    public string Category;
+    public int DesignPressure;
+    public string SerialNumber;
+}
+
+public class PointCheckModel
+{
+    public int ID;
+    public int DeviceID;
+    public int DeviceType;
+    public string DeviceName;
+    public string UserName;
+    public string QrCodePath;
+    public DateTime CheckTime;
+    public string Description;
+    public string Result;
 }
 
 public class HistoryDataModel
@@ -93,39 +125,6 @@ public class HistoryDataModel
     public int warningLevel = 0;
 }
 
-public class PointCheckModel
-{
-    public int ID;
-    public int DeviceID;
-    public int DeviceType;
-    public string DeviceName;
-    public string UserName;
-    public string QrCodePath;
-    public DateTime CheckTime;
-    public string Description;
-    public string Result;
-}
-
-public class WaterSealModel
-{
-    public int ID;
-    public string Medium;
-    public string Number;
-    public string InstallPosition;
-    public string Category;
-    public int DesignPressure;
-    public string SerialNumber;
-}
-
-public class DeviceTagModel
-{
-    public int ID;
-    public string TagName;
-    public int ParentID;
-    public string Position;
-}
-
-
 public class MachineSerialPortInfo
 {
     public int MachineID;
@@ -134,24 +133,8 @@ public class MachineSerialPortInfo
     public string MachineName;
     public string ProbeName;
     public int ProbeID;
-    public float FirstAlarmValue;
-    public float SecondAlarmValue;
-    public string GasKind;
-}
-
-public class ProbeSerialPortInfo
-{
-    public int ProbeID;
-    public string ProbeName;
-    public int MachineID;
-    public string MachineName;
-    public int MachineType;
-    public string MachineAddress;
-    public int FactoryID;
-    public string FactoryName;
-    public string ProbeAddress;
-    public float FirstAlarmValue;
-    public float SecondAlarmValue;
+    public double FirstAlarmValue;
+    public double SecondAlarmValue;
     public string GasKind;
 }
 

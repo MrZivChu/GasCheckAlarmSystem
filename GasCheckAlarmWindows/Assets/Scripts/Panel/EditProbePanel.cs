@@ -44,21 +44,7 @@ public class EditProbePanel : UIEventHelper
 
             int dd = dropdown_machine.value;
             MachineModel model = machineList[dd];
-            WWWForm form = new WWWForm();
-            form.AddField("requestType", "EditProbeByID");
-            form.AddField("id", currentModel.ID);
-            form.AddField("mailAddress", address);
-            form.AddField("probeName", probeName);
-            form.AddField("machineID", model.ID);
-            form.AddField("gasKind", gasKind);
-            form.AddField("unit", unit);
-            form.AddField("firstAlarmValue", firstAlarmValue);
-            form.AddField("secondAlarmValue", secondAlarmValue);
-            form.AddField("machineName", model.MachineName);
-            form.AddField("serialNumber", serialNumber);
-            form.AddField("tagName", dropdown_deviceTag.captionText.text);
-            GameUtils.PostHttp("Probe.ashx", form, null, null);
-
+            ProbeDAL.EditProbeByID(currentModel.ID, address, probeName, model.ID, gasKind, unit, firstAlarmValue, secondAlarmValue, model.MachineName, dropdown_deviceTag.captionText.text, serialNumber);
             MessageBox.Instance.PopOK("修改成功", () =>
             {
                 EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
@@ -85,55 +71,45 @@ public class EditProbePanel : UIEventHelper
     void InitMachine(ProbeModel model)
     {
         dropdown_machine.ClearOptions();
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllMachineByCondition");
-        GameUtils.PostHttp("Machine.ashx", form, (result) =>
+        machineList = MachineDAL.SelectAllMachineByCondition();
+        if (machineList != null && machineList.Count > 0)
         {
-            machineList = JsonMapper.ToObject<List<MachineModel>>(result);
-            if (machineList != null && machineList.Count > 0)
+            List<string> optionList = new List<string>();
+            int selectIndex = 0;
+            for (int i = 0; i < machineList.Count; i++)
             {
-                List<string> optionList = new List<string>();
-                int selectIndex = 0;
-                for (int i = 0; i < machineList.Count; i++)
-                {
-                    optionList.Add(machineList[i].MachineName);
-                    if (machineList[i].ID == model.MachineID)
-                        selectIndex = i;
-                }
-                dropdown_machine.AddOptions(optionList);
-                dropdown_machine.value = selectIndex;
+                optionList.Add(machineList[i].MachineName);
+                if (machineList[i].ID == model.MachineID)
+                    selectIndex = i;
             }
-        }, null);
+            dropdown_machine.AddOptions(optionList);
+            dropdown_machine.value = selectIndex;
+        }
     }
 
     void InitDeviceTag(ProbeModel model)
     {
         dropdown_deviceTag.ClearOptions();
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllDeviceTag");
-        GameUtils.PostHttp("DeviceTag.ashx", form, (result) =>
+        List<DeviceTagModel> list = DeviceTagDAL.SelectAllDeviceTag();
+        if (list != null && list.Count > 0)
         {
-            List<DeviceTag> list = JsonMapper.ToObject<List<DeviceTag>>(result);
-            if (list != null && list.Count > 0)
+            List<string> optionList = new List<string>();
+            int selectIndex = 0;
+            for (int i = 0; i < list.Count; i++)
             {
-                List<string> optionList = new List<string>();
-                int selectIndex = 0;
-                for (int i = 0; i < list.Count; i++)
+                DeviceTagModel deviceTag = list[i];
+                List<DeviceTagModel> temp = list.FindAll(it => it.ParentID == deviceTag.ID);
+                if (temp.Count == 0)
                 {
-                    DeviceTag deviceTag = list[i];
-                    List<DeviceTag> temp = list.FindAll(it => it.ParentID == deviceTag.ID);
-                    if (temp.Count == 0)
+                    if (deviceTag.TagName == model.TagName)
                     {
-                        if (deviceTag.TagName == model.TagName)
-                        {
-                            selectIndex = optionList.Count;
-                        }
-                        optionList.Add(deviceTag.TagName);
+                        selectIndex = optionList.Count;
                     }
+                    optionList.Add(deviceTag.TagName);
                 }
-                dropdown_deviceTag.AddOptions(optionList);
-                dropdown_deviceTag.value = selectIndex;
             }
-        }, null);
+            dropdown_deviceTag.AddOptions(optionList);
+            dropdown_deviceTag.value = selectIndex;
+        }
     }
 }

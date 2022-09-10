@@ -60,28 +60,23 @@ public class GlobalImagePanel : UIEventHelper
     void HandleTagData()
     {
         dic.Clear();
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllDeviceTag");
-        GameUtils.PostHttp("DeviceTag.ashx", form, (result) =>
+        List<DeviceTagModel> list = DeviceTagDAL.SelectAllDeviceTag();
+        for (int i = 0; i < list.Count; i++)
         {
-            List<DeviceTag> list = JsonMapper.ToObject<List<DeviceTag>>(result);
-            for (int i = 0; i < list.Count; i++)
+            DeviceTagModel deviceTag = list[i];
+            TreeMap treeMap = new TreeMap();
+            treeMap.ID = deviceTag.ID;
+            treeMap.parentID = deviceTag.ParentID;
+            treeMap.tagName = deviceTag.TagName;
+            List<DeviceTagModel> temp = list.FindAll(it => it.ParentID == deviceTag.ID);
+            List<int> childIdList = new List<int>();
+            for (int j = 0; j < temp.Count; j++)
             {
-                DeviceTag deviceTag = list[i];
-                TreeMap treeMap = new TreeMap();
-                treeMap.ID = deviceTag.ID;
-                treeMap.parentID = deviceTag.ParentID;
-                treeMap.tagName = deviceTag.TagName;
-                List<DeviceTag> temp = list.FindAll(it => it.ParentID == deviceTag.ID);
-                List<int> childIdList = new List<int>();
-                for (int j = 0; j < temp.Count; j++)
-                {
-                    childIdList.Add(temp[j].ID);
-                }
-                treeMap.childIDList = childIdList;
-                dic[deviceTag.ID] = treeMap;
+                childIdList.Add(temp[j].ID);
             }
-        }, null);
+            treeMap.childIDList = childIdList;
+            dic[deviceTag.ID] = treeMap;
+        }
     }
 
     void InitTagGrid()

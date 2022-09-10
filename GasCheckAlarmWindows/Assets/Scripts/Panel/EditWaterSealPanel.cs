@@ -1,4 +1,5 @@
 ﻿using LitJson;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,18 +34,9 @@ public class EditWaterSealPanel : UIEventHelper
         string number = input_Number.text;
         string installPosition = input_InstallPosition.text;
         string category = input_Category.text;
-        string designPressure = input_DesignPressure.text;
+        int designPressure = Convert.ToInt32(input_DesignPressure.text);
         string serialNumber = input_SerialNumber.text;
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "EditWaterSealByID");
-        form.AddField("id", currentModel.ID);
-        form.AddField("medium", medium);
-        form.AddField("number", number);
-        form.AddField("installPosition", installPosition);
-        form.AddField("category", category);
-        form.AddField("designPressure", designPressure);
-        form.AddField("serialNumber", serialNumber);
-        GameUtils.PostHttp("WaterSeal.ashx", form, null, null);
+        WaterSealDAL.EditWaterSealByID(currentModel.ID, medium, number, installPosition, category, designPressure, serialNumber);
         MessageBox.Instance.PopOK("修改成功", () =>
         {
             EventManager.Instance.DisPatch(NotifyType.UpdateWaterSealList);

@@ -66,14 +66,11 @@ public class WaterSealManagerPanel : UIEventHelper
                     sb.Append(idList[i].ID + ",");
                 }
                 sb = sb.Remove(sb.Length - 1, 1);
-                WWWForm form = new WWWForm();
-                form.AddField("requestType", "DeleteWaterSealByID");
-                form.AddField("idList", sb.ToString());
-                GameUtils.PostHttp("WaterSeal.ashx", form, (content) =>
+                WaterSealDAL.DeleteWaterSealByID(sb.ToString());
+                MessageBox.Instance.PopOK("删除成功", () =>
                 {
                     EventManager.Instance.DisPatch(NotifyType.UpdateWaterSealList);
-                    MessageBox.Instance.PopOK("删除成功", null, "确定");
-                }, null);
+                }, "确定");
             }, "取消", "确定");
         }
     }
@@ -127,13 +124,8 @@ public class WaterSealManagerPanel : UIEventHelper
     List<WaterSealItem> waterSealItemList = new List<WaterSealItem>();
     private void InitData()
     {
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllWaterSealByCondition");
-        GameUtils.PostHttp("WaterSeal.ashx", form, (result) =>
-        {
-            List<WaterSealModel> list = JsonMapper.ToObject<List<WaterSealModel>>(result);
-            InitGrid(list);
-        }, null);
+        List<WaterSealModel> list = WaterSealDAL.SelectAllWaterSealByCondition();
+        InitGrid(list);
     }
 
     void InitGrid(List<WaterSealModel> list)

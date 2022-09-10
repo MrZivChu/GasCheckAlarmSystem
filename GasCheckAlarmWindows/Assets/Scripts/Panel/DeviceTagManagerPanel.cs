@@ -19,7 +19,7 @@ public class TreeMap
 
 public class DeviceTagManagerPanel : UIEventHelper
 {
-    public AddDeviceTagPanel editorDeviceTagPanel;
+    public EditorDeviceTagPanel editorDeviceTagPanel;
     public GameObject panel;
     public Line2DHelper line2DHelperClone;
     public MyButton cloneBtn;
@@ -43,40 +43,35 @@ public class DeviceTagManagerPanel : UIEventHelper
         {
             Destroy(child.gameObject);
         }
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllDeviceTag");
-        GameUtils.PostHttp("DeviceTag.ashx", form, (result) =>
+        List<DeviceTagModel> list = DeviceTagDAL.SelectAllDeviceTag();
+        for (int i = 0; i < list.Count; i++)
         {
-            List<DeviceTag> list = JsonMapper.ToObject<List<DeviceTag>>(result);
-            for (int i = 0; i < list.Count; i++)
+            DeviceTagModel deviceTag = list[i];
+            TreeMap treeMap = new TreeMap();
+            treeMap.ID = deviceTag.ID;
+            treeMap.parentID = deviceTag.ParentID;
+            treeMap.tagName = deviceTag.TagName;
+            string[] pos = deviceTag.Position.Split(new string[] { "," }, System.StringSplitOptions.None);
+            treeMap.position = new Vector3(Convert.ToSingle(pos[0]), Convert.ToSingle(pos[1]), 0);
+            List<DeviceTagModel> temp = list.FindAll(it => it.ParentID == deviceTag.ID);
+            List<int> childIdList = new List<int>();
+            for (int j = 0; j < temp.Count; j++)
             {
-                DeviceTag deviceTag = list[i];
-                TreeMap treeMap = new TreeMap();
-                treeMap.ID = deviceTag.ID;
-                treeMap.parentID = deviceTag.ParentID;
-                treeMap.tagName = deviceTag.TagName;
-                string[] pos = deviceTag.Position.Split(new string[] { "," }, System.StringSplitOptions.None);
-                treeMap.position = new Vector3(Convert.ToSingle(pos[0]), Convert.ToSingle(pos[1]), 0);
-                List<DeviceTag> temp = list.FindAll(it => it.ParentID == deviceTag.ID);
-                List<int> childIdList = new List<int>();
-                for (int j = 0; j < temp.Count; j++)
-                {
-                    childIdList.Add(temp[j].ID);
-                }
-                treeMap.childIDList = childIdList;
-                treeMapList.Add(treeMap);
-                InstanceCloneBtn(treeMap);
+                childIdList.Add(temp[j].ID);
             }
-            for (int j = 0; j < treeMapList.Count; j++)
+            treeMap.childIDList = childIdList;
+            treeMapList.Add(treeMap);
+            InstanceCloneBtn(treeMap);
+        }
+        for (int j = 0; j < treeMapList.Count; j++)
+        {
+            TreeMap treeMap = treeMapList[j];
+            if (treeMap.parentID == -1)
             {
-                TreeMap treeMap = treeMapList[j];
-                if (treeMap.parentID == -1)
-                {
-                    continue;
-                }
-                InstanceLine2DHelper(treeMap);
+                continue;
             }
-        }, null);
+            InstanceLine2DHelper(treeMap);
+        }
     }
 
     void InstanceLine2DHelper(TreeMap treeMap)
@@ -139,12 +134,7 @@ public class DeviceTagManagerPanel : UIEventHelper
         {
             Vector2 pos = targetBtn.GetComponent<RectTransform>().anchoredPosition;
             DeviceTagItemInfo deviceTagItemInfo = targetBtn.GetComponent<DeviceTagItemInfo>();
-            WWWForm form = new WWWForm();
-            form.AddField("requestType", "EditDeviceTagByID");
-            form.AddField("id", deviceTagItemInfo.model.ID);
-            form.AddField("position", pos.x + "," + pos.y);
-            GameUtils.PostHttp("DeviceTag.ashx", form, null, null);
-
+            DeviceTagDAL.EditDeviceTagByID(deviceTagItemInfo.model.ID, pos.x + "," + pos.y);
             targetBtn = null;
         }
         isLongPress = false;

@@ -71,31 +71,13 @@ public class AddProbePanel : UIEventHelper
         string serialNumber = input_serialNumber.text;
         MachineModel model = machineList[dropdown_machine.value];
         string posDir = position.x.ToString("0.00") + "," + position.y.ToString("0.00") + "," + position.z.ToString("0.00") + ";" + direction.x.ToString("0.00") + "," + direction.y.ToString("0.00") + "," + direction.z.ToString("0.00");
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "InsertProbe");
-        form.AddField("mailAddress", address);
-        form.AddField("probeName", probeName);
-        form.AddField("gasKind", gasKind);
-        form.AddField("unit", unit);
-        form.AddField("firstAlarmValue", firstAlarmValue);
-        form.AddField("secondAlarmValue", secondAlarmValue);
-        form.AddField("posdir", posDir);
-        form.AddField("machineID", model.ID);
-        form.AddField("machineName", model.MachineName);
-        form.AddField("factoryID", model.FactoryID);
-        form.AddField("factoryName", model.FactoryName);
-        form.AddField("machineType", model.MachineType);
-        form.AddField("serialNumber", serialNumber);
-        form.AddField("tagName", dropdown_deviceTag.captionText.text);
-        GameUtils.PostHttp("Probe.ashx", form, (result) =>
+
+        ProbeDAL.InsertProbe(address, probeName, gasKind, unit, firstAlarmValue, secondAlarmValue, posDir, model.ID, model.MachineName, model.FactoryID, model.FactoryName, model.MachineType, dropdown_deviceTag.captionText.text, serialNumber);
+        MessageBox.Instance.PopOK("新增成功", () =>
         {
-            int insertID = Convert.ToInt32(result);
-            MessageBox.Instance.PopOK("新增成功", () =>
-            {
-                EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
-                gameObject.SetActive(false);
-            }, "确定");
-        }, null);
+            EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
+            gameObject.SetActive(false);
+        }, "确定");
     }
 
     List<MachineModel> machineList;
@@ -108,48 +90,38 @@ public class AddProbePanel : UIEventHelper
     void InitDeviceTag()
     {
         dropdown_deviceTag.ClearOptions();
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllDeviceTag");
-        GameUtils.PostHttp("DeviceTag.ashx", form, (result) =>
+        List<DeviceTagModel> list = DeviceTagDAL.SelectAllDeviceTag();
+        if (list != null && list.Count > 0)
         {
-            List<DeviceTag> list = JsonMapper.ToObject<List<DeviceTag>>(result);
-            if (list != null && list.Count > 0)
+            List<string> optionList = new List<string>();
+            for (int i = 0; i < list.Count; i++)
             {
-                List<string> optionList = new List<string>();
-                for (int i = 0; i < list.Count; i++)
+                DeviceTagModel deviceTag = list[i];
+                List<DeviceTagModel> temp = list.FindAll(it => it.ParentID == deviceTag.ID);
+                if (temp.Count == 0)
                 {
-                    DeviceTag deviceTag = list[i];
-                    List<DeviceTag> temp = list.FindAll(it => it.ParentID == deviceTag.ID);
-                    if (temp.Count == 0)
-                    {
-                        optionList.Add(deviceTag.TagName);
-                    }
+                    optionList.Add(deviceTag.TagName);
                 }
-                dropdown_deviceTag.AddOptions(optionList);
-                dropdown_deviceTag.value = 0;
             }
-        }, null);
+            dropdown_deviceTag.AddOptions(optionList);
+            dropdown_deviceTag.value = 0;
+        }
     }
 
     void InitMachine()
     {
         dropdown_machine.ClearOptions();
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllMachineByCondition");
-        GameUtils.PostHttp("Machine.ashx", form, (result) =>
+        machineList = MachineDAL.SelectAllMachineByCondition();
+        if (machineList != null && machineList.Count > 0)
         {
-            machineList = JsonMapper.ToObject<List<MachineModel>>(result);
-            if (machineList != null && machineList.Count > 0)
+            List<string> optionList = new List<string>();
+            for (int i = 0; i < machineList.Count; i++)
             {
-                List<string> optionList = new List<string>();
-                for (int i = 0; i < machineList.Count; i++)
-                {
-                    optionList.Add(machineList[i].MachineName);
-                }
-                dropdown_machine.AddOptions(optionList);
-                dropdown_machine.value = 0;
+                optionList.Add(machineList[i].MachineName);
             }
-        }, null);
+            dropdown_machine.AddOptions(optionList);
+            dropdown_machine.value = 0;
+        }
     }
 
 }

@@ -13,6 +13,7 @@ public class Login : IHttpHandler
     public void ProcessRequest(HttpContext context)
     {
         context.Response.ContentType = "text/plain";
+        SqlHelper.connectionString = string.Format(SqlHelper.connectionString, "hds16173015.my3w.com", "hds16173015_db", "hds16173015", "!@#Dz123");
 
         string content = string.Empty;
         string requestType = context.Request["requestType"];

@@ -43,38 +43,20 @@ public class LoginPanel : UIEventHelper
             return;
         }
 
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectUserByNamePwd");
-        form.AddField("accountName", userName);
-        form.AddField("accountPwd", userPwd);
-        GameUtils.PostHttpWebRequest("User.ashx", form, (result) =>
+        List<UserModel> list = UserDAL.SelectUserByNamePwd(userName, userPwd);
+        if (list.Count > 0)
         {
-            string content = System.Text.Encoding.UTF8.GetString(result);
-            if (content.Contains("error:"))
-            {
-                MessageBox.Instance.PopOK(content.Split(':')[1], null, "确定");
-            }
+            FormatData.currentUser = list[0];
+            GameUtils.SetString(nameKey, userName);
+            if (rememberPwdTog.isOn)
+                GameUtils.SetString(pwdKey, userPwd);
             else
-            {
-                List<UserModel> list = JsonMapper.ToObject<List<UserModel>>(content);
-                if (list.Count > 0)
-                {
-                    FormatData.currentUser = list[0];
-                    GameUtils.SetString(nameKey, userName);
-                    if (rememberPwdTog.isOn)
-                        GameUtils.SetString(pwdKey, userPwd);
-                    else
-                        GameUtils.RemoveKey(pwdKey);
-                    SceneManager.LoadScene("Main", LoadSceneMode.Single);
-                }
-                else
-                {
-                    MessageBox.Instance.PopOK("不存在此用户", null, "确定");
-                }
-            }
-        }, (error) =>
+                GameUtils.RemoveKey(pwdKey);
+            SceneManager.LoadScene("Main", LoadSceneMode.Single);
+        }
+        else
         {
-            MessageBox.Instance.PopOK(error, null, "确定");
-        });
+            MessageBox.Instance.PopOK("不存在此用户", null, "确定");
+        }
     }
 }

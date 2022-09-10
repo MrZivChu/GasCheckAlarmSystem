@@ -22,7 +22,7 @@ public struct SGameConfig
 public class JsonHandleHelper : UIEventHelper
 {
     public static SGameConfig gameConfig;
-    public static bool isLocalServer = true;
+    public static bool isRemoteServer = true;
     static string configPath = string.Empty;
     void Awake()
     {
@@ -49,8 +49,8 @@ public class JsonHandleHelper : UIEventHelper
             string json = LitJson.JsonMapper.ToJson(gameConfig);
             File.WriteAllText(configPath, json);
         }
-        SqlHelper.connectionString = string.Format("server = {0}; database = {1}; Integrated Security = false; User ID = {2}; Password = {3}", gameConfig.sqlIP, gameConfig.sqlDatabase, gameConfig.sqlUserId, gameConfig.sqlUserPwd);
-        isLocalServer = gameConfig.sqlIP == "127.0.0.1";
+        SqlHelper.connectionString = string.Format(SqlHelper.connectionString, gameConfig.sqlIP, gameConfig.sqlDatabase, gameConfig.sqlUserId, gameConfig.sqlUserPwd);
+        isRemoteServer = gameConfig.sqlIP != "127.0.0.1";
         Debug.unityLogger.logEnabled = Application.isEditor ? true : gameConfig.isLog;
         if (LightSetting.instance)
         {

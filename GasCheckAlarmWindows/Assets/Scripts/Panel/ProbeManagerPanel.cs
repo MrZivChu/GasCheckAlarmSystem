@@ -66,14 +66,11 @@ public class ProbeManagerPanel : UIEventHelper
                     sb.Append(idList[i].ID + ",");
                 }
                 sb = sb.Remove(sb.Length - 1, 1);
-                WWWForm form = new WWWForm();
-                form.AddField("requestType", "DeleteProbeByID");
-                form.AddField("idList", sb.ToString());
-                GameUtils.PostHttp("Probe.ashx", form, (content) =>
+                ProbeDAL.DeleteProbeByID(sb.ToString());
+                MessageBox.Instance.PopOK("删除成功", () =>
                 {
                     EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
-                    MessageBox.Instance.PopOK("删除成功", null, "确定");
-                }, null);
+                }, "确定");
             }, "取消", "确定");
         }
     }
@@ -127,13 +124,8 @@ public class ProbeManagerPanel : UIEventHelper
     List<ProbeItem> probeItemList = new List<ProbeItem>();
     private void InitData()
     {
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllProbeByCondition");
-        GameUtils.PostHttp("Probe.ashx", form, (result) =>
-        {
-            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(result);
-            InitGrid(list);
-        }, null);
+        List<ProbeModel> list = ProbeDAL.SelectAllProbeByCondition();
+        InitGrid(list);
     }
 
     void InitGrid(List<ProbeModel> list)

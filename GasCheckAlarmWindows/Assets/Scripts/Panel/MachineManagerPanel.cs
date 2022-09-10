@@ -42,15 +42,8 @@ public class MachineManagerPanel : UIEventHelper
     {
         string machineName = input_machineName.text;
         int dd = dropdown_factory.value;
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllMachineByCondition");
-        form.AddField("machineName", machineName);
-        form.AddField("factoryID", dd == 0 ? -1 : factoryList[dd - 1].ID);
-        GameUtils.PostHttp("Machine.ashx", form, (result) =>
-        {
-            List<MachineModel> list = JsonMapper.ToObject<List<MachineModel>>(result);
-            InitGrid(list);
-        }, null);
+        List<MachineModel> list = MachineDAL.SelectAllMachineByCondition(machineName, dd == 0 ? -1 : factoryList[dd - 1].ID);
+        InitGrid(list);
     }
 
     void OnAddMachine(Button btn)
@@ -88,15 +81,11 @@ public class MachineManagerPanel : UIEventHelper
                     sb.Append(idList[i] + ",");
                 }
                 sb = sb.Remove(sb.Length - 1, 1);
-                WWWForm form = new WWWForm();
-                form.AddField("requestType", "DeleteMachineByID");
-                form.AddField("idList", sb.ToString());
-                GameUtils.PostHttp("Machine.ashx", form, (content) =>
+                MachineDAL.DeleteMachineByID(sb.ToString());
+                MessageBox.Instance.PopOK("删除成功", () =>
                 {
                     EventManager.Instance.DisPatch(NotifyType.UpdateMachineList);
-                    MessageBox.Instance.PopOK("删除成功", null, "确定");
-                }, null);
-
+                }, "确定");
             }, "取消", "确定");
         }
     }
@@ -151,35 +140,25 @@ public class MachineManagerPanel : UIEventHelper
     private void InitData()
     {
         InitDropdown();
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllMachineByCondition");
-        GameUtils.PostHttp("Machine.ashx", form, (result) =>
-        {
-            List<MachineModel> list = JsonMapper.ToObject<List<MachineModel>>(result);
-            InitGrid(list);
-        }, null);
+        List<MachineModel> list = MachineDAL.SelectAllMachineByCondition();
+        InitGrid(list);
     }
 
     List<FactoryModel> factoryList;
     void InitDropdown()
     {
         dropdown_factory.ClearOptions();
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllFactoryByCondition");
-        GameUtils.PostHttp("Factory.ashx", form, (result) =>
+        factoryList = FactoryDAL.SelectAllFactoryByCondition();
+        if (factoryList != null && factoryList.Count > 0)
         {
-            factoryList = JsonMapper.ToObject<List<FactoryModel>>(result);
-            if (factoryList != null && factoryList.Count > 0)
+            List<string> optionList = new List<string>() { "请选择" };
+            for (int i = 0; i < factoryList.Count; i++)
             {
-                List<string> optionList = new List<string>() { "请选择" };
-                for (int i = 0; i < factoryList.Count; i++)
-                {
-                    optionList.Add(factoryList[i].FactoryName);
-                }
-                dropdown_factory.AddOptions(optionList);
-                dropdown_factory.value = 0;
+                optionList.Add(factoryList[i].FactoryName);
             }
-        }, null);
+            dropdown_factory.AddOptions(optionList);
+            dropdown_factory.value = 0;
+        }
     }
 
     void InitGrid(List<MachineModel> list)
