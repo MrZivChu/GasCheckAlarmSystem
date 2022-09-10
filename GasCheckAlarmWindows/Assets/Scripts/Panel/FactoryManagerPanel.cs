@@ -30,6 +30,11 @@ public class FactoryManagerPanel : UIEventHelper
         EventManager.Instance.AddEventListener(NotifyType.UpdateFactoryList, UpdateFactoryListEvent);
     }
 
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateFactoryList, UpdateFactoryListEvent);
+    }
+
     void UpdateFactoryListEvent(object data)
     {
         InitData();

@@ -33,8 +33,12 @@ public class UserManagerPanel : UIEventHelper
         RegisterBtnClick(btn_select, OnSelectUser);
 
         RegisterTogClick(wholeToggle, OnWholeToggle);
-
         EventManager.Instance.AddEventListener(NotifyType.UpdateUserList, UpdateUserListEvent);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateUserList, UpdateUserListEvent);
     }
 
     void UpdateUserListEvent(object data)

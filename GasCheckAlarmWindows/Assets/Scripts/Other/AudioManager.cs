@@ -34,13 +34,13 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    bool isShoutWarning = true;
+    static bool isShoutWarning_ = true;
     public AudioSource warningShoutAudioSource;
     public void PlayWarningShout()
     {
         if (warningShoutAudioSource)
         {
-            if (isShoutWarning)
+            if (isShoutWarning_)
                 warningShoutAudioSource.Play();
             else
                 PauseWarningShout();
@@ -49,7 +49,7 @@ public class AudioManager : MonoBehaviour
 
     public void SetIsShoutWarning(bool isShoutWarning)
     {
-        this.isShoutWarning = isShoutWarning;
+        isShoutWarning_ = isShoutWarning;
     }
 
     public void PauseWarningShout()

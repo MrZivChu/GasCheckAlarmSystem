@@ -21,7 +21,7 @@ public class FormatData
     public static Dictionary<int, Color> warningColorDic = new Dictionary<int, Color>() {
         {2, new Color(1f, 0f, 0f)},
         {1, new Color(1f, 1f, 0f)},
-        {0, new Color(0.2f, 0.6f, 0.2f,0.5f)},
+        {0, new Color(0.2f, 0.6f, 0.2f, 0.5f)},
         {-1, new Color(0.75f, 0.75f, 0.75f)}
     };
 
@@ -35,4 +35,38 @@ public class FormatData
         Authority = 1,
         UserName = "--"
     };
+
+    public static string GetGasValue(int machineType, float gasValue)
+    {
+        if (machineType == 4)
+        {
+            if (FormatData.haiwanDic.ContainsKey((int)gasValue))
+            {
+                return FormatData.haiwanDic[(int)gasValue];
+            }
+            else
+            {
+                return "未找到此值对应的状态：" + gasValue;
+            }
+        }
+        else if (machineType == 1)
+        {
+            if (gasValue.ToString() == "-1")
+            {
+                return "预热";
+            }
+            else if (gasValue.ToString() == "-2")
+            {
+                return "不在线";
+            }
+            else
+            {
+                return gasValue.ToString();
+            }
+        }
+        else
+        {
+            return gasValue.ToString();
+        }
+    }
 }

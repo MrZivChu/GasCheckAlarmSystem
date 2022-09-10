@@ -26,6 +26,11 @@ public class ProbeManagerPanel : UIEventHelper
         EventManager.Instance.AddEventListener(NotifyType.UpdateProbeList, UpdateProbeListEvent);
     }
 
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateProbeList, UpdateProbeListEvent);
+    }
+
     void UpdateProbeListEvent(object data)
     {
         InitData();

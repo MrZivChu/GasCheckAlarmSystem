@@ -19,6 +19,11 @@ public class CubeInfoPanel : UIEventHelper
         nameInput.text = GameUtils.GetString("nameInput", "");
     }
 
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeData);
+    }
+
     void OnNameInputEnd(InputField input, string content)
     {
         GameUtils.SetString("nameInput", content);
@@ -26,7 +31,7 @@ public class CubeInfoPanel : UIEventHelper
 
     void UpdateRealtimeData(object data)
     {
-        if (!enabled)
+        if (!gameObject || !enabled)
         {
             return;
         }

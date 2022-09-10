@@ -32,9 +32,14 @@ public class PlanarGraphPanel : UIEventHelper
         btn_upload.gameObject.SetActive(FormatData.currentUser.Authority == 1);
     }
 
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeData);
+    }
+
     void UpdateRealtimeData(object data)
     {
-        if (!enabled)
+        if (!gameObject || !enabled)
         {
             return;
         }

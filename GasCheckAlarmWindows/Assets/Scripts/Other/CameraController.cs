@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    public static CameraController instance;
-
     private Vector3 dirVector3;
     private Vector3 rotaVector3;
 
@@ -13,27 +11,16 @@ public class CameraController : MonoBehaviour
     public float rotateXSpeed = -10f;
     public float rotateYSpeed = 10f;
 
-    Camera mainCamera;
-    private void Awake()
-    {
-        instance = this;
-    }
-
+    Camera mainCamera = null;
     private void Start()
     {
-        mainCamera = Camera.main;
+        mainCamera = GetComponent<Camera>();
         rotaVector3 = mainCamera.transform.localEulerAngles;
-    }
-
-    bool isEnabled_ = true;
-    public void SetEnabled(bool isEnabled)
-    {
-        isEnabled_ = isEnabled;
     }
 
     void FixedUpdate()
     {
-        if (isEnabled_ && mainCamera)
+        if (mainCamera)
         {
             //旋转
             if (Input.GetMouseButtonDown(1))
@@ -44,8 +31,7 @@ public class CameraController : MonoBehaviour
             {
                 rotaVector3.y += Input.GetAxis("Mouse X") * rotateYSpeed;
                 rotaVector3.x += Input.GetAxis("Mouse Y") * rotateXSpeed;
-                if (mainCamera)
-                    mainCamera.transform.rotation = Quaternion.Euler(rotaVector3);
+                mainCamera.transform.rotation = Quaternion.Euler(rotaVector3);
             }
             //移动
             dirVector3 = Vector3.zero;
@@ -79,8 +65,7 @@ public class CameraController : MonoBehaviour
                 if (Input.GetKey(KeyCode.LeftShift)) dirVector3.y = 3;
                 else dirVector3.y = 1;
             }
-            if (mainCamera)
-                mainCamera.transform.Translate(dirVector3 * translateSpeed, Space.Self);
+            mainCamera.transform.Translate(dirVector3 * translateSpeed, Space.Self);
         }
     }
 }

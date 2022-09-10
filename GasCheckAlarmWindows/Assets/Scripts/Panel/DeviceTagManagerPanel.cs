@@ -29,6 +29,12 @@ public class DeviceTagManagerPanel : UIEventHelper
         EventManager.Instance.AddEventListener(NotifyType.DeleteDeviceTag, DeleteDeviceTagCallBack);
     }
 
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.InsertDeviceTag, InsertDeviceTagCallBack);
+        EventManager.Instance.DeleteEventListener(NotifyType.DeleteDeviceTag, DeleteDeviceTagCallBack);
+    }
+
     private void OnEnable()
     {
         InitPanel();

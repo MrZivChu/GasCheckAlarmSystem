@@ -17,6 +17,7 @@ public struct SGameConfig
     public string sqlDatabase;
     public string sqlUserId;
     public string sqlUserPwd;
+    public bool isOpenWaterSeal;
 }
 
 public class JsonHandleHelper : UIEventHelper
@@ -46,6 +47,7 @@ public class JsonHandleHelper : UIEventHelper
             gameConfig.sqlUserId = "sa";
             gameConfig.sqlUserPwd = "1";
             gameConfig.productName = "钢铁有限责任公司\n气体监控系统";
+            gameConfig.isOpenWaterSeal = false;
             string json = LitJson.JsonMapper.ToJson(gameConfig);
             File.WriteAllText(configPath, json);
         }

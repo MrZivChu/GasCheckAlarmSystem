@@ -15,9 +15,14 @@ public class RealtimeDataManagerPanel : UIEventHelper
         EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
     }
 
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
+    }
+
     void UpdateRealtimeDataListEvent(object tdata)
     {
-        if (!enabled)
+        if (!gameObject || !enabled)
             return;
         RealtimeEventData realtimeEventData = (RealtimeEventData)tdata;
         List<RealtimeDataModel> secondList = realtimeEventData.secondList;

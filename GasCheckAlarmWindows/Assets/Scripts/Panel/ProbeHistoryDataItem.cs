@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,32 +32,7 @@ public class ProbeHistoryDataItem : UIEventHelper
         txt_machineName.text = model.MachineName;
         txt_factoryName.text = model.FactoryName;
         txt_gasKind.text = model.GasKind;
-        if (model.MachineType == 4)
-        {
-            if (FormatData.haiwanDic.ContainsKey((int)model.GasValue))
-            {
-                txt_gasValue.text = FormatData.haiwanDic[(int)model.GasValue];
-            }
-        }
-        else if (model.MachineType == 1)
-        {
-            if (model.GasValue.ToString() == "-1")
-            {
-                txt_gasValue.text = "预热";
-            }
-            else if (model.GasValue.ToString() == "-2")
-            {
-                txt_gasValue.text = "不在线";
-            }
-            else
-            {
-                txt_gasValue.text = model.GasValue.ToString();
-            }
-        }
-        else
-        {
-            txt_gasValue.text = model.GasValue.ToString();
-        }
+        txt_gasValue.text = FormatData.GetGasValue(model.MachineType, Convert.ToSingle(model.GasValue));
         txt_firstAlarmValue.text = model.FirstAlarmValue.ToString();
         txt_secondAlarmValue.text = model.SecondAlarmValue.ToString();
         txt_checkTime.text = model.CheckTime.ToString("MM-dd HH:mm:ss");

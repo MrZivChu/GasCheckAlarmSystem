@@ -32,6 +32,9 @@ public class ProbeModel
     public string Pos2D;
     public string TagName;
     public string SerialNumber;
+
+    //扩展字段
+    public bool isCheck = false;
 }
 
 public class RealtimeDataModel
@@ -90,6 +93,9 @@ public class WaterSealModel
     public string Category;
     public int DesignPressure;
     public string SerialNumber;
+
+    //扩展字段
+    public bool isCheck = false;
 }
 
 public class PointCheckModel

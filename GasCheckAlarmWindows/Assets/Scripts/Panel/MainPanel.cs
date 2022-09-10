@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainPanel : UIEventHelper
@@ -20,6 +21,7 @@ public class MainPanel : UIEventHelper
     public List<GameObject> panelList;
 
     public Button btn_exitGame;
+    public Button btn_3d;
     public Toggle tog_openShoutWarning;
     public Toggle tog_closeShoutWarning;
     public Toggle tog_openShakeWarning;
@@ -40,11 +42,17 @@ public class MainPanel : UIEventHelper
         txt_userName.text = FormatData.currentUser.UserName + FormatData.authorityNameDic[FormatData.currentUser.Authority];
 
         RegisterBtnClick(btn_exitGame, OnExitGame);
+        RegisterBtnClick(btn_3d, On3D);
         RegisterTogClick(tog_openShoutWarning, OnTogOpenShoutWarning);
         RegisterTogClick(tog_closeShoutWarning, OnTogCloseShoutWarning);
         RegisterTogClick(tog_openShakeWarning, OnTogOpenShakeWarning);
         RegisterTogClick(tog_closeShakeWarning, OnTogCloseShaketWarning);
         EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
     }
 
     void OnTogClick(Toggle tog, bool isOn, int index)
@@ -87,6 +95,11 @@ public class MainPanel : UIEventHelper
         Application.Quit();
     }
 
+    void On3D(Button btn)
+    {
+        SceneManager.LoadScene("Env", LoadSceneMode.Single);
+    }
+
     void UpdateRealtimeDataListEvent(object tdata)
     {
         RealtimeEventData realtimeEventData = (RealtimeEventData)tdata;
@@ -97,7 +110,7 @@ public class MainPanel : UIEventHelper
         txt_allCount.text = (realtimeEventData.normalList.Count + realtimeEventData.firstList.Count + realtimeEventData.secondList.Count + realtimeEventData.noResponseList.Count).ToString();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         UpdateTime(Time.deltaTime);
     }

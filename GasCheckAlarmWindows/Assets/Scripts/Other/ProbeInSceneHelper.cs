@@ -3,19 +3,40 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 
 public class ProbeInSceneHelper : UIEventHelper
 {
     public AddProbePanel addProbePanel;
-    UnityEngine.Object probeResObj;
-    UnityEngine.Object probeInfo3DPanelResObj;
+    public UpdatePosDirPanel updatePosDirPanel;
+    public ProbeInfo3DPanel probeInfo3DPanel;
+    public Transform probeListRoot;
+    public Transform errorProbeListRoot;
+    public UnityEngine.Object probeResObj;
+    public UnityEngine.Object mainRealtimeDataItemResObj;
 
     public static ProbeInSceneHelper instance;
     private void Awake()
     {
         instance = this;
-        probeResObj = Resources.Load("Probe");
-        probeInfo3DPanelResObj = Resources.Load("ProbeInfo3DPanel");
+    }
+
+    private void Start()
+    {
+        LoadAllProbe();
+        EventManager.Instance.AddEventListener(NotifyType.UpdateProbeList, UpdateProbeListEvent);
+        EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateProbeList, UpdateProbeListEvent);
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
+    }
+
+    void UpdateProbeListEvent(object data)
+    {
+        LoadAllProbe();
     }
 
     float doublePreTime = 0;
@@ -23,20 +44,49 @@ public class ProbeInSceneHelper : UIEventHelper
     {
         if (Input.GetMouseButtonDown(0))
         {
-            if (!EventSystem.current.IsPointerOverGameObject())
+            bool isHasHandle = RaycastHitProbe();
+            if (!isHasHandle)
             {
-                float doubleNowTime = Time.realtimeSinceStartup;
-                if (doubleNowTime - doublePreTime < 0.3f)
+                if (!EventSystem.current.IsPointerOverGameObject())
                 {
-                    ShowAddProbePanel();
+                    float doubleNowTime = Time.realtimeSinceStartup;
+                    if (doubleNowTime - doublePreTime < 0.3f)
+                    {
+                        ShowOperateProbePanel();
+                    }
+                    doublePreTime = doubleNowTime;
                 }
-                doublePreTime = doubleNowTime;
             }
+        }
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene("Main", LoadSceneMode.Single);
         }
     }
 
-    public UpdatePosDirPanel updatePosDirPanel;
-    void ShowAddProbePanel()
+    bool RaycastHitProbe()
+    {
+        if (!probeInfo3DPanel)
+        {
+            return false;
+        }
+        RaycastHit hit;
+        bool isHit = RayHit(out hit);
+        if (isHit)
+        {
+            ProbeInfo probeInfo = hit.collider.GetComponent<ProbeInfo>();
+            if (probeInfo != null)
+            {
+                probeInfo3DPanel.InitInfo(probeInfo.currentModel);
+                probeInfo3DPanel.RefreshRealtimeData(probeIdValueDic[probeInfo.currentModel.ID]);
+                probeInfo3DPanel.gameObject.SetActive(true);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    void ShowOperateProbePanel()
     {
         if (addProbePanel != null)
         {
@@ -46,9 +96,6 @@ public class ProbeInSceneHelper : UIEventHelper
             {
                 if (JsonHandleHelper.gameConfig.isEnterPosDir)
                 {
-                    GameObject probeObj = Instantiate(probeResObj) as GameObject;
-                    probeObj.transform.position = new Vector3(hit.point.x, hit.point.y, hit.point.z);
-                    probeObj.transform.LookAt(hit.point + (-hit.normal * 3));
                     string posDir = hit.point.x.ToString("0.00") + "," + hit.point.y.ToString("0.00") + "," + hit.point.z.ToString("0.00") + ";" + hit.normal.x.ToString("0.00") + "," + hit.normal.y.ToString("0.00") + "," + hit.normal.z.ToString("0.00");
                     updatePosDirPanel.posDir = posDir;
                     updatePosDirPanel.gameObject.SetActive(true);
@@ -74,52 +121,20 @@ public class ProbeInSceneHelper : UIEventHelper
         return false;
     }
 
-    public Dictionary<int, Dictionary<ProbeInfo, ProbeInfo3DPanel>> probe3DDic = new Dictionary<int, Dictionary<ProbeInfo, ProbeInfo3DPanel>>();
+    public Dictionary<int, ProbeInfo> probeIdInfoDic = new Dictionary<int, ProbeInfo>();
+    public Dictionary<int, float> probeIdValueDic = new Dictionary<int, float>();
     public void LoadAllProbe()
     {
+        probeIdInfoDic.Clear();
+        probeIdValueDic.Clear();
+        foreach (Transform item in probeListRoot)
+        {
+            Destroy(item.gameObject);
+        }
         List<ProbeModel> list = ProbeDAL.SelectAllProbeByCondition();
         for (int i = 0; i < list.Count; i++)
         {
-            ProbeModel model = list[i];
-            SpawnProbe(model);
-        }
-    }
-
-    public void DeleteProbe(ProbeModel model)
-    {
-        if (probe3DDic.ContainsKey(model.ID))
-        {
-            Dictionary<ProbeInfo, ProbeInfo3DPanel> value = probe3DDic[model.ID];
-            foreach (var item in value)
-            {
-                Destroy(item.Key.gameObject);
-                Destroy(item.Value.gameObject);
-            }
-            probe3DDic.Remove(model.ID);
-        }
-    }
-
-    public void RefreshProbeStatus(RealtimeDataModel model)
-    {
-        if (probe3DDic.ContainsKey(model.ProbeID))
-        {
-            Dictionary<ProbeInfo, ProbeInfo3DPanel> value = probe3DDic[model.ProbeID];
-            foreach (var item in value)
-            {
-                item.Value.RefreshRealtimeData((float)model.GasValue);
-                if (model.GasValue > model.SecondAlarmValue)
-                {
-                    GameUtils.SetObjectHighLight(item.Key.gameObject, true, Color.red, Color.white);
-                }
-                else if (model.GasValue > model.FirstAlarmValue)
-                {
-                    GameUtils.SetObjectHighLight(item.Key.gameObject, true, Color.yellow, Color.white);
-                }
-                else
-                {
-                    GameUtils.SetObjectHighLight(item.Key.gameObject, true, Color.white, Color.white);
-                }
-            }
+            SpawnProbe(list[i]);
         }
     }
 
@@ -127,7 +142,6 @@ public class ProbeInSceneHelper : UIEventHelper
     {
         Vector3 position = Vector3.zero;
         Vector3 direction = Vector3.zero;
-
         string posDir = model.PosDir;
         if (!string.IsNullOrEmpty(posDir))
         {
@@ -143,21 +157,80 @@ public class ProbeInSceneHelper : UIEventHelper
                 }
             }
         }
-
         GameObject probeObj = Instantiate(probeResObj) as GameObject;
         probeObj.transform.position = position;
+        probeObj.transform.parent = probeListRoot;
         probeObj.transform.LookAt(position + (-direction * 3));
         ProbeInfo info = probeObj.GetComponent<ProbeInfo>();
         info.InitInfo(model);
+        probeIdInfoDic.Add(model.ID, info);
+        probeIdValueDic.Add(model.ID, 0);
+    }
 
-        GameObject threeDCanvasRoot = GameObject.Find("3DCanvas");
-        GameObject probe3DPanelObj = Instantiate(probeInfo3DPanelResObj) as GameObject;
-        probe3DPanelObj.transform.SetParent(threeDCanvasRoot.transform);
-        probe3DPanelObj.transform.localScale = new Vector3(0.004f, 0.004f, 1f);
-        probe3DPanelObj.transform.position = new Vector3(position.x + 2.0f, position.y, position.z - 1.0f);
-        ProbeInfo3DPanel panel = probe3DPanelObj.GetComponent<ProbeInfo3DPanel>();
-        panel.InitInfo(model);
+    public void UpdateRealtimeDataListEvent(object data)
+    {
+        if (!gameObject || !enabled)
+        {
+            return;
+        }
+        RealtimeEventData realtimeEventData = (RealtimeEventData)data;
+        Update3DProbeList(realtimeEventData);
+        UpdateErrorDataList(realtimeEventData);
+    }
 
-        probe3DDic.Add(model.ID, new Dictionary<ProbeInfo, ProbeInfo3DPanel>() { { info, panel } });
+    void Update3DProbeList(RealtimeEventData realtimeEventData)
+    {
+        List<RealtimeDataModel> list = new List<RealtimeDataModel>();
+        list.AddRange(realtimeEventData.secondList);
+        list.AddRange(realtimeEventData.firstList);
+        list.AddRange(realtimeEventData.noResponseList);
+        list.AddRange(realtimeEventData.normalList);
+        for (int i = 0; i < list.Count; i++)
+        {
+            RealtimeDataModel realtimeDataModel = list[i];
+            if (probeIdInfoDic.ContainsKey(realtimeDataModel.ProbeID))
+            {
+                ProbeInfo probeInfo = probeIdInfoDic[realtimeDataModel.ProbeID];
+                if (realtimeDataModel.GasValue > realtimeDataModel.SecondAlarmValue)
+                {
+                    GameUtils.SetObjectHighLight(probeInfo.gameObject, true, Color.red, Color.white);
+                }
+                else if (realtimeDataModel.GasValue > realtimeDataModel.FirstAlarmValue)
+                {
+                    GameUtils.SetObjectHighLight(probeInfo.gameObject, true, Color.yellow, Color.white);
+                }
+                else
+                {
+                    GameUtils.SetObjectHighLight(probeInfo.gameObject, true, Color.white, Color.white);
+                }
+            }
+            if (probeIdValueDic.ContainsKey(realtimeDataModel.ProbeID))
+            {
+                probeIdValueDic[realtimeDataModel.ProbeID] = Convert.ToSingle(realtimeDataModel.GasValue);
+            }
+        }
+    }
+
+    void UpdateErrorDataList(RealtimeEventData realtimeEventData)
+    {
+        List<RealtimeDataModel> list = new List<RealtimeDataModel>();
+        list.AddRange(realtimeEventData.secondList);
+        list.AddRange(realtimeEventData.firstList);
+        list.AddRange(realtimeEventData.noResponseList);
+        GameUtils.SpawnCellForTable<RealtimeDataModel>(errorProbeListRoot, list, (go, data, isSpawn, index) =>
+        {
+            GameObject currentObj = go;
+            if (isSpawn)
+            {
+                currentObj = Instantiate(mainRealtimeDataItemResObj) as GameObject;
+                currentObj.transform.SetParent(errorProbeListRoot);
+                currentObj.transform.localScale = Vector3.one;
+                currentObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
+            }
+            MainRealtimeDataItem item = currentObj.GetComponent<MainRealtimeDataItem>();
+            item.InitData(data, probeIdInfoDic[data.ID].gameObject);
+            item.SetBackgroundColor(FormatData.warningColorDic[data.warningLevel]);
+            currentObj.SetActive(true);
+        });
     }
 }

@@ -21,6 +21,11 @@ public class GlobalImagePanel : UIEventHelper
         RegisterBtnClick(preStepBtn, OnPreStep);
     }
 
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeData);
+    }
+
     void OnPreStep(Button btn)
     {
         if (selectDeviceTagID.Count > 1)
@@ -31,7 +36,7 @@ public class GlobalImagePanel : UIEventHelper
 
     void UpdateRealtimeData(object data)
     {
-        if (!enabled)
+        if (!gameObject || !enabled)
         {
             return;
         }

@@ -26,6 +26,11 @@ public class WaterSealManagerPanel : UIEventHelper
         EventManager.Instance.AddEventListener(NotifyType.UpdateWaterSealList, UpdateWaterSealListEvent);
     }
 
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateWaterSealList, UpdateWaterSealListEvent);
+    }
+
     void UpdateWaterSealListEvent(object data)
     {
         InitData();

@@ -36,13 +36,11 @@ public class LoginPanel : UIEventHelper
     {
         string userName = input_name.text;
         string userPwd = input_pwd.text;
-
         if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(userPwd))
         {
             MessageBox.Instance.PopOK("用户名或密码不能为空", null, "确定");
             return;
         }
-
         List<UserModel> list = UserDAL.SelectUserByNamePwd(userName, userPwd);
         if (list.Count > 0)
         {

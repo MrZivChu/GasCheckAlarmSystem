@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class ProbeInfo3DPanel : UIEventHelper
 {
-    ProbeModel currentModel;
+    public ProbeModel currentModel;
+
     public Text txt_name;
     public Text txt_gasKind;
     public Text txt_gasValue;
@@ -13,27 +14,28 @@ public class ProbeInfo3DPanel : UIEventHelper
     public Text txt_secondValue;
 
     public Button deleteBtn;
+    public Button okBtn;
     private void Start()
     {
+        deleteBtn.gameObject.SetActive(FormatData.currentUser.Authority == 1);
         RegisterBtnClick(deleteBtn, OnDelete);
+        RegisterBtnClick(okBtn, OnOk);
+    }
+
+    void OnOk(Button btn)
+    {
+        gameObject.SetActive(false);
     }
 
     void OnDelete(Button btn)
     {
-        if (FormatData.currentUser.Authority == 1)
+        MessageBox.Instance.PopYesNo("确认删除？", null, () =>
         {
-            MessageBox.Instance.PopYesNo("确认删除？", null, () =>
-            {
-                bool result = ProbeDAL.DeleteProbeByID(currentModel.ID.ToString());
-                EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
-                ProbeInSceneHelper.instance.DeleteProbe(currentModel);
-                MessageBox.Instance.PopOK("删除成功", null, "确定");
-            }, "取消", "确定");
-        }
-        else
-        {
-            MessageBox.Instance.PopOK("无权限删除", null, "确认");
-        }
+            gameObject.SetActive(false);
+            ProbeDAL.DeleteProbeByID(currentModel.ID.ToString());
+            EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
+            MessageBox.Instance.PopOK("删除成功", null, "确定");
+        }, "取消", "确定");
     }
 
     public void InitInfo(ProbeModel model)
@@ -49,24 +51,5 @@ public class ProbeInfo3DPanel : UIEventHelper
     public void RefreshRealtimeData(float gasValue)
     {
         txt_gasValue.text = gasValue.ToString();
-    }
-
-    void Update()
-    {
-        if (Camera.main)
-        {
-            transform.LookAt(Camera.main.transform);
-            transform.Rotate(Vector3.up, 180);
-
-            float distance = Vector3.Distance(Camera.main.transform.position, transform.position);
-            if (distance > 20)
-            {
-                transform.GetChild(0).gameObject.SetActive(false);
-            }
-            else
-            {
-                transform.GetChild(0).gameObject.SetActive(true);
-            }
-        }
     }
 }

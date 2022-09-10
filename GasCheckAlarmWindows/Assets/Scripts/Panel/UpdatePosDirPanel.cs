@@ -28,6 +28,7 @@ public class UpdatePosDirPanel : UIEventHelper
         if (int.TryParse(input_probeID.text, out result))
         {
             ProbeDAL.EditProbePosDirByID(result, posDir);
+            EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
             gameObject.SetActive(false);
         }
     }

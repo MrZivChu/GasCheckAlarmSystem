@@ -6,7 +6,6 @@ public class CameraShake : MonoBehaviour
     public float shakeLevel = 3f;// 震动幅度
     public float setShakeTime = 0.5f;   // 震动时间
     public float shakeFps = 45f;    // 震动的FPS
-
     private bool isShakeCamera = false;// 震动标志
 
     private float shakeTime = 0.0f;
@@ -14,8 +13,7 @@ public class CameraShake : MonoBehaviour
     public float shakeDelta = 0.005f;
 
     public static CameraShake instance;
-
-    bool isUseCameraShake = true;
+    static bool isUseCameraShake = true;
     private void Awake()
     {
         instance = this;
@@ -57,7 +55,6 @@ public class CameraShake : MonoBehaviour
                 else
                 {
                     frameTime += Time.deltaTime;
-
                     if (frameTime > 1.0 / shakeFps)
                     {
                         frameTime = 0;

@@ -33,6 +33,11 @@ public class MachineManagerPanel : UIEventHelper
         EventManager.Instance.AddEventListener(NotifyType.UpdateMachineList, UpdateMachineListEvent);
     }
 
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateMachineList, UpdateMachineListEvent);
+    }
+
     void UpdateMachineListEvent(object data)
     {
         InitData();
