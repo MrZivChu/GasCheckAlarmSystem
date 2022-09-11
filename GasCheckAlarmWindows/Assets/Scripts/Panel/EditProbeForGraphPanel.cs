@@ -18,7 +18,7 @@ public class EditProbeForGraphPanel : UIEventHelper
     {
         RegisterBtnClick(deleteBtn, OnDelete);
         RegisterBtnClick(btn_cancel, OnCancel);
-        deleteBtn.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
+        deleteBtn.gameObject.SetActive(FormatData.currentUser.Authority == 1);
     }
 
     void OnCancel(Button btn)

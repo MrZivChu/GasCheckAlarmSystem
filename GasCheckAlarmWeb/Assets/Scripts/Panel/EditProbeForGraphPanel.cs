@@ -18,7 +18,7 @@ public class EditProbeForGraphPanel : UIEventHelper
     {
         RegisterBtnClick(deleteBtn, OnDelete);
         RegisterBtnClick(btn_cancel, OnCancel);
-        deleteBtn.gameObject.SetActive(false);
+        deleteBtn.gameObject.SetActive(FormatData.currentUser.Authority == 1);
     }
 
     void OnCancel(Button btn)
@@ -33,7 +33,7 @@ public class EditProbeForGraphPanel : UIEventHelper
             WWWForm form = new WWWForm();
             form.AddField("requestType", "DeleteRealtimePos2DByID");
             form.AddField("id", currentModel.ProbeID);
-            GameUtils.PostHttp("RealtimeData.ashx", form, null, null);
+            GameUtils.PostHttpWebRequest("RealtimeData.ashx", form, null, null);
 
             MessageBox.Instance.PopOK("删除成功", () =>
             {

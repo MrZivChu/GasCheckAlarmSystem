@@ -30,7 +30,7 @@ public class MainPanel : UIEventHelper
         {
             RegisterTogClick<int>(togList[i], i, OnTogClick);
         }
-        OnTogClick(togList[0], true, 0);
+        togList[0].isOn = true;
         togList[1].gameObject.SetActive(FormatData.currentUser.Authority == 1);
 
         RegisterBtnClick(btn_exitGame, OnExitGame);
@@ -41,6 +41,11 @@ public class MainPanel : UIEventHelper
 
         EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
         txt_userName.text = FormatData.currentUser.UserName + FormatData.authorityNameDic[FormatData.currentUser.Authority];
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
     }
 
     void OnTogClick(Toggle tog, bool isOn, int index)

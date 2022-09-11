@@ -1,6 +1,7 @@
 ﻿using LitJson;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -41,7 +42,7 @@ public class EditMachinePanel : UIEventHelper
             form.AddField("machineName", machineName);
             form.AddField("factoryID", model.ID);
             form.AddField("factoryName", model.FactoryName);
-            GameUtils.PostHttp("Machine.ashx", form, null, null);
+            GameUtils.PostHttpWebRequest("Machine.ashx", form, null, null);
 
             MessageBox.Instance.PopOK("修改成功", () =>
             {
@@ -62,9 +63,10 @@ public class EditMachinePanel : UIEventHelper
 
         WWWForm form = new WWWForm();
         form.AddField("requestType", "SelectAllFactoryByCondition");
-        GameUtils.PostHttp("Factory.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("Factory.ashx", form, (result) =>
         {
-            factoryList = JsonMapper.ToObject<List<FactoryModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            factoryList = JsonMapper.ToObject<List<FactoryModel>>(content);
             if (factoryList != null && factoryList.Count > 0)
             {
                 List<string> optionList = new List<string>();

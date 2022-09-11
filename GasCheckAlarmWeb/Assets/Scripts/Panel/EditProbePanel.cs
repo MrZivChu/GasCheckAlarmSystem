@@ -1,6 +1,7 @@
 ﻿using LitJson;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -54,7 +55,7 @@ public class EditProbePanel : UIEventHelper
             form.AddField("firstAlarmValue", firstAlarmValue);
             form.AddField("secondAlarmValue", secondAlarmValue);
             form.AddField("machineName", model.MachineName);
-            GameUtils.PostHttp("Probe.ashx", form, null, null);
+            GameUtils.PostHttpWebRequest("Probe.ashx", form, null, null);
 
             MessageBox.Instance.PopOK("修改成功", () =>
             {
@@ -79,9 +80,10 @@ public class EditProbePanel : UIEventHelper
 
         WWWForm form = new WWWForm();
         form.AddField("requestType", "SelectAllMachineByCondition");
-        GameUtils.PostHttp("Machine.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("Machine.ashx", form, (result) =>
         {
-            machineList = JsonMapper.ToObject<List<MachineModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            machineList = JsonMapper.ToObject<List<MachineModel>>(content);
             if (machineList != null && machineList.Count > 0)
             {
                 List<string> optionList = new List<string>();

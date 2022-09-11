@@ -29,7 +29,7 @@ public class EditFactoryPanel : UIEventHelper
         form.AddField("requestType", "EditFactoryByID");
         form.AddField("id", currentModel.ID);
         form.AddField("factoryName", factoryName);
-        GameUtils.PostHttp("Factory.ashx", form, null, null);
+        GameUtils.PostHttpWebRequest("Factory.ashx", form, null, null);
 
         MessageBox.Instance.PopOK("修改成功", () =>
         {

@@ -55,13 +55,13 @@ public class GlobalCheckGas : MonoBehaviour
         int overTimeMax = list.Count * 2;
         foreach (var model in list)
         {
-            //TimeSpan ts = DateTime.Now - model.CheckTime;
-            //if (ts.TotalSeconds > overTimeMax)
-            //{
-            //    model.warningLevel = -1;
-            //    realtimeEventData.noResponseList.Add(model);
-            //}
-            //else
+            TimeSpan ts = DateTime.Now - model.CheckTime;
+            if (ts.TotalSeconds > overTimeMax && !Application.isEditor)
+            {
+                model.warningLevel = -1;
+                realtimeEventData.noResponseList.Add(model);
+            }
+            else
             {
                 if (model.GasKind == "氧气")
                 {

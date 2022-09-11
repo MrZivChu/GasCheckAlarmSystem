@@ -42,7 +42,7 @@ public class AddUserPanel : UIEventHelper
         form.AddField("userNumber", address);
         form.AddField("phone", number);
         form.AddField("authority", authority);
-        GameUtils.PostHttp("User.ashx", form, null, null);
+        GameUtils.PostHttpWebRequest("User.ashx", form, null, null);
         MessageBox.Instance.PopOK("新增成功", () =>
         {
             EventManager.Instance.DisPatch(NotifyType.UpdateUserList);

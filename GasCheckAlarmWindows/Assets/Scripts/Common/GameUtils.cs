@@ -24,35 +24,6 @@ public static class GameUtils
 
 
     const string serverUrl = "http://www.huaiantegang.com";
-    public static void PostHttp(string url, WWWForm form, System.Action<string> onSuccess, System.Action<string> onFailed)
-    {
-        url = serverUrl + "/Handler/" + url;
-        UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
-        es.StartCoroutine(HttpPost(url, form, onSuccess, onFailed));
-    }
-
-    private static IEnumerator HttpPost(string url, WWWForm form, System.Action<string> onSuccess, System.Action<string> onFailed)
-    {
-        using (WWW www = new WWW(url, form.data))
-        {
-            yield return www;
-            if (www.isDone && string.IsNullOrEmpty(www.error))
-            {
-                if (onSuccess != null)
-                    onSuccess(www.text);
-            }
-            else
-            {
-                if (onFailed != null)
-                {
-                    string error = www.url + " = " + www.error + " = " + www.text;
-                    Debug.Log(error);
-                    onFailed(error);
-                }
-            }
-        }
-    }
-
     // www.downloadHandler 是服务器往客户端发送的数据
     // www.uploadHandler   是客户端往服务器发送的数据
     public static void PostHttpWebRequest(string url, WWWForm form, System.Action<byte[]> onSuccess, System.Action<string> onFailed)

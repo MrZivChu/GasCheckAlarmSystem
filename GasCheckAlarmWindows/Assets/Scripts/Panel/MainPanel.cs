@@ -33,10 +33,11 @@ public class MainPanel : UIEventHelper
         {
             RegisterTogClick<int>(togList[i], i, OnTogClick);
         }
-        OnTogClick(togList[0], true, 0);
         togList[0].gameObject.SetActive(FormatData.currentUser.Authority == 1);
         togList[1].gameObject.SetActive(FormatData.currentUser.Authority == 1);
-        togList[2].gameObject.SetActive(FormatData.currentUser.Authority == 1);
+
+        int selectIndex = FormatData.currentUser.Authority == 1 ? 0 : 2;
+        togList[selectIndex].isOn = true;
 
         txt_productName.text = JsonHandleHelper.gameConfig.productName;
         txt_userName.text = FormatData.currentUser.UserName + FormatData.authorityNameDic[FormatData.currentUser.Authority];
@@ -57,15 +58,18 @@ public class MainPanel : UIEventHelper
 
     void OnTogClick(Toggle tog, bool isOn, int index)
     {
-        for (int i = 0; i < panelList.Count; i++)
+        if (isOn)
         {
-            if (i == index)
+            for (int i = 0; i < panelList.Count; i++)
             {
-                panelList[i].SetActive(true);
-            }
-            else
-            {
-                panelList[i].SetActive(false);
+                if (i == index)
+                {
+                    panelList[i].SetActive(true);
+                }
+                else
+                {
+                    panelList[i].SetActive(false);
+                }
             }
         }
     }

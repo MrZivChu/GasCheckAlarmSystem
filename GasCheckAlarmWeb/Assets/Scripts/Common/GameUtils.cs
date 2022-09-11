@@ -8,6 +8,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using HighlightingSystem;
+using UnityEngine.Networking;
 
 public static class GameUtils
 {
@@ -21,98 +22,64 @@ public static class GameUtils
     /// </summary>
     public static bool WifiIsAvailable { get { return Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork; } }
 
-    /// <summary>
-    /// Get方式网络请求
-    /// </summary>
-    /// <param name="url"></param>
-    /// <param name="onSuccess"></param>
-    /// <param name="onFailed"></param>
-    public static void GetHttp(string url, System.Action<string> onSuccess, System.Action<string> onFailed)
+
+    const string serverUrl = "http://www.huaiantegang.com";
+    // www.downloadHandler 是服务器往客户端发送的数据
+    // www.uploadHandler   是客户端往服务器发送的数据
+    public static void PostHttpWebRequest(string url, WWWForm form, System.Action<byte[]> onSuccess, System.Action<string> onFailed)
     {
+        url = serverUrl + "/Handler/" + url;
         UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
-        es.StartCoroutine(HttpGet(url, onSuccess, onFailed));
+        es.StartCoroutine(HttpPostWebRequest(url, form, onSuccess, onFailed));
     }
 
-    private static System.Collections.IEnumerator HttpGet(string url, System.Action<string> onSuccess, System.Action<string> onFailed)
+    private static IEnumerator HttpPostWebRequest(string url, WWWForm form, System.Action<byte[]> onSuccess, System.Action<string> onFailed)
     {
-        if (url.IndexOf('?') > 0)
+        using (UnityWebRequest www = UnityWebRequest.Post(url, form))
         {
-            if (!url.EndsWith("&")) url += "&";
-        }
-        else
-        {
-            url += "?";
-        }
-        url += "&appId=" + AppConfig.APP_ID;
-        url += "&channelId=" + AppConfig.CHANNEL_ID;
-        url += "&clientFoceVersion=" + AppConfig.APP_ForceVERSION;
-
-        WWW www = new WWW(url);
-        yield return www;
-
-        if (www.isDone && string.IsNullOrEmpty(www.error))
-        {
-            onSuccess(www.text);
-        }
-        else
-        {
-            onFailed(www.error);
-        }
-    }
-
-    const string serverUrl = "http://www.huaiantegang.com/Handler/";
-    /// <summary>
-    /// post方式网络请求
-    /// </summary>
-    /// <param name="url"></param>
-    /// <param name="fields"></param>
-    /// <param name="onSuccess"></param>
-    /// <param name="onFailed"></param>
-    public static void PostHttp(string url, WWWForm form, System.Action<string> onSuccess, System.Action<string> onFailed)
-    {
-        url = serverUrl + url;
-        UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
-        es.StartCoroutine(HttpPost(url, form, onSuccess, onFailed));
-    }
-
-    private static IEnumerator HttpPost(string url, WWWForm form, System.Action<string> onSuccess, System.Action<string> onFailed)
-    {
-        form.AddField("channelId", AppConfig.CHANNEL_ID.ToString());
-        Dictionary<string, string> JsonDic = new Dictionary<string, string>();
-        JsonDic.Add("Content-Type", "application/x-www-form-urlencoded");
-        WWW www = new WWW(url, form.data, JsonDic);
-        yield return www;
-
-        if (www.isDone && string.IsNullOrEmpty(www.error))
-        {
-            if (onSuccess != null && !string.IsNullOrEmpty(www.text))
-                onSuccess(www.text);
-        }
-        else
-        {
-            if (www.error.Contains("Timed out"))
+            yield return www.SendWebRequest();
+            if (www.isDone && string.IsNullOrEmpty(www.error))
             {
-                if (onFailed != null)
-                    onFailed(StaticText.STR_TIMEOUT);
-            }
-            else if (www.error.Contains("Host unreachable"))
-            {
-                if (onFailed != null)
-                    onFailed(StaticText.STR_UNREACHABLE);
-            }
-            else if (www.error.StartsWith("Could not resolve host"))
-            {
-                if (onFailed != null)
-                    onFailed(StaticText.STR_NOT_RESOLVE);
+                if (onSuccess != null)
+                    onSuccess(www.downloadHandler.data);
             }
             else
             {
                 if (onFailed != null)
-                    onFailed(StaticText.STR_SERVER_FAILED + www.error);
+                {
+                    string error = www.error + " " + www.isHttpError + " " + www.isNetworkError;
+                    onFailed(error);
+                }
             }
         }
-        www.Dispose();
-        www = null;
+    }
+
+    public static void GetHttpWebRequest(string url, System.Action<byte[]> onSuccess, System.Action<string> onFailed)
+    {
+        url = serverUrl + url;
+        UnityEngine.EventSystems.EventSystem es = UnityEngine.EventSystems.EventSystem.current;
+        es.StartCoroutine(HttpGetWebRequest(url, onSuccess, onFailed));
+    }
+
+    private static IEnumerator HttpGetWebRequest(string url, System.Action<byte[]> onSuccess, System.Action<string> onFailed)
+    {
+        using (UnityWebRequest www = UnityWebRequest.Get(url))
+        {
+            yield return www.SendWebRequest();
+            if (www.isDone && string.IsNullOrEmpty(www.error))
+            {
+                if (onSuccess != null)
+                    onSuccess(www.downloadHandler.data);
+            }
+            else
+            {
+                if (onFailed != null)
+                {
+                    string error = www.error + " " + www.isHttpError + " " + www.isNetworkError;
+                    onFailed(error);
+                }
+            }
+        }
     }
 
     #region PlayerPrefs
@@ -172,12 +139,6 @@ public static class GameUtils
     #endregion
 
 
-    /// <summary>
-    /// 设置对象高亮
-    /// </summary>
-    /// <param name="go"></param>
-    /// <param name="isLight"></param>
-    /// <param name="color"></param>
     public static void SetObjectHighLight(GameObject go, bool isLight, Color startColor = new Color(), Color endColor = new Color())
     {
         if (isLight)

@@ -50,9 +50,10 @@ public class FactoryManagerPanel : UIEventHelper
         WWWForm form = new WWWForm();
         form.AddField("requestType", "SelectAllFactoryByCondition");
         form.AddField("factoryName", factoryName);
-        GameUtils.PostHttp("Factory.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("Factory.ashx", form, (result) =>
         {
-            List<FactoryModel> list = JsonMapper.ToObject<List<FactoryModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            List<FactoryModel> list = JsonMapper.ToObject<List<FactoryModel>>(content);
             InitGrid(list);
         }, null);
     }
@@ -92,7 +93,7 @@ public class FactoryManagerPanel : UIEventHelper
                 WWWForm form = new WWWForm();
                 form.AddField("requestType", "DeleteFactoryByID");
                 form.AddField("idList", sb.ToString());
-                GameUtils.PostHttp("Factory.ashx", form, null, null);
+                GameUtils.PostHttpWebRequest("Factory.ashx", form, null, null);
 
                 EventManager.Instance.DisPatch(NotifyType.UpdateFactoryList);
                 MessageBox.Instance.PopOK("删除成功", null, "确定");
@@ -151,9 +152,10 @@ public class FactoryManagerPanel : UIEventHelper
     {
         WWWForm form = new WWWForm();
         form.AddField("requestType", "SelectAllFactoryByCondition");
-        GameUtils.PostHttp("Factory.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("Factory.ashx", form, (result) =>
         {
-            List<FactoryModel> list = JsonMapper.ToObject<List<FactoryModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            List<FactoryModel> list = JsonMapper.ToObject<List<FactoryModel>>(content);
             InitGrid(list);
         }, null);
     }

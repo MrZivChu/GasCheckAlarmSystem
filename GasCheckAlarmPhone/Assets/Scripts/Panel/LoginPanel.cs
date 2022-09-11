@@ -16,6 +16,7 @@ public class LoginPanel : UIEventHelper
     string pwdKey = "userPwd";
     void Start()
     {
+        SqlHelper.connectionString = string.Format(SqlHelper.connectionString, "hds16173015.my3w.com", "hds16173015_db", "hds16173015", "!@#Dz123");
         RegisterBtnClick(btn_login, OnLogin);
         bool hasNameKey = GameUtils.HasKey(nameKey);
         if (hasNameKey)
@@ -38,32 +39,20 @@ public class LoginPanel : UIEventHelper
             MessageBox.Instance.PopOK("用户名或密码不能为空", null, "确定");
             return;
         }
-
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectUserByNamePwd");
-        form.AddField("accountName", userName);
-        form.AddField("accountPwd", userPwd);
-        GameUtils.PostHttpWebRequest("User.ashx", form, (result) =>
+        List<UserModel> list = UserDAL.SelectUserByNamePwd(userName, userPwd);
+        if (list.Count > 0)
         {
-            string content = System.Text.Encoding.UTF8.GetString(result);
-            if (content.Contains("error:"))
-            {
-                MessageBox.Instance.PopOK(content.Split(':')[1], null, "确定");
-            }
+            FormatData.currentUser = list[0];
+            GameUtils.SetString(nameKey, userName);
+            if (rememberPwdTog.isOn)
+                GameUtils.SetString(pwdKey, userPwd);
             else
-            {
-                List<UserModel> list = JsonMapper.ToObject<List<UserModel>>(content);
-                FormatData.currentUser = list[0];
-                GameUtils.SetString(nameKey, userName);
-                if (rememberPwdTog.isOn)
-                    GameUtils.SetString(pwdKey, userPwd);
-                else
-                    GameUtils.RemoveKey(pwdKey);
-                SceneManager.LoadScene("Main", LoadSceneMode.Single);
-            }
-        }, (error) =>
+                GameUtils.RemoveKey(pwdKey);
+            SceneManager.LoadScene("Main", LoadSceneMode.Single);
+        }
+        else
         {
-            MessageBox.Instance.PopOK(error, null, "确定");
-        });
+            MessageBox.Instance.PopOK("不存在此用户", null, "确定");
+        }
     }
 }

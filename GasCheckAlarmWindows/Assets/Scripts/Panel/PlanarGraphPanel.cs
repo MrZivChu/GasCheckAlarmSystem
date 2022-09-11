@@ -39,7 +39,7 @@ public class PlanarGraphPanel : UIEventHelper
 
     void UpdateRealtimeData(object data)
     {
-        if (!gameObject || !enabled)
+        if (!gameObject || !gameObject.activeSelf)
         {
             return;
         }
@@ -55,7 +55,7 @@ public class PlanarGraphPanel : UIEventHelper
             if (!EventSystem.current.IsPointerOverGameObject())
             {
                 float doubleNowTime = Time.realtimeSinceStartup;
-                if (doubleNowTime - doublePreTime < 0.3f)
+                if (doubleNowTime - doublePreTime < 0.3f && FormatData.currentUser.Authority == 1)
                 {
                     InsertProbe();
                 }

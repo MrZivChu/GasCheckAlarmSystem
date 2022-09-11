@@ -22,7 +22,7 @@ public class RealtimeDataManagerPanel : UIEventHelper
 
     void UpdateRealtimeDataListEvent(object tdata)
     {
-        if (!gameObject || !enabled)
+        if (!gameObject || !gameObject.activeSelf)
             return;
         RealtimeEventData realtimeEventData = (RealtimeEventData)tdata;
         List<RealtimeDataModel> secondList = realtimeEventData.secondList;

@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class RealtimeEventData
@@ -14,18 +15,12 @@ public class RealtimeEventData
 
 public class GlobalCheckGas : MonoBehaviour
 {
-    public static GlobalCheckGas instance;
-
-    private void Awake()
-    {
-        instance = this;
-    }
     private void Start()
     {
         //程序启动执行一次删除历史数据的操作
         WWWForm form = new WWWForm();
         form.AddField("requestType", "DeleteHistoryDataBeforeWeek");
-        GameUtils.PostHttp("HistoryData.ashx", form, null, null);
+        GameUtils.PostHttpWebRequest("HistoryData.ashx", form, null, null);
     }
 
     float refreshTime = 1;
@@ -40,9 +35,10 @@ public class GlobalCheckGas : MonoBehaviour
             tempRefreshTime = 0;
             WWWForm form = new WWWForm();
             form.AddField("requestType", "SelectAllRealtimeDataByCondition");
-            GameUtils.PostHttp("RealtimeData.ashx", form, (result) =>
+            GameUtils.PostHttpWebRequest("RealtimeData.ashx", form, (result) =>
             {
-                List<RealtimeDataModel> rsult = JsonMapper.ToObject<List<RealtimeDataModel>>(result);
+                string content = Encoding.UTF8.GetString(result);
+                List<RealtimeDataModel> rsult = JsonMapper.ToObject<List<RealtimeDataModel>>(content);
                 RealtimeEventData data = HandleRealtimeData(rsult);
                 JudgeWarningShout(data);
                 EventManager.Instance.DisPatch(NotifyType.UpdateRealtimeDataList, data);
@@ -54,7 +50,7 @@ public class GlobalCheckGas : MonoBehaviour
             tempDeleteHistoryDataTime = 0;
             WWWForm form = new WWWForm();
             form.AddField("requestType", "DeleteHistoryDataBeforeWeek");
-            GameUtils.PostHttp("HistoryData.ashx", form, null, null);
+            GameUtils.PostHttpWebRequest("HistoryData.ashx", form, null, null);
         }
     }
 
@@ -66,22 +62,30 @@ public class GlobalCheckGas : MonoBehaviour
         realtimeEventData.normalList = new List<RealtimeDataModel>();
         realtimeEventData.noResponseList = new List<RealtimeDataModel>();
 
+        //level：-1超时 0正常 1低报 2高报
+        int overTimeMax = list.Count * 2;
         foreach (var model in list)
         {
             TimeSpan ts = DateTime.Now - model.CheckTime;
-            if (ts.TotalSeconds > 200)
+            if (ts.TotalSeconds > overTimeMax && !Application.isEditor)
             {
                 model.warningLevel = -1;
                 realtimeEventData.noResponseList.Add(model);
             }
             else
             {
-                if (model.MachineType == 4)
+                if (model.GasKind == "氧气")
                 {
-                    if (model.GasValue == 1)
+                    model.GasValue = model.GasValue / 10.0f;
+                    if (model.GasValue > model.SecondAlarmValue)
                     {
                         model.warningLevel = 2;
                         realtimeEventData.secondList.Add(model);
+                    }
+                    else if (model.GasValue < model.FirstAlarmValue)
+                    {
+                        model.warningLevel = 1;
+                        realtimeEventData.firstList.Add(model);
                     }
                     else
                     {
@@ -91,20 +95,36 @@ public class GlobalCheckGas : MonoBehaviour
                 }
                 else
                 {
-                    if (model.GasValue >= model.SecondAlarmValue)
+                    if (model.MachineType == 4)
                     {
-                        model.warningLevel = 2;
-                        realtimeEventData.secondList.Add(model);
-                    }
-                    else if (model.GasValue >= model.FirstAlarmValue)
-                    {
-                        model.warningLevel = 1;
-                        realtimeEventData.firstList.Add(model);
+                        if (model.GasValue == 1)
+                        {
+                            model.warningLevel = 2;
+                            realtimeEventData.secondList.Add(model);
+                        }
+                        else
+                        {
+                            model.warningLevel = 0;
+                            realtimeEventData.normalList.Add(model);
+                        }
                     }
                     else
                     {
-                        model.warningLevel = 0;
-                        realtimeEventData.normalList.Add(model);
+                        if (model.GasValue >= model.SecondAlarmValue)
+                        {
+                            model.warningLevel = 2;
+                            realtimeEventData.secondList.Add(model);
+                        }
+                        else if (model.GasValue >= model.FirstAlarmValue)
+                        {
+                            model.warningLevel = 1;
+                            realtimeEventData.firstList.Add(model);
+                        }
+                        else
+                        {
+                            model.warningLevel = 0;
+                            realtimeEventData.normalList.Add(model);
+                        }
                     }
                 }
             }

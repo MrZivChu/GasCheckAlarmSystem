@@ -3,15 +3,38 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 
+public class RealtimeDataModel
+{
+    public int ID;
+    public int ProbeID;
+    public string ProbeName;
+    public DateTime CheckTime;
+    public double GasValue;
+    public string GasKind;
+    public string Unit;
+    public double FirstAlarmValue;
+    public double SecondAlarmValue;
+    public string MachineName;
+    public int MachineID;
+    public int FactoryID;
+    public string FactoryName;
+    public int MachineType;
+    public string Pos2D;
+    public string TagName;
+
+    //扩展字段
+    public int warningLevel = 0;
+}
+
 public class UserModel
 {
     public int ID;
     public string AccountName;
     public string AccountPwd;
-    public string UserName;
-    public string UserNumber;
     public int Authority;
     public string Phone;
+    public string UserName;
+    public string UserNumber;
 }
 
 public class ProbeModel
@@ -35,29 +58,6 @@ public class ProbeModel
 
     //扩展字段
     public bool isCheck = false;
-}
-
-public class RealtimeDataModel
-{
-    public int ID;
-    public int ProbeID;
-    public string ProbeName;
-    public DateTime CheckTime;
-    public double GasValue;
-    public string GasKind;
-    public string Unit;
-    public double FirstAlarmValue;
-    public double SecondAlarmValue;
-    public string MachineName;
-    public int MachineID;
-    public int FactoryID;
-    public string FactoryName;
-    public int MachineType;
-    public string Pos2D;
-    public string TagName;
-
-    //扩展字段
-    public int warningLevel = 0;
 }
 
 public class DeviceTagModel

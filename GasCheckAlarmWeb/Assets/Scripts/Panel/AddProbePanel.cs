@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -83,9 +84,10 @@ public class AddProbePanel : UIEventHelper
         form.AddField("factoryID", model.FactoryID);
         form.AddField("factoryName", model.FactoryName);
         form.AddField("machineType", model.MachineType);
-        GameUtils.PostHttp("Probe.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("Probe.ashx", form, (result) =>
         {
-            int insertID = Convert.ToInt32(result);
+            string content = Encoding.UTF8.GetString(result);
+            int insertID = Convert.ToInt32(content);
             MessageBox.Instance.PopOK("新增成功", () =>
             {
                 EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
@@ -94,9 +96,10 @@ public class AddProbePanel : UIEventHelper
                 WWWForm form1 = new WWWForm();
                 form1.AddField("requestType", "SelectProbeByID");
                 form1.AddField("id", insertID);
-                GameUtils.PostHttp("Probe.ashx", form1, (result1) =>
+                GameUtils.PostHttpWebRequest("Probe.ashx", form1, (result1) =>
                 {
-                    ProbeModel probeModel = JsonMapper.ToObject<ProbeModel>(result1);
+                    string content1 = Encoding.UTF8.GetString(result1);
+                    ProbeModel probeModel = JsonMapper.ToObject<ProbeModel>(content1);
                     ProbeInSceneHelper.instance.SpawnProbe(probeModel);
                 }, null);
 
@@ -113,9 +116,10 @@ public class AddProbePanel : UIEventHelper
 
         WWWForm form = new WWWForm();
         form.AddField("requestType", "SelectAllMachineByCondition");
-        GameUtils.PostHttp("Machine.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("Machine.ashx", form, (result) =>
         {
-            machineList = JsonMapper.ToObject<List<MachineModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            machineList = JsonMapper.ToObject<List<MachineModel>>(content);
             if (machineList != null && machineList.Count > 0)
             {
                 List<string> optionList = new List<string>();

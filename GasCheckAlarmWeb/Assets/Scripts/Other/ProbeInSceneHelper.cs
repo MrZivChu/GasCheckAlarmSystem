@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -80,9 +81,10 @@ public class ProbeInSceneHelper : UIEventHelper
     {
         WWWForm form = new WWWForm();
         form.AddField("requestType", "SelectAllProbeByCondition");
-        GameUtils.PostHttp("Probe.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("Probe.ashx", form, (result) =>
         {
-            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(content);
             for (int i = 0; i < list.Count; i++)
             {
                 ProbeModel model = list[i];

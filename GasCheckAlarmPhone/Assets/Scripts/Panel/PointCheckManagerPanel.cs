@@ -76,31 +76,9 @@ public class PointCheckManagerPanel : UIEventHelper
         if (dateRange.ToDate.HasValue)
             endTime = dateRange.ToDate.Date.AddDays(1).ToString("yyyy-MM-dd");
 
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllPointCheckByCondition");
-        form.AddField("pageIndex", pageIndex);
-        form.AddField("pageSize", pageSize);
-        form.AddField("userName", input_userName.text);
-        form.AddField("deviceName", input_deviceName.text);
-        form.AddField("deviceType", dropdown_deviceType.value);
-        form.AddField("startTime", startTime);
-        form.AddField("endTime", endTime);
-        form.AddField("pageCount", pageCount);
-        form.AddField("rowCount", rowCount);
-        GameUtils.PostHttp("PointCheck.ashx", form, (result) =>
-        {
-            List<PointCheckModel> pointCheckModelList = new List<PointCheckModel>();
-            if (result.Contains("|"))
-            {
-                string pageResult = result.Split('|')[0];
-                pageCount = Convert.ToInt32(pageResult.Split(',')[0]);
-                rowCount = Convert.ToInt32(pageResult.Split(',')[1]);
-                result = result.Split('|')[1];
-                pointCheckModelList = JsonMapper.ToObject<List<PointCheckModel>>(result);
-            }
-            InitGrid(pointCheckModelList);
-            txt_pageCount.text = pageIndex + "/" + pageCount;
-        }, null);
+        List<PointCheckModel> pointCheckModelList = PointCheckDAL.SelectAllPointCheckByCondition(pageIndex, pageSize, input_userName.text, input_deviceName.text, dropdown_deviceType.value, startTime, endTime, out pageCount, out rowCount);
+        InitGrid(pointCheckModelList);
+        txt_pageCount.text = pageIndex + "/" + pageCount;
     }
 
     void InitGrid(List<PointCheckModel> pointCheckModelList)

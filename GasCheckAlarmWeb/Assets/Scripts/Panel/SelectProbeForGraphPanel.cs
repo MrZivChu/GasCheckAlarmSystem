@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Text;
 
 public class SelectProbeForGraphPanel : UIEventHelper
 {
@@ -33,7 +34,7 @@ public class SelectProbeForGraphPanel : UIEventHelper
         form.AddField("requestType", "EditRealtimePos2DByID");
         form.AddField("id", probeModel.ID);
         form.AddField("pos2D", uiPos.x + "," + uiPos.y);
-        GameUtils.PostHttp("RealtimeData.ashx", form, null, null);
+        GameUtils.PostHttpWebRequest("RealtimeData.ashx", form, null, null);
 
         MessageBox.Instance.PopOK("新增成功", () =>
         {
@@ -51,9 +52,10 @@ public class SelectProbeForGraphPanel : UIEventHelper
     {
         WWWForm form = new WWWForm();
         form.AddField("requestType", "SelectAllProbeByCondition");
-        GameUtils.PostHttp("Probe.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("Probe.ashx", form, (result) =>
         {
-            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(content);
             list = list.FindAll((item) =>
             {
                 return string.IsNullOrEmpty(item.Pos2D) ? true : false;

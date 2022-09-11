@@ -26,16 +26,9 @@ public class ProbeHistoryDataPanel : UIEventHelper
     public UI.Dates.DatePicker_DateRange dateRange;
 
     public Transform contentTrans;
-    UnityEngine.Object itemRes;
+    public UnityEngine.Object itemRes;
 
     List<HistoryDataModel> historyDataModelList;
-    public static ProbeHistoryDataPanel instance;
-
-    void Awake()
-    {
-        instance = this;
-        itemRes = Resources.Load("ProbeHistoryDataItem");
-    }
 
     private void Start()
     {
@@ -113,7 +106,7 @@ public class ProbeHistoryDataPanel : UIEventHelper
     {
         WWWForm form = new WWWForm();
         form.AddField("requestType", "DeleteAllHistoryData");
-        GameUtils.PostHttp("HistoryData.ashx", form, null, null);
+        GameUtils.PostHttpWebRequest("HistoryData.ashx", form, null, null);
         InitData();
     }
 
@@ -136,13 +129,14 @@ public class ProbeHistoryDataPanel : UIEventHelper
         form.AddField("endTime", endTime.ToString());
         form.AddField("pageCount", pageCount);
         form.AddField("rowCount", rowCount);
-        GameUtils.PostHttp("HistoryData.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("HistoryData.ashx", form, (result) =>
         {
-            string pageResult = result.Split('*')[0];
+            string content = Encoding.UTF8.GetString(result);
+            string pageResult = content.Split('*')[0];
             pageCount = Convert.ToInt32(pageResult.Split(',')[0]);
             rowCount = Convert.ToInt32(pageResult.Split(',')[1]);
-            result = result.Split('*')[1];
-            historyDataModelList = JsonMapper.ToObject<List<HistoryDataModel>>(result);
+            content = content.Split('*')[1];
+            historyDataModelList = JsonMapper.ToObject<List<HistoryDataModel>>(content);
             InitGrid();
         }, null);
     }
@@ -171,13 +165,14 @@ public class ProbeHistoryDataPanel : UIEventHelper
         form.AddField("endTime", endTime.ToString());
         form.AddField("pageCount", pageCount);
         form.AddField("rowCount", rowCount);
-        GameUtils.PostHttp("HistoryData.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("HistoryData.ashx", form, (result) =>
         {
-            string pageResult = result.Split('*')[0];
+            string content = Encoding.UTF8.GetString(result);
+            string pageResult = content.Split('*')[0];
             pageCount = Convert.ToInt32(pageResult.Split(',')[0]);
             rowCount = Convert.ToInt32(pageResult.Split(',')[1]);
-            result = result.Split('*')[1];
-            historyDataModelList = JsonMapper.ToObject<List<HistoryDataModel>>(result);
+            content = content.Split('*')[1];
+            historyDataModelList = JsonMapper.ToObject<List<HistoryDataModel>>(content);
             InitGrid();
         }, null);
     }

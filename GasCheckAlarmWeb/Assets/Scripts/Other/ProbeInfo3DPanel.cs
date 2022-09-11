@@ -25,7 +25,7 @@ public class ProbeInfo3DPanel : UIEventHelper
             WWWForm form = new WWWForm();
             form.AddField("requestType", "DeleteProbeByID");
             form.AddField("idList", currentModel.ID.ToString());
-            GameUtils.PostHttp("Probe.ashx", form, null, null);
+            GameUtils.PostHttpWebRequest("Probe.ashx", form, null, null);
 
             EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
             ProbeInSceneHelper.instance.DeleteProbe(currentModel);

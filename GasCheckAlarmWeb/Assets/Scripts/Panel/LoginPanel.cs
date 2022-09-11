@@ -1,6 +1,7 @@
 ﻿using LitJson;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -17,7 +18,6 @@ public class LoginPanel : UIEventHelper
     void Start()
     {
         RegisterBtnClick(btn_login, OnLogin);
-
         bool hasNameKey = GameUtils.HasKey(nameKey);
         if (hasNameKey)
         {
@@ -34,26 +34,25 @@ public class LoginPanel : UIEventHelper
     {
         string userName = input_name.text;
         string userPwd = input_pwd.text;
-
         if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(userPwd))
         {
             MessageBox.Instance.PopOK("用户名或密码不能为空", null, "确定");
             return;
         }
-
         WWWForm form = new WWWForm();
         form.AddField("requestType", "SelectUserByNamePwd");
         form.AddField("accountName", userName);
         form.AddField("accountPwd", userPwd);
-        GameUtils.PostHttp("User.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("User.ashx", form, (result) =>
         {
-            if (result.Contains("error:"))
+            string content = Encoding.UTF8.GetString(result);
+            if (content.Contains("error:"))
             {
-                MessageBox.Instance.PopOK(result.Split(':')[1], null, "确定");
+                MessageBox.Instance.PopOK(content.Split(':')[1], null, "确定");
             }
             else
             {
-                List<UserModel> list = JsonMapper.ToObject<List<UserModel>>(result);
+                List<UserModel> list = JsonMapper.ToObject<List<UserModel>>(content);
                 FormatData.currentUser = list[0];
                 GameUtils.SetString(nameKey, userName);
                 if (rememberPwdTog.isOn)

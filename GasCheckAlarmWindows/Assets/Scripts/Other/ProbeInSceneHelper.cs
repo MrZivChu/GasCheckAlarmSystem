@@ -45,7 +45,7 @@ public class ProbeInSceneHelper : UIEventHelper
         if (Input.GetMouseButtonDown(0))
         {
             bool isHasHandle = RaycastHitProbe();
-            if (!isHasHandle)
+            if (!isHasHandle && FormatData.currentUser.Authority == 1)
             {
                 if (!EventSystem.current.IsPointerOverGameObject())
                 {
@@ -169,7 +169,7 @@ public class ProbeInSceneHelper : UIEventHelper
 
     public void UpdateRealtimeDataListEvent(object data)
     {
-        if (!gameObject || !enabled)
+        if (!gameObject || !gameObject.activeSelf)
         {
             return;
         }

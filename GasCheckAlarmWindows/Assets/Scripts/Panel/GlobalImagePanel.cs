@@ -36,7 +36,7 @@ public class GlobalImagePanel : UIEventHelper
 
     void UpdateRealtimeData(object data)
     {
-        if (!gameObject || !enabled)
+        if (!gameObject || !gameObject.activeSelf)
         {
             return;
         }

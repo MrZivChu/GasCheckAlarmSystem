@@ -53,9 +53,10 @@ public class ProbeManagerPanel : UIEventHelper
         form.AddField("requestType", "SelectAllProbeByCondition");
         form.AddField("probeName", probeName);
         form.AddField("gasKind", gasKind);
-        GameUtils.PostHttp("Probe.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("Probe.ashx", form, (result) =>
         {
-            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(content);
             InitGrid(list);
         }, null);
     }
@@ -97,7 +98,7 @@ public class ProbeManagerPanel : UIEventHelper
                 WWWForm form = new WWWForm();
                 form.AddField("requestType", "DeleteProbeByID");
                 form.AddField("idList", sb.ToString());
-                GameUtils.PostHttp("Probe.ashx", form, null, null);
+                GameUtils.PostHttpWebRequest("Probe.ashx", form, null, null);
 
                 EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
                 MessageBox.Instance.PopOK("删除成功", null, "确定");
@@ -157,9 +158,10 @@ public class ProbeManagerPanel : UIEventHelper
     {
         WWWForm form = new WWWForm();
         form.AddField("requestType", "SelectAllProbeByCondition");
-        GameUtils.PostHttp("Probe.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("Probe.ashx", form, (result) =>
         {
-            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(content);
             InitGrid(list);
         }, null);
     }

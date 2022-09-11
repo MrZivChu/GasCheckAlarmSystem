@@ -38,7 +38,7 @@ public class EditUserPanel : UIEventHelper
         form.AddField("userNumber", userNumber);
         form.AddField("phone", phone);
         form.AddField("authority", authority);
-        GameUtils.PostHttp("User.ashx", form, null, null);
+        GameUtils.PostHttpWebRequest("User.ashx", form, null, null);
         MessageBox.Instance.PopOK("修改成功", () =>
         {
             EventManager.Instance.DisPatch(NotifyType.UpdateUserList);

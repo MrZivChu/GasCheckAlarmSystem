@@ -8,11 +8,7 @@ using UnityEngine.UI;
 public class RealtimeDataManagerPanel : UIEventHelper
 {
     public Transform contentTrans;
-    UnityEngine.Object itemRes;
-    void Awake()
-    {
-        itemRes = Resources.Load("RealtimeDataItem");
-    }
+    public UnityEngine.Object itemRes;
 
     private void Start()
     {
@@ -21,7 +17,7 @@ public class RealtimeDataManagerPanel : UIEventHelper
 
     void UpdateRealtimeDataListEvent(object tdata)
     {
-        if (!enabled)
+        if (!gameObject.activeSelf)
             return;
         RealtimeEventData realtimeEventData = (RealtimeEventData)tdata;
         List<RealtimeDataModel> secondList = realtimeEventData.secondList;
@@ -33,7 +29,6 @@ public class RealtimeDataManagerPanel : UIEventHelper
         allList.AddRange(firstList);
         allList.AddRange(normalList);
         allList.AddRange(noResponseList);
-
         GameUtils.SpawnCellForTable<RealtimeDataModel>(contentTrans, allList, (go, data, isSpawn, index) =>
         {
             GameObject currentObj = go;

@@ -58,9 +58,10 @@ public class UserManagerPanel : UIEventHelper
         form.AddField("userNumber", userNumber);
         form.AddField("Phone", phone);
         form.AddField("authority", authority);
-        GameUtils.PostHttp("User.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("User.ashx", form, (result) =>
         {
-            List<UserModel> list = JsonMapper.ToObject<List<UserModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            List<UserModel> list = JsonMapper.ToObject<List<UserModel>>(content);
             InitGrid(list);
         }, null);
     }
@@ -100,7 +101,7 @@ public class UserManagerPanel : UIEventHelper
                 WWWForm form = new WWWForm();
                 form.AddField("requestType", "DeleteUserByID");
                 form.AddField("idList", sb.ToString());
-                GameUtils.PostHttp("User.ashx", form, null, null);
+                GameUtils.PostHttpWebRequest("User.ashx", form, null, null);
 
                 EventManager.Instance.DisPatch(NotifyType.UpdateUserList);
                 MessageBox.Instance.PopOK("删除成功", null, "确定");
@@ -160,9 +161,10 @@ public class UserManagerPanel : UIEventHelper
     {
         WWWForm form = new WWWForm();
         form.AddField("requestType", "SelectAllUser");
-        GameUtils.PostHttp("User.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("User.ashx", form, (result) =>
         {
-            List<UserModel> list = JsonMapper.ToObject<List<UserModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            List <UserModel> list = JsonMapper.ToObject<List<UserModel>>(content);
             InitGrid(list);
         }, null);
     }

@@ -13,18 +13,21 @@ public class PlanarGraphPanel : UIEventHelper
     public Transform contentTrans;
     public SelectProbeForGraphPanel selectProbeForGraphPanel;
     public EditProbeForGraphPanel editProbeForGraphPanel;
-    public Button btn_upload;
 
     private void Start()
     {
+        LoadServerGraphImg();
         EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeData);
-        RegisterBtnClick(btn_upload, OnUploadImg);
-        LoadGraphImg();
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeData);
     }
 
     void UpdateRealtimeData(object data)
     {
-        if (!enabled)
+        if (!gameObject || !gameObject.activeSelf)
         {
             return;
         }
@@ -40,7 +43,7 @@ public class PlanarGraphPanel : UIEventHelper
             if (!EventSystem.current.IsPointerOverGameObject())
             {
                 float doubleNowTime = Time.realtimeSinceStartup;
-                if (doubleNowTime - doublePreTime < 0.3f)
+                if (doubleNowTime - doublePreTime < 0.3f && FormatData.currentUser.Authority == 1)
                 {
                     InsertProbe();
                 }
@@ -115,57 +118,15 @@ public class PlanarGraphPanel : UIEventHelper
         editProbeForGraphPanel.gameObject.SetActive(true);
     }
 
-    string graphImgPath = Application.streamingAssetsPath + "/graphImg.png";
-    void OnUploadImg(Button btn)
+    void LoadServerGraphImg()
     {
-        //using (System.Windows.Forms.OpenFileDialog od = new System.Windows.Forms.OpenFileDialog())
-        //{
-        //    od.Title = "请选择图片";
-        //    od.Multiselect = false;
-        //    od.Filter = "图片文件(*.jpg,*.png,*.bmp)|*.jpg;*.png;*.bmp";
-        //    if (od.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-        //    {
-        //        SaveFile(od.FileName, graphImgPath);
-        //    }
-        //}
-        LoadGraphImg();
-    }
-
-    void LoadGraphImg()
-    {
-        if (File.Exists(graphImgPath))
+        GameUtils.GetHttpWebRequest("/PlanarGraph/PlanarGraph.jpg", (data) =>
         {
-            StartCoroutine(GetTexture(graphImgPath));
-        }
-    }
-
-    IEnumerator GetTexture(string url)
-    {
-        using (WWW www = new WWW(url))
-        {
-            yield return www;
-            if (www.isDone && www.error == null)
-            {
-                Texture2D texture2D = www.texture;
-                Sprite sprite = Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(0.5f, 0.5f));
-                contentTrans.GetComponent<Image>().sprite = sprite;
-            }
-        }
-    }
-
-    void SaveFile(string selectPath, string savePath)
-    {
-        using (FileStream fs = new FileStream(selectPath, FileMode.Open))
-        {
-            using (FileStream fs2 = new FileStream(savePath, FileMode.Create))
-            {
-                byte[] b = new byte[1024 * 1024];
-                int getv = 0;
-                while ((getv = fs.Read(b, 0, b.Length)) > 0)
-                {
-                    fs2.Write(b, 0, getv);
-                }
-            }
-        }
+            Texture2D texture = new Texture2D(160, 120, TextureFormat.RGBA32, false);
+            texture.LoadImage(data);
+            texture.Apply();
+            Sprite sp = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2());
+            contentTrans.GetComponent<Image>().sprite = sp;
+        }, null);
     }
 }

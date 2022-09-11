@@ -8,20 +8,21 @@ using UnityEngine.UI;
 public class RealtimeDataManagerPanel : UIEventHelper
 {
     public Transform contentTrans;
-    UnityEngine.Object itemRes;
-    void Awake()
-    {
-        itemRes = Resources.Load("RealtimeDataItem");
-    }
+    public UnityEngine.Object itemRes;
 
     private void Start()
     {
         EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
     }
 
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
+    }
+
     void UpdateRealtimeDataListEvent(object tdata)
     {
-        if (!enabled)
+        if (!gameObject || !gameObject.activeSelf)
             return;
         RealtimeEventData realtimeEventData = (RealtimeEventData)tdata;
         List<RealtimeDataModel> secondList = realtimeEventData.secondList;

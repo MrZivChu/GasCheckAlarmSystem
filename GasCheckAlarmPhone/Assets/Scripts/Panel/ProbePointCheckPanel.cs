@@ -9,6 +9,7 @@ using System.IO;
 
 public class ProbePointCheckPanel : MonoBehaviour
 {
+    public Image okImg;
     public Image confirmImg;
     public Button confirmOkBtn;
     public Button confirmCancelBtn;
@@ -51,38 +52,14 @@ public class ProbePointCheckPanel : MonoBehaviour
 
     void UpdateList()
     {
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllProbeByCondition");
-        GameUtils.PostHttp("Probe.ashx", form, (result) =>
+        List<ProbeModel> list = ProbeDAL.SelectAllProbeByCondition();
+        if (list.Count > 0)
         {
-            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(result);
-            if (list.Count > 0)
-            {
-                int pageCount = 0;
-                int rowCount = 0;
-                form = new WWWForm();
-                form.AddField("requestType", "SelectAllPointCheckByCondition");
-                form.AddField("deviceType", 0);
-                form.AddField("userName", string.Empty);
-                form.AddField("deviceName", string.Empty);
-                form.AddField("pageIndex", 1);
-                form.AddField("pageSize", 100);
-                form.AddField("startTime", DateTime.Now.ToString("yyyy-MM-dd"));
-                form.AddField("endTime", DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"));
-                form.AddField("pageCount", pageCount);
-                form.AddField("rowCount", rowCount);
-                GameUtils.PostHttp("PointCheck.ashx", form, (r1) =>
-                {
-                    List<PointCheckModel> pointCheckModelList = new List<PointCheckModel>();
-                    if (r1.Contains("|"))
-                    {
-                        r1 = r1.Split('|')[1];
-                        pointCheckModelList = JsonMapper.ToObject<List<PointCheckModel>>(r1);
-                    }
-                    InitGrid(list, pointCheckModelList);
-                }, null);
-            }
-        }, null);
+            int pageCount = 0;
+            int rowCount = 0;
+            List<PointCheckModel> pointCheckModelList = PointCheckDAL.SelectAllPointCheckByCondition(1, 100, string.Empty, string.Empty, 0, DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"), out pageCount, out rowCount);
+            InitGrid(list, pointCheckModelList);
+        }
     }
 
     //序列号  探头具体信息
@@ -142,6 +119,7 @@ public class ProbePointCheckPanel : MonoBehaviour
             cameraTexture.texture = webCamTextrue;
             barcodeReader = new BarcodeReader();
         }
+        okImg.gameObject.SetActive(false);
         interval = 0;
         isGoScanning = true;
     }
@@ -150,10 +128,23 @@ public class ProbePointCheckPanel : MonoBehaviour
     {
         Color32[] data = webCamTextrue.GetPixels32();
         Result result = barcodeReader.Decode(data, webCamTextrue.width, webCamTextrue.height);
-        //if (result != null)
+        if (result != null)
         {
-            isGoScanning = false;
-            OnSaoMaComplete("1000");
+            string content = result.Text;
+            if (!string.IsNullOrEmpty(content))
+            {
+                string[] contentArray = content.Split('\n');
+                if (contentArray.Length > 1)
+                {
+                    string[] content1 = contentArray[1].Split(':');
+                    if (content1.Length > 1)
+                    {
+                        okImg.gameObject.SetActive(true);
+                        isGoScanning = false;
+                        OnSaoMaComplete(content1[1]);
+                    }
+                }
+            }
         }
     }
 
@@ -206,22 +197,9 @@ public class ProbePointCheckPanel : MonoBehaviour
     {
         if (currentProbeModel != null)
         {
-            WWWForm form = new WWWForm();
-            form.AddField("requestType", "InsertPointCheck");
-            form.AddField("deviceID", currentProbeModel.ID);
-            form.AddField("deviceName", currentProbeModel.ProbeName);
-            form.AddField("userName", FormatData.currentUser.UserName);
-            form.AddField("qrCodePath", saomaImgServerPath);
-            form.AddField("description", description);
-            form.AddField("result", "");
-            form.AddField("deviceType", 0);
-            GameUtils.PostHttp("PointCheck.ashx", form, (content) =>
-            {
-                UpdateList();
-                MessageBox.Instance.PopOK("点检成功", null, "确定");
-            }, null);
+            PointCheckDAL.InsertPointCheck(currentProbeModel.ID, currentProbeModel.ProbeName, FormatData.currentUser.UserName, saomaImgServerPath, description, string.Empty, 0);
+            UpdateList();
+            MessageBox.Instance.PopOK("点检成功", null, "确定");
         }
     }
-
-
 }

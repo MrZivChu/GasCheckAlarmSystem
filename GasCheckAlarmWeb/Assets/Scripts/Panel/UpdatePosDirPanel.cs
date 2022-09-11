@@ -31,7 +31,7 @@ public class UpdatePosDirPanel : UIEventHelper
             form.AddField("requestType", "EditProbePosDirByID");
             form.AddField("id", result);
             form.AddField("posDir", posDir);
-            GameUtils.PostHttp("Probe.ashx", form, null, null);
+            GameUtils.PostHttpWebRequest("Probe.ashx", form, null, null);
 
             gameObject.SetActive(false);
         }

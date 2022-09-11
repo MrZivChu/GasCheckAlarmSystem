@@ -16,9 +16,14 @@ public class CubeInfoPanel : UIEventHelper
         EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeData);
     }
 
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeData);
+    }
+
     void UpdateRealtimeData(object data)
     {
-        if (!enabled)
+        if (!gameObject || !gameObject.activeSelf)
         {
             return;
         }
@@ -29,10 +34,10 @@ public class CubeInfoPanel : UIEventHelper
     private void InitData(RealtimeEventData realtimeEventData)
     {
         List<RealtimeDataModel> list = new List<RealtimeDataModel>();
+        list.AddRange(realtimeEventData.secondList);
         list.AddRange(realtimeEventData.firstList);
         list.AddRange(realtimeEventData.noResponseList);
         list.AddRange(realtimeEventData.normalList);
-        list.AddRange(realtimeEventData.secondList);
         InitGrid(list);
     }
 

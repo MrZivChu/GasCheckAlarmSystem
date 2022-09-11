@@ -10,6 +10,7 @@ using System.IO;
 public class WaterSealPointCheckPanel : MonoBehaviour
 {
     public List<Toggle> confirmTogList;
+    public Image okImg;
     public Image confirmImg;
     public Button confirmOkBtn;
     public Button confirmCancelBtn;
@@ -52,38 +53,14 @@ public class WaterSealPointCheckPanel : MonoBehaviour
 
     void UpdateList()
     {
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllWaterSealByCondition");
-        GameUtils.PostHttp("WaterSeal.ashx", form, (result) =>
+        List<WaterSealModel> list = WaterSealDAL.SelectAllWaterSealByCondition();
+        if (list.Count > 0)
         {
-            List<WaterSealModel> list = JsonMapper.ToObject<List<WaterSealModel>>(result);
-            if (list.Count > 0)
-            {
-                int pageCount = 0;
-                int rowCount = 0;
-                form = new WWWForm();
-                form.AddField("requestType", "SelectAllPointCheckByCondition");
-                form.AddField("deviceType", 1);
-                form.AddField("userName", string.Empty);
-                form.AddField("deviceName", string.Empty);
-                form.AddField("pageIndex", 1);
-                form.AddField("pageSize", 100);
-                form.AddField("startTime", DateTime.Now.ToString("yyyy-MM-dd"));
-                form.AddField("endTime", DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"));
-                form.AddField("pageCount", pageCount);
-                form.AddField("rowCount", rowCount);
-                GameUtils.PostHttp("PointCheck.ashx", form, (r1) =>
-                {
-                    List<PointCheckModel> pointCheckModelList = new List<PointCheckModel>();
-                    if (r1.Contains("|"))
-                    {
-                        r1 = r1.Split('|')[1];
-                        pointCheckModelList = JsonMapper.ToObject<List<PointCheckModel>>(r1);
-                    }
-                    InitGrid(list, pointCheckModelList);
-                }, null);
-            }
-        }, null);
+            int pageCount = 0;
+            int rowCount = 0;
+            List<PointCheckModel> pointCheckModelList = PointCheckDAL.SelectAllPointCheckByCondition(1, 100, string.Empty, string.Empty, 1, DateTime.Now.ToString("yyyy-MM-dd"), DateTime.Now.AddDays(1).ToString("yyyy-MM-dd"), out pageCount, out rowCount);
+            InitGrid(list, pointCheckModelList);
+        }
     }
 
     //序列号  探头具体信息
@@ -143,6 +120,7 @@ public class WaterSealPointCheckPanel : MonoBehaviour
             cameraTexture.texture = webCamTextrue;
             barcodeReader = new BarcodeReader();
         }
+        okImg.gameObject.SetActive(false);
         interval = 0;
         isGoScanning = true;
     }
@@ -151,10 +129,23 @@ public class WaterSealPointCheckPanel : MonoBehaviour
     {
         Color32[] data = webCamTextrue.GetPixels32();
         Result result = barcodeReader.Decode(data, webCamTextrue.width, webCamTextrue.height);
-        //if (result != null)
+        if (result != null)
         {
-            isGoScanning = false;
-            OnSaoMaComplete("0002");
+            string content = result.Text;
+            if (!string.IsNullOrEmpty(content))
+            {
+                string[] contentArray = content.Split('\n');
+                if (contentArray.Length > 1)
+                {
+                    string[] content1 = contentArray[1].Split(':');
+                    if (content1.Length > 1)
+                    {
+                        okImg.gameObject.SetActive(true);
+                        isGoScanning = false;
+                        OnSaoMaComplete(content1[1]);
+                    }
+                }
+            }
         }
     }
 
@@ -213,22 +204,9 @@ public class WaterSealPointCheckPanel : MonoBehaviour
         togResult = togResult.TrimEnd(',');
         if (currentWaterSealModel != null)
         {
-            WWWForm form = new WWWForm();
-            form.AddField("requestType", "InsertPointCheck");
-            form.AddField("deviceID", currentWaterSealModel.ID);
-            form.AddField("deviceName", currentWaterSealModel.Number);
-            form.AddField("userName", FormatData.currentUser.UserName);
-            form.AddField("qrCodePath", saomaImgServerPath);
-            form.AddField("description", description);
-            form.AddField("result", togResult);
-            form.AddField("deviceType", 1);
-            GameUtils.PostHttp("PointCheck.ashx", form, (content) =>
-            {
-                UpdateList();
-                MessageBox.Instance.PopOK("点检成功", null, "确定");
-            }, null);
+            PointCheckDAL.InsertPointCheck(currentWaterSealModel.ID, currentWaterSealModel.Number, FormatData.currentUser.UserName, saomaImgServerPath, description, togResult, 1);
+            UpdateList();
+            MessageBox.Instance.PopOK("点检成功", null, "确定");
         }
     }
-
-
 }

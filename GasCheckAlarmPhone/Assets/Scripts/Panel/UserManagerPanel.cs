@@ -23,11 +23,7 @@ public class UserManagerPanel : UIEventHelper
     public Dropdown dropdown_authority;
 
     public Transform contentTrans;
-    Object itemRes;
-    void Awake()
-    {
-        itemRes = Resources.Load("UserItem");
-    }
+    public Object itemRes;
 
     private void Start()
     {
@@ -37,8 +33,12 @@ public class UserManagerPanel : UIEventHelper
         RegisterBtnClick(btn_select, OnSelectUser);
 
         RegisterTogClick(wholeToggle, OnWholeToggle);
-
         EventManager.Instance.AddEventListener(NotifyType.UpdateUserList, UpdateUserListEvent);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateUserList, UpdateUserListEvent);
     }
 
     void UpdateUserListEvent(object data)
@@ -52,17 +52,8 @@ public class UserManagerPanel : UIEventHelper
         string userNumber = input_userNumber.text;
         string phone = input_phone.text;
         int authority = dropdown_authority.value == 1 ? 0 : (dropdown_authority.value == 2 ? 1 : 2);
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllUserByCondition");
-        form.AddField("userName", userName);
-        form.AddField("userNumber", userNumber);
-        form.AddField("Phone", phone);
-        form.AddField("authority", authority);
-        GameUtils.PostHttp("User.ashx", form, (result) =>
-        {
-            List<UserModel> list = JsonMapper.ToObject<List<UserModel>>(result);
-            InitGrid(list);
-        }, null);
+        List<UserModel> list = UserDAL.SelectAllUserByCondition(userName, userNumber, phone, authority);
+        InitGrid(list);
     }
 
     void OnAddUser(Button btn)
@@ -97,13 +88,11 @@ public class UserManagerPanel : UIEventHelper
                     sb.Append(idList[i] + ",");
                 }
                 sb = sb.Remove(sb.Length - 1, 1);
-                WWWForm form = new WWWForm();
-                form.AddField("requestType", "DeleteUserByID");
-                form.AddField("idList", sb.ToString());
-                GameUtils.PostHttp("User.ashx", form, null, null);
-
-                EventManager.Instance.DisPatch(NotifyType.UpdateUserList);
-                MessageBox.Instance.PopOK("删除成功", null, "确定");
+                UserDAL.DeleteUserByID(sb.ToString());
+                MessageBox.Instance.PopOK("删除成功", () =>
+                {
+                    EventManager.Instance.DisPatch(NotifyType.UpdateUserList);
+                }, "确定");
 
             }, "取消", "确定");
         }
@@ -158,13 +147,8 @@ public class UserManagerPanel : UIEventHelper
     List<UserItem> itemList = new List<UserItem>();
     private void InitData()
     {
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllUser");
-        GameUtils.PostHttp("User.ashx", form, (result) =>
-        {
-            List<UserModel> list = JsonMapper.ToObject<List<UserModel>>(result);
-            InitGrid(list);
-        }, null);
+        List<UserModel> list = UserDAL.SelectAllUser();
+        InitGrid(list);
     }
 
     private void InitGrid(List<UserModel> list)

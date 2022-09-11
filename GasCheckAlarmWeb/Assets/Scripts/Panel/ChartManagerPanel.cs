@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class ChartManagerPanel : MonoBehaviour
@@ -19,10 +20,11 @@ public class ChartManagerPanel : MonoBehaviour
         form.AddField("endTime", System.DateTime.MinValue.ToString());
         form.AddField("pageCount", pageCount);
         form.AddField("rowCount", rowCount);
-        GameUtils.PostHttp("HistoryData.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("HistoryData.ashx", form, (result) =>
         {
-            result = result.Split('*')[1];
-            List<HistoryDataModel> list = JsonMapper.ToObject<List<HistoryDataModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            content = content.Split('*')[1];
+            List<HistoryDataModel> list = JsonMapper.ToObject<List<HistoryDataModel>>(content);
         }, null);
     }
 }

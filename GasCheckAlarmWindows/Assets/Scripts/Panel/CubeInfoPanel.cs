@@ -31,7 +31,7 @@ public class CubeInfoPanel : UIEventHelper
 
     void UpdateRealtimeData(object data)
     {
-        if (!gameObject || !enabled)
+        if (!gameObject || !gameObject.activeSelf)
         {
             return;
         }

@@ -6,9 +6,7 @@ public class CameraShake : MonoBehaviour
     public float shakeLevel = 3f;// 震动幅度
     public float setShakeTime = 0.5f;   // 震动时间
     public float shakeFps = 45f;    // 震动的FPS
-
     private bool isShakeCamera = false;// 震动标志
-    private Camera selfCamera;
 
     private float shakeTime = 0.0f;
     public float frameTime = 0.03f;
@@ -20,7 +18,6 @@ public class CameraShake : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        selfCamera = gameObject.GetComponent<Camera>();
     }
 
     public void StartShake()
@@ -31,7 +28,7 @@ public class CameraShake : MonoBehaviour
 
     public void StopShake()
     {
-        selfCamera.rect = new Rect(0.0f, 0.0f, 1.0f, 1.0f);
+        Camera.main.rect = new Rect(0.0f, 0.0f, 1.0f, 1.0f);
         isShakeCamera = false;
     }
 
@@ -59,11 +56,10 @@ public class CameraShake : MonoBehaviour
                 else
                 {
                     frameTime += Time.deltaTime;
-
                     if (frameTime > 1.0 / shakeFps)
                     {
                         frameTime = 0;
-                        selfCamera.rect = new Rect(shakeDelta * (-1.0f + shakeLevel * Random.value), shakeDelta * (-1.0f + shakeLevel * Random.value), 1.0f, 1.0f);
+                        Camera.main.rect = new Rect(shakeDelta * (-1.0f + shakeLevel * Random.value), shakeDelta * (-1.0f + shakeLevel * Random.value), 1.0f, 1.0f);
                     }
                 }
             }

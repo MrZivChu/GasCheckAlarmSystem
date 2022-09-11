@@ -27,7 +27,7 @@ public class AddFactoryPanel : UIEventHelper
         WWWForm form = new WWWForm();
         form.AddField("requestType", "InsertFactory");
         form.AddField("factoryName", factoryName);
-        GameUtils.PostHttp("Factory.ashx", form, null, null);
+        GameUtils.PostHttpWebRequest("Factory.ashx", form, null, null);
 
         MessageBox.Instance.PopOK("新增成功", () =>
         {

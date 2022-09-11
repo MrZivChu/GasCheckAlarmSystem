@@ -53,9 +53,10 @@ public class MachineManagerPanel : UIEventHelper
         form.AddField("requestType", "SelectAllMachineByCondition");
         form.AddField("machineName", machineName);
         form.AddField("factoryID", dd == 0 ? -1 : factoryList[dd - 1].ID);
-        GameUtils.PostHttp("Machine.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("Machine.ashx", form, (result) =>
         {
-            List<MachineModel> list = JsonMapper.ToObject<List<MachineModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            List<MachineModel> list = JsonMapper.ToObject<List<MachineModel>>(content);
             InitGrid(list);
         }, null);
     }
@@ -95,7 +96,7 @@ public class MachineManagerPanel : UIEventHelper
                 WWWForm form = new WWWForm();
                 form.AddField("requestType", "DeleteMachineByID");
                 form.AddField("idList", sb.ToString());
-                GameUtils.PostHttp("Machine.ashx", form, null, null);
+                GameUtils.PostHttpWebRequest("Machine.ashx", form, null, null);
 
                 EventManager.Instance.DisPatch(NotifyType.UpdateMachineList);
                 MessageBox.Instance.PopOK("删除成功", null, "确定");
@@ -157,9 +158,10 @@ public class MachineManagerPanel : UIEventHelper
 
         WWWForm form = new WWWForm();
         form.AddField("requestType", "SelectAllMachineByCondition");
-        GameUtils.PostHttp("Machine.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("Machine.ashx", form, (result) =>
         {
-            List<MachineModel> list = JsonMapper.ToObject<List<MachineModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            List<MachineModel> list = JsonMapper.ToObject<List<MachineModel>>(content);
             InitGrid(list);
         }, null);
     }
@@ -171,9 +173,10 @@ public class MachineManagerPanel : UIEventHelper
 
         WWWForm form = new WWWForm();
         form.AddField("requestType", "SelectAllFactoryByCondition");
-        GameUtils.PostHttp("Factory.ashx", form, (result) =>
+        GameUtils.PostHttpWebRequest("Factory.ashx", form, (result) =>
         {
-            factoryList = JsonMapper.ToObject<List<FactoryModel>>(result);
+            string content = Encoding.UTF8.GetString(result);
+            factoryList = JsonMapper.ToObject<List<FactoryModel>>(content);
             if (factoryList != null && factoryList.Count > 0)
             {
                 List<string> optionList = new List<string>() { "请选择" };
