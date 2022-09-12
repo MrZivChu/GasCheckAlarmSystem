@@ -40,6 +40,7 @@ public class CameraShake : MonoBehaviour
 
     public void NotUseCameraShake()
     {
+        Camera.main.rect = new Rect(0.0f, 0.0f, 1.0f, 1.0f);
         isUseCameraShake = false;
     }
 

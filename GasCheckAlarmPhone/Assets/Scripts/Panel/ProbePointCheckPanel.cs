@@ -9,7 +9,6 @@ using System.IO;
 
 public class ProbePointCheckPanel : MonoBehaviour
 {
-    public Image okImg;
     public Image confirmImg;
     public Button confirmOkBtn;
     public Button confirmCancelBtn;
@@ -17,9 +16,8 @@ public class ProbePointCheckPanel : MonoBehaviour
     public InputField confirmInputField;
     public GameObject confirmPanel;
 
-    public RawImage cameraTexture;
     public Button saomaBtn;
-    public Text saomaTipText;
+    public SaomaPanel saomaPanel;
 
     public Transform contentTrans;
     public UnityEngine.Object itemRes;
@@ -28,21 +26,6 @@ public class ProbePointCheckPanel : MonoBehaviour
         saomaBtn.onClick.AddListener(OnSaoMa);
         confirmOkBtn.onClick.AddListener(OnConfirmOk);
         confirmCancelBtn.onClick.AddListener(OnConfirmCancel);
-    }
-
-    bool isGoScanning = false;
-    float interval = 0;
-    void Update()
-    {
-        if (isGoScanning)
-        {
-            interval += Time.deltaTime;
-            if (interval >= 0.5f)
-            {
-                SaoMaRunning();
-                interval = 0;
-            }
-        }
     }
 
     private void OnEnable()
@@ -106,58 +89,40 @@ public class ProbePointCheckPanel : MonoBehaviour
         });
     }
 
-    BarcodeReader barcodeReader;
-    WebCamTexture webCamTextrue;
     void OnSaoMa()
     {
-        if (webCamTextrue == null)
-        {
-            WebCamDevice[] devices = WebCamTexture.devices;
-            string deviceName = devices[0].name;
-            webCamTextrue = new WebCamTexture(deviceName, 600, 600);
-            webCamTextrue.Play();
-            cameraTexture.texture = webCamTextrue;
-            barcodeReader = new BarcodeReader();
-        }
-        okImg.gameObject.SetActive(false);
-        interval = 0;
-        isGoScanning = true;
+        saomaPanel.Run(SaomaSuccess);
     }
 
-    void SaoMaRunning()
+    void SaomaSuccess(string content, WebCamTexture camera)
     {
-        Color32[] data = webCamTextrue.GetPixels32();
-        Result result = barcodeReader.Decode(data, webCamTextrue.width, webCamTextrue.height);
-        if (result != null)
+        if (!string.IsNullOrEmpty(content))
         {
-            string content = result.Text;
-            if (!string.IsNullOrEmpty(content))
+            string[] contentArray = content.Split(new string[] { "\r\n" }, StringSplitOptions.None);
+            if (contentArray.Length > 1)
             {
-                string[] contentArray = content.Split('\n');
-                if (contentArray.Length > 1)
+                string[] content1 = contentArray[1].Split(':');
+                if (content1.Length > 1)
                 {
-                    string[] content1 = contentArray[1].Split(':');
-                    if (content1.Length > 1)
-                    {
-                        okImg.gameObject.SetActive(true);
-                        isGoScanning = false;
-                        OnSaoMaComplete(content1[1]);
-                    }
+                    OnSaoMaComplete(content1[1], camera);
+                    return;
                 }
             }
         }
+        MessageBox.Instance.PopOK("二维码信息没有匹配成功，信息为：" + content, null, "确定");
     }
 
     ProbeModel currentProbeModel = null;
-    void OnSaoMaComplete(string serialNumber)
+    void OnSaoMaComplete(string serialNumber, WebCamTexture camera)
     {
+        Debug.Log(serialNumber);
         if (probeDic != null && probeDic.Count > 0 && probeDic.ContainsKey(serialNumber))
         {
             currentProbeModel = probeDic[serialNumber];
             confirmInputField.text = string.Empty;
             confirmProbeNameText.text = currentProbeModel.ProbeName;
-            Texture2D texture2D = new Texture2D(webCamTextrue.width, webCamTextrue.height);
-            texture2D.SetPixels(webCamTextrue.GetPixels());
+            Texture2D texture2D = new Texture2D(camera.width, camera.height);
+            texture2D.SetPixels(camera.GetPixels());
             texture2D.Apply();
             Sprite sp = Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), new Vector2());
             confirmImg.sprite = sp;

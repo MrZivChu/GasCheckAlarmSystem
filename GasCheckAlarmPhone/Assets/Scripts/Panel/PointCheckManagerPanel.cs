@@ -15,7 +15,7 @@ public class PointCheckManagerPanel : UIEventHelper
     int pageIndex = 1;
     int pageCount = 1;
     int rowCount = 1;
-    int pageSize = 16;
+    int pageSize = 15;
 
     public InputField input_deviceName;
     public InputField input_userName;
