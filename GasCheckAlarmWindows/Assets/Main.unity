@@ -23787,7 +23787,7 @@ MonoBehaviour:
       ShowHeader: 1
       BackgroundColor: {r: 0, g: 0, b: 0, a: 1}
       TextColor: {r: 1, g: 1, b: 1, a: 1}
-      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 3}
       ShowNextAndPreviousMonthButtons: 1
       ShowNextAndPreviousYearButtons: 1
       Height: 48
@@ -23834,18 +23834,18 @@ MonoBehaviour:
       WeekNumberColumnWidth: 0
       OverrideTemplate: 1
       TextColor: {r: 1, g: 1, b: 1, a: 1}
-      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 3}
       FontSize: 15
       BackgroundImage: {fileID: 0}
       BackgroundColor: {r: 0.07, g: 0.313, b: 0.486, a: 1}
     Days:
       BackgroundColor: {r: 0, g: 0, b: 0, a: 1}
-      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 3}
       FontSize: 15
       CurrentMonth:
         OverrideTemplate: 1
         TextColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
-        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 3}
         BackgroundColors:
           m_NormalColor: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 1}
           m_HighlightedColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
@@ -23856,7 +23856,7 @@ MonoBehaviour:
       OtherMonths:
         OverrideTemplate: 1
         TextColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 0.47058824}
-        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 3}
         BackgroundColors:
           m_NormalColor: {r: 0.0627451, g: 0.0627451, b: 0.0627451, a: 1}
           m_HighlightedColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
@@ -23867,7 +23867,7 @@ MonoBehaviour:
       Today:
         OverrideTemplate: 1
         TextColor: {r: 0, g: 0.8602941, b: 0.2530277, a: 1}
-        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 3}
         BackgroundColors:
           m_NormalColor: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 1}
           m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
@@ -23878,7 +23878,7 @@ MonoBehaviour:
       SelectedDay:
         OverrideTemplate: 1
         TextColor: {r: 0, g: 0.7655708, b: 0.88235295, a: 1}
-        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 3}
         BackgroundColors:
           m_NormalColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
           m_HighlightedColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
@@ -27304,8 +27304,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 520613655}
   m_HandleRect: {fileID: 520613654}
   m_Direction: 0
-  m_Value: 0
-  m_Size: 0.99011636
+  m_Value: 0.000017951517
+  m_Size: 0.9901163
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -88009,7 +88009,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0.00010108948, y: 0}
+  m_AnchoredPosition: {x: -0.00032615662, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1346991520
@@ -107426,7 +107426,7 @@ MonoBehaviour:
       ShowHeader: 1
       BackgroundColor: {r: 0, g: 0, b: 0, a: 1}
       TextColor: {r: 1, g: 1, b: 1, a: 1}
-      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 3}
       ShowNextAndPreviousMonthButtons: 1
       ShowNextAndPreviousYearButtons: 1
       Height: 48
@@ -107473,18 +107473,18 @@ MonoBehaviour:
       WeekNumberColumnWidth: 0
       OverrideTemplate: 1
       TextColor: {r: 1, g: 1, b: 1, a: 1}
-      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 3}
       FontSize: 15
       BackgroundImage: {fileID: 0}
       BackgroundColor: {r: 0.07, g: 0.313, b: 0.486, a: 1}
     Days:
       BackgroundColor: {r: 0, g: 0, b: 0, a: 1}
-      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 3}
       FontSize: 15
       CurrentMonth:
         OverrideTemplate: 1
         TextColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
-        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 3}
         BackgroundColors:
           m_NormalColor: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 1}
           m_HighlightedColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
@@ -107495,7 +107495,7 @@ MonoBehaviour:
       OtherMonths:
         OverrideTemplate: 1
         TextColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 0.47058824}
-        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 3}
         BackgroundColors:
           m_NormalColor: {r: 0.0627451, g: 0.0627451, b: 0.0627451, a: 1}
           m_HighlightedColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
@@ -107506,7 +107506,7 @@ MonoBehaviour:
       Today:
         OverrideTemplate: 1
         TextColor: {r: 0, g: 0.8602941, b: 0.2530277, a: 1}
-        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 3}
         BackgroundColors:
           m_NormalColor: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 1}
           m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
@@ -107517,7 +107517,7 @@ MonoBehaviour:
       SelectedDay:
         OverrideTemplate: 1
         TextColor: {r: 0, g: 0.7655708, b: 0.88235295, a: 1}
-        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 3}
         BackgroundColors:
           m_NormalColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
           m_HighlightedColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
@@ -132677,7 +132677,7 @@ MonoBehaviour:
       ShowHeader: 1
       BackgroundColor: {r: 0, g: 0, b: 0, a: 1}
       TextColor: {r: 1, g: 1, b: 1, a: 1}
-      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 3}
       ShowNextAndPreviousMonthButtons: 1
       ShowNextAndPreviousYearButtons: 1
       Height: 48
@@ -132724,18 +132724,18 @@ MonoBehaviour:
       WeekNumberColumnWidth: 0
       OverrideTemplate: 1
       TextColor: {r: 1, g: 1, b: 1, a: 1}
-      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 3}
       FontSize: 15
       BackgroundImage: {fileID: 0}
       BackgroundColor: {r: 0.07, g: 0.313, b: 0.486, a: 1}
     Days:
       BackgroundColor: {r: 0, g: 0, b: 0, a: 1}
-      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+      Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 3}
       FontSize: 15
       CurrentMonth:
         OverrideTemplate: 1
         TextColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
-        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 3}
         BackgroundColors:
           m_NormalColor: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 1}
           m_HighlightedColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
@@ -132746,7 +132746,7 @@ MonoBehaviour:
       OtherMonths:
         OverrideTemplate: 1
         TextColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 0.47058824}
-        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 3}
         BackgroundColors:
           m_NormalColor: {r: 0.0627451, g: 0.0627451, b: 0.0627451, a: 1}
           m_HighlightedColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}
@@ -132757,7 +132757,7 @@ MonoBehaviour:
       Today:
         OverrideTemplate: 1
         TextColor: {r: 0, g: 0.8602941, b: 0.2530277, a: 1}
-        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 3}
         BackgroundColors:
           m_NormalColor: {r: 0.1254902, g: 0.1254902, b: 0.1254902, a: 1}
           m_HighlightedColor: {r: 1, g: 1, b: 1, a: 1}
@@ -132768,7 +132768,7 @@ MonoBehaviour:
       SelectedDay:
         OverrideTemplate: 1
         TextColor: {r: 0, g: 0.7655708, b: 0.88235295, a: 1}
-        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+        BackgroundImage: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 3}
         BackgroundColors:
           m_NormalColor: {r: 0.5019608, g: 0.5019608, b: 0.5019608, a: 1}
           m_HighlightedColor: {r: 0.7529412, g: 0.7529412, b: 0.7529412, a: 1}

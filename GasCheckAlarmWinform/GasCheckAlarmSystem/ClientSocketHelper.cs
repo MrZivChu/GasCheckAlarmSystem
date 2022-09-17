@@ -36,37 +36,21 @@ class ClientSocketHelper
     {
         while (!isExit)
         {
-            try
+            if (clientSocket != null)
             {
-                if (clientSocket != null)
-                {
-                    byte[] bytes = new byte[1024];
-                    int length = clientSocket.Receive(bytes);
-                    string result = Encoding.UTF8.GetString(bytes, 0, length);
-                    if (dataReceiveAction != null)
-                        dataReceiveAction(result);
-                }
-            }
-            catch (Exception ex)
-            {
-                //File.WriteAllText("D:\\ReciveData.txt", ex.Message);
-                //System.Windows.Forms.MessageBox.Show("ReciveData error  = " + ex.Message);
+                byte[] bytes = new byte[1024];
+                int length = clientSocket.Receive(bytes);
+                string result = Encoding.UTF8.GetString(bytes, 0, length);
+                if (dataReceiveAction != null)
+                    dataReceiveAction(result);
             }
         }
     }
 
     public void SendData(string content)
     {
-        try
-        {
-            if (clientSocket != null)
-                clientSocket.Send(Encoding.UTF8.GetBytes(content));
-        }
-        catch (Exception ex)
-        {
-            //File.WriteAllText("D:\\ClientSocketHelperSendData.txt", ex.Message);
-            //System.Windows.Forms.MessageBox.Show("SendData error  = " + ex.Message);
-        }
+        if (clientSocket != null)
+            clientSocket.Send(Encoding.UTF8.GetBytes(content));
     }
 
     public void Close()

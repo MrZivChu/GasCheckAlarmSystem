@@ -209,7 +209,7 @@ public class CSharpUtils
     {
         foreach (Process p in Process.GetProcesses())
         {
-            if (p.ProcessName.Contains(processName))
+            if (!p.HasExited && p.ProcessName.Contains(processName))
             {
                 try
                 {

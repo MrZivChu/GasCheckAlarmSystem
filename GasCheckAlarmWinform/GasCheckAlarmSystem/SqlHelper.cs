@@ -8,12 +8,12 @@ using System.Data;
 
 public class SqlHelper
 {
-    public static string connstr = "server=hds16173015.my3w.com;database=hds16173015_db;Integrated Security=false;User ID=hds16173015;Password=!@#Dz123";
+    public static string connectionString = "server=hds16173015.my3w.com;database=hds16173015_db;Integrated Security=false;User ID=hds16173015;Password=!@#Dz123";
 
     public static int ExecuteNonQuery(string cmdText,
         params SqlParameter[] parameters)
     {
-        using (SqlConnection conn = new SqlConnection(connstr))
+        using (SqlConnection conn = new SqlConnection(connectionString))
         {
             conn.Open();
             using (SqlCommand cmd = conn.CreateCommand())
@@ -29,7 +29,7 @@ public class SqlHelper
     public static object ExecuteScalar(string cmdText,
         params SqlParameter[] parameters)
     {
-        using (SqlConnection conn = new SqlConnection(connstr))
+        using (SqlConnection conn = new SqlConnection(connectionString))
         {
             conn.Open();
             using (SqlCommand cmd = conn.CreateCommand())
@@ -45,7 +45,7 @@ public class SqlHelper
     public static DataTable ExecuteDataTable(string cmdText,
         params SqlParameter[] parameters)
     {
-        using (SqlConnection conn = new SqlConnection(connstr))
+        using (SqlConnection conn = new SqlConnection(connectionString))
         {
             conn.Open();
             using (SqlCommand cmd = conn.CreateCommand())
@@ -66,7 +66,7 @@ public class SqlHelper
     public static SqlDataReader ExecuteDataReader(string cmdText,
         params SqlParameter[] parameters)
     {
-        using (SqlConnection conn = new SqlConnection(connstr))
+        using (SqlConnection conn = new SqlConnection(connectionString))
         {
             conn.Open();
             using (SqlCommand cmd = conn.CreateCommand())
@@ -88,7 +88,7 @@ public class SqlHelper
     public static SqlDataReader ExecuteProcQueryDataReader(string procName,
          params SqlParameter[] parameters)
     {
-        using (SqlConnection conn = new SqlConnection(connstr))
+        using (SqlConnection conn = new SqlConnection(connectionString))
         {
             conn.Open();
             using (SqlCommand cmd = conn.CreateCommand())
@@ -113,7 +113,7 @@ public class SqlHelper
     public static DataSet ExecuteProcQueryDataSet(string procName,
          params SqlParameter[] parameters)
     {
-        using (SqlConnection conn = new SqlConnection(connstr))
+        using (SqlConnection conn = new SqlConnection(connectionString))
         {
             conn.Open();
             using (SqlCommand cmd = conn.CreateCommand())
@@ -140,7 +140,7 @@ public class SqlHelper
     {
         if (dt != null && dt.Rows.Count != 0 && !string.IsNullOrEmpty(tabelName))
         {
-            using (SqlConnection conn = new SqlConnection(connstr))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
                 conn.Open();
                 using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))

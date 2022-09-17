@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 public class RealtimeEventData
@@ -30,9 +31,10 @@ public class GlobalCheckGas : MonoBehaviour
         if (tempRefreshTime > refreshTime)
         {
             tempRefreshTime = 0;
-            List<RealtimeDataModel> rsult = RealtimeDataDAL.SelectAllRealtimeDataByCondition();
-            RealtimeEventData data = HandleRealtimeData(rsult);
+            List<RealtimeDataModel> result = RealtimeDataDAL.SelectAllRealtimeDataByCondition();
+            RealtimeEventData data = HandleRealtimeData(result);
             JudgeWarningShout(data);
+            HandleSMS(data);
             EventManager.Instance.DisPatch(NotifyType.UpdateRealtimeDataList, data);
         }
         tempDeleteHistoryDataTime += Time.deltaTime;
@@ -134,5 +136,67 @@ public class GlobalCheckGas : MonoBehaviour
             AudioManager.instance.PauseWarningShout();
             CameraShake.instance.StopShake();
         }
+    }
+
+    static List<int> smsDic = new List<int>();
+    static bool hasNew = false;
+    static DateTime preTime = DateTime.Now;
+    void HandleSMS(RealtimeEventData realtimeEventData)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < realtimeEventData.normalList.Count; i++)
+        {
+            RealtimeDataModel model = realtimeEventData.normalList[i];
+            if (smsDic.Contains(model.ProbeID))
+            {
+                smsDic.Remove(model.ProbeID);
+            }
+        }
+        hasNew = false;
+        for (int i = 0; i < realtimeEventData.firstList.Count; i++)
+        {
+            RealtimeDataModel model = realtimeEventData.firstList[i];
+            sb = sb.Append(HandleSMSProbeStr(model));
+        }
+        for (int i = 0; i < realtimeEventData.secondList.Count; i++)
+        {
+            RealtimeDataModel model = realtimeEventData.secondList[i];
+            sb = sb.Append(HandleSMSProbeStr(model));
+        }
+        for (int i = 0; i < realtimeEventData.noResponseList.Count; i++)
+        {
+            RealtimeDataModel model = realtimeEventData.noResponseList[i];
+            sb = sb.Append(HandleSMSProbeStr(model));
+        }
+        if (hasNew)
+        {
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                preTime = DateTime.Now;
+                SMSHelper.SendSMS(sb.ToString());
+            }
+        }
+        else
+        {
+            int overTime = Application.isEditor ? 15 : 60 * 60 * 1;//1个小时
+            if (DateTime.Now.Subtract(preTime).TotalSeconds > overTime)
+            {
+                if (!string.IsNullOrEmpty(sb.ToString()))
+                {
+                    preTime = DateTime.Now;
+                    SMSHelper.SendSMS(sb.ToString());
+                }
+            }
+        }
+    }
+
+    string HandleSMSProbeStr(RealtimeDataModel model)
+    {
+        if (!smsDic.Contains(model.ProbeID))
+        {
+            smsDic.Add(model.ProbeID);
+            hasNew = true;
+        }
+        return "[" + model.ProbeName + "]";
     }
 }

@@ -1,1 +1,0 @@
-{"productName":"钢铁有限责任公司\n气体监控系统","isEnterPosDir":false,"isLog":false,"mainLight":1.5,"subLight":0.300000011920929,"isSetLightByUI":false,"commName":"COM10"}

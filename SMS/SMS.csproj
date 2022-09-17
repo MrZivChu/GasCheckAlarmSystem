@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <RootNamespace>AlibabaCloud.SDK.SMS</RootNamespace>
+    <ApplicationIcon />
+    <StartupObject></StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>fabu\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="AlibabaCloud.SDK.Dysmsapi20170525" Version="1.0.2" />
+    <PackageReference Include="AlibabaCloud.OpenApiClient" Version="0.0.10" />
+    <PackageReference Include="AlibabaCloud.TeaConsole" Version="0.1.0" />
+    <PackageReference Include="AlibabaCloud.DarabonbaEnv" Version="0.1.0" />
+    <PackageReference Include="AlibabaCloud.TeaUtil" Version="0.1.11" />
+    <PackageReference Include="AlibabaCloud.DarabonbaTime" Version="1.0.0" />
+    <PackageReference Include="AlibabaCloud.DarabonbaString" Version="1.0.0" />
+    <PackageReference Include="Tea" Version="1.0.9" />
+  </ItemGroup>
+</Project>

@@ -23,6 +23,11 @@ namespace GasCheckAlarmSystem
         public bool isSetLightByUI;
         public string commName;
         public string productName;
+        public string sqlIP;
+        public string sqlDatabase;
+        public string sqlUserId;
+        public string sqlUserPwd;
+        public bool isOpenWaterSeal;
     }
     public partial class Form1 : Form
     {
@@ -39,6 +44,7 @@ namespace GasCheckAlarmSystem
         {
             RealtimeDataDAL.ResetGasValue();
             ReadConfig();
+            InitSqlConnection();
             InitControl();
             InitSerialPort();
         }
@@ -60,30 +66,39 @@ namespace GasCheckAlarmSystem
 
         void ReadConfig()
         {
-            string configPath = AppDomain.CurrentDomain.BaseDirectory + "/config.txt";
+            string configPath = AppDomain.CurrentDomain.BaseDirectory + "/configPath.txt";
             if (File.Exists(configPath))
             {
-                string content = File.ReadAllText(configPath);
-                if (!string.IsNullOrEmpty(content))
+                string configPathContent = File.ReadAllText(configPath);
+                if (File.Exists(configPathContent))
                 {
-                    try
+                    string content = File.ReadAllText(configPathContent);
+                    if (!string.IsNullOrEmpty(content))
                     {
-                        gameConfig_ = LitJson.JsonMapper.ToObject<SGameConfig>(content);
+                        try
+                        {
+                            gameConfig_ = LitJson.JsonMapper.ToObject<SGameConfig>(content);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("配置文件转换成Json格式失败：" + ex.Message);
+                        }
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        MessageBox.Show("配置文件转换成Json格式失败：" + ex.Message);
+                        MessageBox.Show("配置文件内容为空");
                     }
                 }
                 else
                 {
-                    MessageBox.Show("配置文件内容为空");
+                    MessageBox.Show("配置文件不存在：" + configPathContent);
                 }
             }
-            else
-            {
-                MessageBox.Show("配置文件不存在：" + configPath);
-            }
+        }
+
+        void InitSqlConnection()
+        {
+            SqlHelper.connectionString = string.Format(SqlHelper.connectionString, gameConfig_.sqlIP, gameConfig_.sqlDatabase, gameConfig_.sqlUserId, gameConfig_.sqlUserPwd);
         }
 
         void InitControl()
