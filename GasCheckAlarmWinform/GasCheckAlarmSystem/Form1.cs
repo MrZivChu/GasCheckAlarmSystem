@@ -11,23 +11,22 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace GasCheckAlarmSystem
 {
     public struct SGameConfig
     {
-        public bool isEnterPosDir;
         public bool isLog;
-        public double mainLight;
-        public double subLight;
-        public bool isSetLightByUI;
+        public bool isEnterPosDir;
+        public bool isOpenWaterSeal;
         public string commName;
         public string productName;
         public string sqlIP;
         public string sqlDatabase;
         public string sqlUserId;
         public string sqlUserPwd;
-        public bool isOpenWaterSeal;
+        public string smsPhone;
     }
     public partial class Form1 : Form
     {
@@ -49,21 +48,6 @@ namespace GasCheckAlarmSystem
             InitSerialPort();
         }
 
-        string PrintSendData(string startProbe, string endProbe, string machineAddress)
-        {
-            int firstDec = Convert.ToInt32(startProbe);
-            int endDec = Convert.ToInt32(endProbe);
-            string firstHex = firstDec.ToString("X4");
-            string endHex = endDec.ToString("X4");
-
-            int machineDec = Convert.ToInt32(machineAddress);
-            string machineHex = machineDec.ToString("X2");
-
-            StringBuilder sb = new StringBuilder();
-            sb.Append(machineHex).Append("03").Append(firstHex).Append(endHex);
-            return HexHelper.GetTxtSendText(sb.ToString());
-        }
-
         void ReadConfig()
         {
             string configPath = AppDomain.CurrentDomain.BaseDirectory + "/configPath.txt";
@@ -75,23 +59,8 @@ namespace GasCheckAlarmSystem
                     string content = File.ReadAllText(configPathContent);
                     if (!string.IsNullOrEmpty(content))
                     {
-                        try
-                        {
-                            gameConfig_ = LitJson.JsonMapper.ToObject<SGameConfig>(content);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show("配置文件转换成Json格式失败：" + ex.Message);
-                        }
+                        gameConfig_ = LitJson.JsonMapper.ToObject<SGameConfig>(content);
                     }
-                    else
-                    {
-                        MessageBox.Show("配置文件内容为空");
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("配置文件不存在：" + configPathContent);
                 }
             }
         }
@@ -157,18 +126,30 @@ namespace GasCheckAlarmSystem
 
         private void button1_Click(object sender, EventArgs e)
         {
-            File.WriteAllText("d:\\" + DateTime.Now.ToString("MM-dd HH-mm") + ".txt", log_);
-            MessageBox.Show("保存成功");
-        }
-
-        private void Form1_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            button1_Click(null, null);
+            string filePath = "c:\\" + DateTime.Now.ToString("MM-dd HH-mm") + ".txt";
+            File.WriteAllText(filePath, log_);
+            Process.Start(filePath);
+            log_ = string.Empty;
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             textBox4.Text = PrintSendData(textBox1.Text, textBox2.Text, textBox3.Text);
+        }
+
+        string PrintSendData(string startProbe, string endProbe, string machineAddress)
+        {
+            int firstDec = Convert.ToInt32(startProbe);
+            int endDec = Convert.ToInt32(endProbe);
+            string firstHex = firstDec.ToString("X4");
+            string endHex = endDec.ToString("X4");
+
+            int machineDec = Convert.ToInt32(machineAddress);
+            string machineHex = machineDec.ToString("X2");
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append(machineHex).Append("03").Append(firstHex).Append(endHex);
+            return HexHelper.GetTxtSendText(sb.ToString());
         }
     }
 }
