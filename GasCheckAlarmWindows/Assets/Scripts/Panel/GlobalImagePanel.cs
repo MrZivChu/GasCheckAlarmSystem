@@ -43,7 +43,7 @@ public class GlobalImagePanel : UIEventHelper
         RealtimeEventData realtimeEventData = (RealtimeEventData)data;
         InitData(realtimeEventData);
     }
-
+    
     List<RealtimeDataModel> realtimeDataModelList = new List<RealtimeDataModel>();
     private void InitData(RealtimeEventData realtimeEventData)
     {

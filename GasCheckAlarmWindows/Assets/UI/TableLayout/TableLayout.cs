@@ -195,7 +195,9 @@ namespace UI.Tables
                 rowRectTransform.anchorMin = new Vector2(0, 1);
                 rowRectTransform.anchorMax = new Vector2(0, 1);
                 rowRectTransform.localScale = new Vector3(1, 1, 1);
-                //rowRectTransform.localPosition = Vector3.zero;
+                Vector3 vv = rowRectTransform.localPosition;
+                vv.z = 0;
+                rowRectTransform.localPosition = vv;
                 rowRectTransform.localRotation = new Quaternion();
 
                 rowRectTransform.sizeDelta = new Vector2(tableWidth - (this.padding.left + this.padding.right), rowHeight);

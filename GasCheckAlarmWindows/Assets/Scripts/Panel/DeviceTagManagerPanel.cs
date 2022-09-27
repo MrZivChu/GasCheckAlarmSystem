@@ -178,7 +178,6 @@ public class DeviceTagManagerPanel : UIEventHelper
         }
     }
 
-    public Camera uiCamera;
     private void Update()
     {
         if (isLongPress && targetBtn)
@@ -187,7 +186,7 @@ public class DeviceTagManagerPanel : UIEventHelper
             float halfWidth = graphPanelRT.rect.size.x / 2;
             float halfHeight = graphPanelRT.rect.size.y / 2;
             Vector2 uiPosition;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(graphPanelRT, Input.mousePosition, uiCamera, out uiPosition);
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(graphPanelRT, Input.mousePosition, Camera.main, out uiPosition);
             Vector2 targetSize = targetBtn.GetComponent<RectTransform>().rect.size;
             if (Mathf.Abs(uiPosition.x) > halfWidth || Mathf.Abs(uiPosition.y) > halfHeight)
             {

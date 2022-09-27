@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -57,5 +58,8 @@ public class HandleLogPanel : UIEventHelper
 
         JsonHandleHelper.UpdateConfig(isLog, isEnterPosDir, isOpenWaterSeal, productName, sqlIP, sqlDatabase, sqlUserId, sqlUserPwd, smsPhone);
         Application.Quit();
+        string exePath = Application.streamingAssetsPath + "/../../GasCheckAlarmSystem.exe";
+        File.WriteAllText("d:\\121.txt", exePath);
+        System.Diagnostics.Process.Start(exePath);
     }
 }

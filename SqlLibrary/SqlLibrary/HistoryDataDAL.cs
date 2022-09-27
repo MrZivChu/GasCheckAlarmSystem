@@ -103,4 +103,34 @@ public class HistoryDataDAL
         int result = SqlHelper.ExecuteNonQuery(sql, null);
         return result >= 1 ? true : false;
     }
+
+    public static List<HistoryDataModel> SelectHistoryDataForChart(int machineID, string startTime, string endTime)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append(@"select GasValue,CheckTime,ProbeName from HistoryData where MachineID=@MachineID and GasValue >= FirstAlarmValue ");
+        List<SqlParameter> para = new List<SqlParameter>()
+        {
+            new SqlParameter("@MachineID",machineID)
+        };
+        if (!string.IsNullOrEmpty(startTime) && !string.IsNullOrEmpty(endTime))
+        {
+            sb.Append(" and CheckTime >= @StartCheckTime and CheckTime <= @EndCheckTime ");
+            para.Add(new SqlParameter("@StartCheckTime", startTime));
+            para.Add(new SqlParameter("@EndCheckTime", endTime));
+        }
+        DataTable dt = SqlHelper.ExecuteDataTable(sb.ToString(), para.ToArray());
+        List<HistoryDataModel> modelList = new List<HistoryDataModel>();
+        if (dt != null && dt.Rows.Count > 0)
+        {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                HistoryDataModel model = new HistoryDataModel();
+                model.GasValue = Convert.ToSingle(dt.Rows[i]["GasValue"]);
+                model.CheckTime = Convert.ToDateTime(dt.Rows[i]["CheckTime"]);
+                model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
+                modelList.Add(model);
+            }
+        }
+        return modelList;
+    }
 }

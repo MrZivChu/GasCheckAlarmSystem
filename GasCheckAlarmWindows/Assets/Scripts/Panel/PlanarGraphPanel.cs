@@ -9,7 +9,6 @@ using UnityEngine.UI;
 public class PlanarGraphPanel : UIEventHelper
 {
     public GameObject itemRes;
-    public Camera uiCamera;
     public Transform contentTrans;
     public SelectProbeForGraphPanel selectProbeForGraphPanel;
     public EditProbeForGraphPanel editProbeForGraphPanel;
@@ -70,7 +69,7 @@ public class PlanarGraphPanel : UIEventHelper
         float halfWidth = graphPanelRT.rect.size.x / 2;
         float halfHeight = graphPanelRT.rect.size.y / 2;
         Vector2 uiPosition;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(graphPanelRT, Input.mousePosition, uiCamera, out uiPosition);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(graphPanelRT, Input.mousePosition, Camera.main, out uiPosition);
         print(uiPosition.x + "," + uiPosition.y);
         if (Mathf.Abs(uiPosition.x) > halfWidth || Mathf.Abs(uiPosition.y) > halfHeight)
         {

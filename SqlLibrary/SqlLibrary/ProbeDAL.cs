@@ -173,4 +173,24 @@ public class ProbeDAL
         return insertIndex;
     }
 
+    public static List<ProbeModel> SelectAllProbeNameByMachineID(int machineID)
+    {
+        string sql = @"select ProbeName from Probe where MachineID=@MachineID ";
+        List<SqlParameter> parameter = new List<SqlParameter>{
+                 new SqlParameter("@MachineID",machineID),
+            };
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, parameter.ToArray());
+        List<ProbeModel> modelList = new List<ProbeModel>();
+        if (dt.Rows.Count > 0)
+        {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                ProbeModel model = new ProbeModel();
+                model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
+                modelList.Add(model);
+            }
+        }
+        return modelList;
+    }
+
 }

@@ -58,10 +58,6 @@ public class ProbeInSceneHelper : UIEventHelper
                 }
             }
         }
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            SceneManager.LoadScene("Main", LoadSceneMode.Single);
-        }
     }
 
     bool RaycastHitProbe()
