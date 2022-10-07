@@ -25,7 +25,7 @@ public class UserDAL
                 model.AccountPwd = dt.Rows[i]["AccountPwd"].ToString();
                 model.UserName = dt.Rows[i]["UserName"].ToString();
                 model.UserNumber = dt.Rows[i]["UserNumber"].ToString();
-                model.Authority = Convert.ToInt32(dt.Rows[i]["Authority"]);
+                model.Authority = (EAuthority)(dt.Rows[i]["Authority"]);
                 model.Phone = dt.Rows[i]["Phone"].ToString();
 
                 modelList.Add(model);
@@ -49,7 +49,7 @@ public class UserDAL
                 model.AccountPwd = dt.Rows[i]["AccountPwd"].ToString();
                 model.UserName = dt.Rows[i]["UserName"].ToString();
                 model.UserNumber = dt.Rows[i]["UserNumber"].ToString();
-                model.Authority = Convert.ToInt32(dt.Rows[i]["Authority"]);
+                model.Authority = (EAuthority)(dt.Rows[i]["Authority"]);
                 model.Phone = dt.Rows[i]["Phone"].ToString();
                 modelList.Add(model);
             }
@@ -105,7 +105,7 @@ public class UserDAL
             sql += " and UserNumber like '%" + userNumber + "%' ";
         if (!string.IsNullOrEmpty(Phone))
             sql += " and Phone like '%" + Phone + "%' ";
-        if (!string.IsNullOrEmpty(authority.ToString()) && (authority == 1 || authority == 0))
+        if (authority == 1 || authority == 0)
             sql += " and Authority like '%" + authority + "%' ";
         List<UserModel> modelList = new List<UserModel>();
         DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
@@ -119,7 +119,7 @@ public class UserDAL
                 model.AccountPwd = dt.Rows[i]["AccountPwd"].ToString();
                 model.UserName = dt.Rows[i]["UserName"].ToString();
                 model.UserNumber = dt.Rows[i]["UserNumber"].ToString();
-                model.Authority = Convert.ToInt32(dt.Rows[i]["Authority"]);
+                model.Authority = (EAuthority)(dt.Rows[i]["Authority"]);
                 model.Phone = dt.Rows[i]["Phone"].ToString();
                 modelList.Add(model);
             }

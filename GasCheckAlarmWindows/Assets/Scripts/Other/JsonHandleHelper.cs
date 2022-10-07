@@ -1,8 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using UnityEngine;
-using UnityEngine.UI;
 
 public struct SGameConfig
 {
@@ -25,9 +22,9 @@ public class JsonHandleHelper : UIEventHelper
     static string configPath = string.Empty;
     void Awake()
     {
-        WritePathFile();
         configPath = Application.persistentDataPath + "/config.txt";
-        Debug.Log(configPath);
+        File.WriteAllText(Application.streamingAssetsPath + "/configPath.txt", configPath);
+
         if (File.Exists(configPath))
         {
             string content = File.ReadAllText(configPath);
@@ -44,19 +41,13 @@ public class JsonHandleHelper : UIEventHelper
             gameConfig.sqlUserPwd = "1";
             gameConfig.productName = "钢铁有限责任公司\n气体监控系统";
             gameConfig.isOpenWaterSeal = false;
-            gameConfig.smsPhone = "18013031202";
+            gameConfig.smsPhone = string.Empty;
             string json = LitJson.JsonMapper.ToJson(gameConfig);
             File.WriteAllText(configPath, json);
         }
-        SqlHelper.connectionString = string.Format(SqlHelper.connectionString, gameConfig.sqlIP, gameConfig.sqlDatabase, gameConfig.sqlUserId, gameConfig.sqlUserPwd);
+        SqlHelper.InitSqlConnection(gameConfig.sqlIP, gameConfig.sqlDatabase, gameConfig.sqlUserId, gameConfig.sqlUserPwd);
         isRemoteServer = gameConfig.sqlIP != "127.0.0.1";
         Debug.unityLogger.logEnabled = Application.isEditor ? true : gameConfig.isLog;
-    }
-
-    void WritePathFile()
-    {
-        string configPath = Application.streamingAssetsPath + "/configPath.txt";
-        File.WriteAllText(configPath, Application.persistentDataPath + "/config.txt");
     }
 
     public static void UpdateConfigWithCommName(string commName)
@@ -68,14 +59,14 @@ public class JsonHandleHelper : UIEventHelper
 
     public static void UpdateConfig(bool isLog, bool isEnterPosDir, bool isOpenWaterSeal, string productName, string sqlIP, string sqlDatabase, string sqlUserId, string sqlUserPwd, string smsPhone)
     {
-        gameConfig.isLog = isLog;
         gameConfig.isEnterPosDir = isEnterPosDir;
-        gameConfig.isOpenWaterSeal = isOpenWaterSeal;
-        gameConfig.productName = productName;
+        gameConfig.isLog = isLog;
         gameConfig.sqlIP = sqlIP;
         gameConfig.sqlDatabase = sqlDatabase;
         gameConfig.sqlUserId = sqlUserId;
         gameConfig.sqlUserPwd = sqlUserPwd;
+        gameConfig.productName = productName;
+        gameConfig.isOpenWaterSeal = isOpenWaterSeal;
         gameConfig.smsPhone = smsPhone;
         string json = LitJson.JsonMapper.ToJson(gameConfig);
         File.WriteAllText(configPath, json);

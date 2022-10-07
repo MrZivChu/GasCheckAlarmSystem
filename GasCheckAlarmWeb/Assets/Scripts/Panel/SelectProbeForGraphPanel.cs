@@ -31,13 +31,13 @@ public class SelectProbeForGraphPanel : UIEventHelper
     void OnOk(Button btn)
     {
         WWWForm form = new WWWForm();
-        form.AddField("requestType", "EditRealtimePos2DByID");
+        form.AddField("requestType", "EditProbePos2DByID");
         form.AddField("id", probeModel.ID);
         form.AddField("pos2D", uiPos.x + "," + uiPos.y);
-        GameUtils.PostHttpWebRequest("RealtimeData.ashx", form, null, null);
-
+        GameUtils.PostHttpWebRequest("Probe.ashx", form, null, null);
         MessageBox.Instance.PopOK("新增成功", () =>
         {
+            EventManager.Instance.DisPatch(NotifyType.UpdatePos2D);
             gameObject.SetActive(false);
         }, "确定");
     }

@@ -10,6 +10,7 @@ public class AddMachinePanel : UIEventHelper
     public InputField input_machineAddress;
     public Dropdown dropdown_factory;
     public Dropdown dropdown_protocol;
+    public Dropdown dropdown_baundRate;
 
     public Button btn_cancel;
     public Button btn_ok;
@@ -17,9 +18,6 @@ public class AddMachinePanel : UIEventHelper
     {
         RegisterBtnClick(btn_cancel, OnCancel);
         RegisterBtnClick(btn_ok, OnOk);
-        dropdown_protocol.ClearOptions();
-        dropdown_protocol.AddOptions(FormatData.machineTypeFormat);
-        dropdown_protocol.value = 0;
     }
 
     void OnCancel(Button btn)
@@ -34,16 +32,7 @@ public class AddMachinePanel : UIEventHelper
         int machineProtocol = dropdown_protocol.value;
         int dd = dropdown_factory.value;
         FactoryModel model = factoryList[dd];
-
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "InsertMachine");
-        form.AddField("mailAddress", machineAddress);
-        form.AddField("machineName", machineName);
-        form.AddField("factoryID", model.ID);
-        form.AddField("factoryName", model.FactoryName);
-        form.AddField("machineProtocol", machineProtocol);
-        GameUtils.PostHttp("Machine.ashx", form, null, null);
-
+        MachineDAL.InsertMachine(machineAddress, machineName, model.ID, machineProtocol, dropdown_baundRate.value);
         MessageBox.Instance.PopOK("新增成功", () =>
         {
             EventManager.Instance.DisPatch(NotifyType.UpdateMachineList);
@@ -54,26 +43,36 @@ public class AddMachinePanel : UIEventHelper
     List<FactoryModel> factoryList;
     private void OnEnable()
     {
-        input_machineName.text = string.Empty;
-        input_machineAddress.text = string.Empty;
-
         dropdown_factory.ClearOptions();
-
-        WWWForm form = new WWWForm();
-        form.AddField("requestType", "SelectAllFactoryByCondition");
-        GameUtils.PostHttp("Factory.ashx", form, (result) =>
+        factoryList = FactoryDAL.SelectAllFactoryByCondition();
+        if (factoryList != null && factoryList.Count > 0)
         {
-            factoryList = JsonMapper.ToObject<List<FactoryModel>>(result);
-            if (factoryList != null && factoryList.Count > 0)
+            List<string> optionList = new List<string>();
+            for (int i = 0; i < factoryList.Count; i++)
             {
-                List<string> optionList = new List<string>();
-                for (int i = 0; i < factoryList.Count; i++)
-                {
-                    optionList.Add(factoryList[i].FactoryName);
-                }
-                dropdown_factory.AddOptions(optionList);
-                dropdown_factory.value = 0;
+                optionList.Add(factoryList[i].FactoryName);
             }
-        }, null);
+            dropdown_factory.AddOptions(optionList);
+            dropdown_factory.value = 0;
+            dropdown_factory.RefreshShownValue();
+        }
+
+        dropdown_protocol.ClearOptions();
+        foreach (var item in FormatData.protocolTypeFormat)
+        {
+            Dropdown.OptionData data = new Dropdown.OptionData(item.Value);
+            dropdown_protocol.options.Add(data);
+        }
+        dropdown_protocol.value = 0;
+        dropdown_protocol.RefreshShownValue();
+
+        dropdown_baundRate.ClearOptions();
+        foreach (var item in FormatData.baudRateFormat)
+        {
+            Dropdown.OptionData data = new Dropdown.OptionData(item.ToString());
+            dropdown_baundRate.options.Add(data);
+        }
+        dropdown_baundRate.value = 0;
+        dropdown_baundRate.RefreshShownValue();
     }
 }

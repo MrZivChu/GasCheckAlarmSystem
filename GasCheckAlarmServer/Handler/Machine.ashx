@@ -35,23 +35,10 @@ public class Machine : IHttpHandler
             string idList = context.Request["idList"];
             MachineDAL.DeleteMachineByID(idList);
         }
-        else if (requestType == "EditMachineByID")
+        else if (requestType == "SelectAllMachineDic")
         {
-            int id = Convert.ToInt32(context.Request["id"]);
-            string mailAddress = context.Request["mailAddress"];
-            string machineName = context.Request["machineName"];
-            int factoryID = Convert.ToInt32(context.Request["factoryID"]);
-            string factoryName = context.Request["factoryName"];
-            MachineDAL.EditMachineByID(id, mailAddress, machineName, factoryID, factoryName);
-        }
-        else if (requestType == "InsertMachine")
-        {
-            string mailAddress = context.Request["mailAddress"];
-            string machineName = context.Request["machineName"];
-            int factoryID = Convert.ToInt32(context.Request["factoryID"]);
-            string factoryName = context.Request["factoryName"];
-            int machineProtocol = Convert.ToInt32(context.Request["machineProtocol"]);
-            MachineDAL.InsertMachine(mailAddress, machineName, factoryID, factoryName, machineProtocol);
+            Dictionary<int, MachineModel> model = MachineDAL.SelectAllMachineDic();
+            content = JsonConvert.SerializeObject(model);
         }
         context.Response.Write(content);
         context.Response.End();

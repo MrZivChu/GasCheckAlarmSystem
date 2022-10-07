@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class MainRealtimeDataItem : UIEventHelper
 {
-    public RealtimeDataModel currentModel;
+    public ProbeModel currentModel;
     GameObject target = null;
 
     public Text txt_probeName;
@@ -32,14 +32,14 @@ public class MainRealtimeDataItem : UIEventHelper
         }
     }
 
-    public void InitData(RealtimeDataModel model, GameObject go)
+    public void InitData(ProbeModel model, GameObject go)
     {
         target = go;
         currentModel = model;
         txt_probeName.text = model.ProbeName;
-        txt_gasValue.text = FormatData.GetGasValue(model.MachineType, Convert.ToSingle(model.GasValue));
-        txt_firstAlarmValue.text = model.FirstAlarmValue.ToString();
-        txt_secondAlarmValue.text = model.SecondAlarmValue.ToString();
+        txt_gasValue.text = model.GasValue.ToString();
+        txt_firstAlarmValue.text = FormatData.gasKindFormat[model.GasKind].minValue.ToString();
+        txt_secondAlarmValue.text = FormatData.gasKindFormat[model.GasKind].maxValue.ToString();
     }
 
     public void SetBackgroundColor(Color color)

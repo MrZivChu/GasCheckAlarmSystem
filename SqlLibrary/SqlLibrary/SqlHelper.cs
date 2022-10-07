@@ -8,7 +8,12 @@ using System.Data;
 
 public class SqlHelper
 {
-    public static string connectionString = "server = {0}; database = {1}; Integrated Security = false; User ID = {2}; Password = {3}";
+    static string connectionString = "server = {0}; database = {1}; Integrated Security = false; User ID = {2}; Password = {3}";
+
+    public static void InitSqlConnection(string sqlIP, string sqlDatabase, string sqlUserId, string sqlUserPwd)
+    {
+        connectionString = string.Format(connectionString, sqlIP, sqlDatabase, sqlUserId, sqlUserPwd);
+    }
 
     public static int ExecuteNonQuery(string cmdText,
         params SqlParameter[] parameters)

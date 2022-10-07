@@ -15,12 +15,12 @@ public class PointCheckDAL
         StringBuilder sb2 = new StringBuilder();
         sb1.Append(@"select @RowCount=count(*),@pageCount=ceiling((count(*)+0.0)/@pageSize) 
 		from (
-		select ID,DeviceID,DeviceName,UserName,QrCodePath,CheckTime,Description,Result,DeviceType
+		select ID,DeviceID,DeviceName,DeviceType,UserName,QrCodePath,CheckTime,Description,Result
         from PointCheck) temp_row  
         where 1=1 ");
 
         sb2.Append(@"select top (select @pageSize) *   
-	from (select row_number() over(order by CheckTime desc) as rownumber,ID,DeviceID,DeviceName,UserName,QrCodePath,CheckTime,Description,Result,DeviceType from PointCheck) temp_row 
+	from (select row_number() over(order by CheckTime desc) as rownumber,ID,DeviceID,DeviceName,DeviceType,UserName,QrCodePath,CheckTime,Description,Result from PointCheck) temp_row 
 	where 1=1 and rownumber>(@pageIndex-1)*@pageSize ");
 
         List<SqlParameter> para = new List<SqlParameter>()
@@ -62,12 +62,12 @@ public class PointCheckDAL
                 PointCheckModel model = new PointCheckModel();
                 model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
                 model.DeviceID = Convert.ToInt32(dt.Rows[i]["DeviceID"]);
-                model.DeviceType = Convert.ToInt32(dt.Rows[i]["DeviceType"]);
                 model.DeviceName = dt.Rows[i]["DeviceName"].ToString();
+                model.DeviceType = Convert.ToInt32(dt.Rows[i]["DeviceType"]);
                 model.UserName = dt.Rows[i]["UserName"].ToString();
                 model.QrCodePath = dt.Rows[i]["QrCodePath"].ToString();
-                model.Description = dt.Rows[i]["Description"].ToString();
                 model.CheckTime = Convert.ToDateTime(dt.Rows[i]["CheckTime"]);
+                model.Description = dt.Rows[i]["Description"].ToString();
                 model.Result = dt.Rows[i]["Result"].ToString();
                 modelList.Add(model);
             }
@@ -77,7 +77,7 @@ public class PointCheckDAL
 
     public static bool InsertPointCheck(int deviceID, string deviceName, string userName, string qrCodePath, string description, string result, int deviceType)
     {
-        string sql = @"insert into PointCheck (DeviceID,DeviceName,UserName,QrCodePath,Description,Result,DeviceType)values(@DeviceID,@DeviceName,@UserName,@QrCodePath,@Description,@Result,@DeviceType)";
+        string sql = @"insert into PointCheck (DeviceID,DeviceName,DeviceType,UserName,QrCodePath,Description,Result)values(@DeviceID,@DeviceName,@DeviceType,@UserName,@QrCodePath,@Description,@Result)";
         List<SqlParameter> parameter = new List<SqlParameter>{
                  new SqlParameter("@DeviceID",deviceID),
                  new SqlParameter("@DeviceName",deviceName),

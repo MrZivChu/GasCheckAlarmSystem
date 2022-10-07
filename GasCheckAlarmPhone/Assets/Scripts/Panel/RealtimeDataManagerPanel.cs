@@ -9,7 +9,6 @@ public class RealtimeDataManagerPanel : UIEventHelper
 {
     public Transform contentTrans;
     public UnityEngine.Object itemRes;
-
     private void Start()
     {
         EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
@@ -20,22 +19,45 @@ public class RealtimeDataManagerPanel : UIEventHelper
         EventManager.Instance.DeleteEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
     }
 
-    void UpdateRealtimeDataListEvent(object tdata)
+    void UpdateRealtimeDataListEvent(object data)
     {
         if (!gameObject || !gameObject.activeSelf)
             return;
-        RealtimeEventData realtimeEventData = (RealtimeEventData)tdata;
-        List<RealtimeDataModel> secondList = realtimeEventData.secondList;
-        List<RealtimeDataModel> firstList = realtimeEventData.firstList;
-        List<RealtimeDataModel> normalList = realtimeEventData.normalList;
-        List<RealtimeDataModel> noResponseList = realtimeEventData.noResponseList;
-        List<RealtimeDataModel> allList = new List<RealtimeDataModel>();
-        allList.AddRange(secondList);
-        allList.AddRange(firstList);
-        allList.AddRange(normalList);
-        allList.AddRange(noResponseList);
+        List<ProbeModel> allList = (List<ProbeModel>)data;
+        List<ProbeModel> secondAlarm = new List<ProbeModel>();
+        List<ProbeModel> firstAlarm = new List<ProbeModel>();
+        List<ProbeModel> noResponse = new List<ProbeModel>();
+        List<ProbeModel> normal = new List<ProbeModel>();
+        foreach (var item in allList)
+        {
+            if (item.warningLevel == EWarningLevel.SecondAlarm)
+            {
+                secondAlarm.Add(item);
+            }
+            else if (item.warningLevel == EWarningLevel.FirstAlarm)
+            {
+                firstAlarm.Add(item);
+            }
+            else if (item.warningLevel == EWarningLevel.NoResponse)
+            {
+                noResponse.Add(item);
+            }
+            else if (item.warningLevel == EWarningLevel.Normal)
+            {
+                normal.Add(item);
+            }
+        }
+        List<ProbeModel> result = new List<ProbeModel>() { };
+        result.AddRange(secondAlarm);
+        result.AddRange(firstAlarm);
+        result.AddRange(noResponse);
+        result.AddRange(normal);
+        InitGrid(result);
+    }
 
-        GameUtils.SpawnCellForTable<RealtimeDataModel>(contentTrans, allList, (go, data, isSpawn, index) =>
+    void InitGrid(List<ProbeModel> list)
+    {
+        GameUtils.SpawnCellForTable<ProbeModel>(contentTrans, list, (go, data, isSpawn, index) =>
         {
             GameObject currentObj = go;
             if (isSpawn)
@@ -46,7 +68,7 @@ public class RealtimeDataManagerPanel : UIEventHelper
                 currentObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
             }
             RealtimeDataItem item = currentObj.GetComponent<RealtimeDataItem>();
-            item.InitData(data);
+            item.InitInfo(data);
             item.SetBackgroundColor(FormatData.warningColorDic[data.warningLevel]);
             currentObj.SetActive(true);
         });

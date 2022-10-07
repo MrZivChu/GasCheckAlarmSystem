@@ -1,6 +1,4 @@
-﻿using LitJson;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.UI;
@@ -80,10 +78,7 @@ public class FactoryManagerPanel : UIEventHelper
                 }
                 sb = sb.Remove(sb.Length - 1, 1);
                 FactoryDAL.DeleteFactoryByID(sb.ToString());
-                MessageBox.Instance.PopOK("删除成功", () =>
-                {
-                    EventManager.Instance.DisPatch(NotifyType.UpdateFactoryList);
-                }, "确定");
+                EventManager.Instance.DisPatch(NotifyType.UpdateFactoryList);
             }, "取消", "确定");
         }
     }

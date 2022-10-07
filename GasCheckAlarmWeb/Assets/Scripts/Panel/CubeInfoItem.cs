@@ -8,8 +8,8 @@ public class CubeInfoItem : MonoBehaviour
     public Text probeNameText;
     public Text gasValueText;
 
-    public RealtimeDataModel realtimeDataModel;
-    public void InitData(RealtimeDataModel realtimeDataModel)
+    public ProbeModel realtimeDataModel;
+    public void InitData(ProbeModel realtimeDataModel)
     {
         this.realtimeDataModel = realtimeDataModel;
         probeNameText.text = realtimeDataModel.ProbeName;

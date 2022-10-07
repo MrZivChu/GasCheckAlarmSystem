@@ -14,8 +14,6 @@ public class ChartManagerPanel : MonoBehaviour
         form.AddField("requestType", "SelectAllHistoryDataByCondition");
         form.AddField("pageIndex", 1);
         form.AddField("pageSize", 500);
-        form.AddField("probeName", string.Empty);
-        form.AddField("gasKind", string.Empty);
         form.AddField("startTime", System.DateTime.MinValue.ToString());
         form.AddField("endTime", System.DateTime.MinValue.ToString());
         form.AddField("pageCount", pageCount);

@@ -8,7 +8,7 @@ public class ProbeDAL
 {
     public static List<ProbeModel> SelectAllProbeByCondition(string probeName = "", string gasKind = "")
     {
-        string sql = @"select ID,MailAddress,ProbeName,GasKind,Unit,FirstAlarmValue,SecondAlarmValue,MachineName,MachineID,PosDir,FactoryID,FactoryName,MachineType,Pos2D,SerialNumber,TagName from Probe where 1=1 ";
+        string sql = @"select ID,MailAddress,ProbeName,GasKind,MachineID,Pos3D,Pos2D,SerialNumber,TagName,CheckTime,GasValue from Probe where 1=1 ";
         if (!string.IsNullOrEmpty(probeName))
             sql += " and ProbeName like '%" + probeName + "%' ";
         if (!string.IsNullOrEmpty(gasKind))
@@ -24,19 +24,133 @@ public class ProbeDAL
                 model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
                 model.MailAddress = dt.Rows[i]["MailAddress"].ToString();
                 model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
-                model.GasKind = dt.Rows[i]["GasKind"].ToString();
-                model.Unit = dt.Rows[i]["Unit"].ToString();
-                model.FirstAlarmValue = Convert.ToSingle(dt.Rows[i]["FirstAlarmValue"]);
-                model.SecondAlarmValue = Convert.ToSingle(dt.Rows[i]["SecondAlarmValue"]);
-                model.MachineName = dt.Rows[i]["MachineName"].ToString();
+                model.GasKind = (EGasKind)(dt.Rows[i]["GasKind"]);
                 model.MachineID = Convert.ToInt32(dt.Rows[i]["MachineID"]);
-                model.PosDir = dt.Rows[i]["PosDir"].ToString();
-                model.FactoryID = Convert.ToInt32(dt.Rows[i]["FactoryID"]);
-                model.FactoryName = dt.Rows[i]["FactoryName"].ToString();
-                model.MachineType = Convert.ToInt32(dt.Rows[i]["MachineType"]);
+                model.Pos3D = dt.Rows[i]["Pos3D"].ToString();
                 model.Pos2D = dt.Rows[i]["Pos2D"].ToString();
                 model.SerialNumber = dt.Rows[i]["SerialNumber"].ToString();
                 model.TagName = dt.Rows[i]["TagName"].ToString();
+                model.CheckTime = Convert.ToDateTime(dt.Rows[i]["CheckTime"]);
+                model.GasValue = Convert.ToSingle(dt.Rows[i]["GasValue"]);
+                modelList.Add(model);
+            }
+        }
+        return modelList;
+    }
+
+    public static List<ProbeModel> SelectIDProbeNameGasKindPos3D()
+    {
+        string sql = @"select ID,ProbeName,Pos3D,GasKind from Probe";
+        List<ProbeModel> modelList = new List<ProbeModel>();
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
+        if (dt.Rows.Count > 0)
+        {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                ProbeModel model = new ProbeModel();
+                model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
+                model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
+                model.Pos3D = dt.Rows[i]["Pos3D"].ToString();
+                model.GasKind = (EGasKind)(dt.Rows[i]["GasKind"]);
+                modelList.Add(model);
+            }
+        }
+        return modelList;
+    }
+
+    public static List<ProbeModel> SelectIDCheckTimeGasValueGasKindMachineID()
+    {
+        string sql = @"select ID,CheckTime,GasValue,GasKind,MachineID from Probe";
+        List<ProbeModel> modelList = new List<ProbeModel>();
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
+        if (dt.Rows.Count > 0)
+        {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                ProbeModel model = new ProbeModel();
+                model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
+                model.CheckTime = Convert.ToDateTime(dt.Rows[i]["CheckTime"]);
+                model.GasValue = Convert.ToSingle(dt.Rows[i]["GasValue"]);
+                model.GasKind = (EGasKind)(dt.Rows[i]["GasKind"]);
+                model.MachineID = Convert.ToInt32(dt.Rows[i]["MachineID"]);
+                modelList.Add(model);
+            }
+        }
+        return modelList;
+    }
+
+    public static List<ProbeModel> SelectIDProbeNameTagName()
+    {
+        string sql = @"select ID,ProbeName,TagName from Probe";
+        List<ProbeModel> modelList = new List<ProbeModel>();
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
+        if (dt.Rows.Count > 0)
+        {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                ProbeModel model = new ProbeModel();
+                model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
+                model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
+                model.TagName = dt.Rows[i]["TagName"].ToString();
+                modelList.Add(model);
+            }
+        }
+        return modelList;
+    }
+
+    public static List<ProbeModel> SelectIDProbeNameGasKindMachineID()
+    {
+        string sql = @"select ID,ProbeName,GasKind,MachineID from Probe";
+        List<ProbeModel> modelList = new List<ProbeModel>();
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
+        if (dt.Rows.Count > 0)
+        {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                ProbeModel model = new ProbeModel();
+                model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
+                model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
+                model.GasKind = (EGasKind)(dt.Rows[i]["GasKind"]);
+                model.MachineID = Convert.ToInt32(dt.Rows[i]["MachineID"]);
+                modelList.Add(model);
+            }
+        }
+        return modelList;
+    }
+
+    public static List<ProbeModel> SelectIDProbeNameMachineIDPos2DWherePos2DHasValue()
+    {
+        string sql = @"select ID,ProbeName,MachineID,Pos2D from Probe where Pos2D != ''";
+        List<ProbeModel> modelList = new List<ProbeModel>();
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
+        if (dt.Rows.Count > 0)
+        {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                ProbeModel model = new ProbeModel();
+                model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
+                model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
+                model.MachineID = Convert.ToInt32(dt.Rows[i]["MachineID"]);
+                model.Pos2D = dt.Rows[i]["Pos2D"].ToString();
+                modelList.Add(model);
+            }
+        }
+        return modelList;
+    }
+
+    public static List<ProbeModel> SelectIDProbeNameMachineIDWherePos2DNoValue()
+    {
+        string sql = @"select ID,ProbeName,MachineID from Probe where Pos2D is null or Pos2D = ''";
+        List<ProbeModel> modelList = new List<ProbeModel>();
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
+        if (dt.Rows.Count > 0)
+        {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                ProbeModel model = new ProbeModel();
+                model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
+                model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
+                model.MachineID = Convert.ToInt32(dt.Rows[i]["MachineID"]);
                 modelList.Add(model);
             }
         }
@@ -45,7 +159,7 @@ public class ProbeDAL
 
     public static ProbeModel SelectProbeByID(int id)
     {
-        string sql = @"select ID,MailAddress,ProbeName,GasKind,Unit,FirstAlarmValue,SecondAlarmValue,MachineName,MachineID,PosDir,FactoryID,FactoryName,MachineType,Pos2D,SerialNumber,TagName from Probe where ID = @ID";
+        string sql = @"select ID,MailAddress,ProbeName,GasKind,MachineID,Pos3D,Pos2D,SerialNumber,TagName,CheckTime,GasValue from Probe where ID = @ID";
         SqlParameter[] parameter = new SqlParameter[] {
                  new SqlParameter("@ID",id)
             };
@@ -56,26 +170,21 @@ public class ProbeDAL
             model.ID = Convert.ToInt32(dt.Rows[0]["ID"]);
             model.MailAddress = dt.Rows[0]["MailAddress"].ToString();
             model.ProbeName = dt.Rows[0]["ProbeName"].ToString();
-            model.GasKind = dt.Rows[0]["GasKind"].ToString();
-            model.Unit = dt.Rows[0]["Unit"].ToString();
-            model.FirstAlarmValue = Convert.ToSingle(dt.Rows[0]["FirstAlarmValue"]);
-            model.SecondAlarmValue = Convert.ToSingle(dt.Rows[0]["SecondAlarmValue"]);
-            model.MachineName = dt.Rows[0]["MachineName"].ToString();
+            model.GasKind = (EGasKind)(dt.Rows[0]["GasKind"]);
             model.MachineID = Convert.ToInt32(dt.Rows[0]["MachineID"]);
-            model.PosDir = dt.Rows[0]["PosDir"].ToString();
-            model.FactoryID = Convert.ToInt32(dt.Rows[0]["FactoryID"]);
-            model.FactoryName = dt.Rows[0]["FactoryName"].ToString();
-            model.MachineType = Convert.ToInt32(dt.Rows[0]["MachineType"]);
+            model.Pos3D = dt.Rows[0]["Pos3D"].ToString();
             model.Pos2D = dt.Rows[0]["Pos2D"].ToString();
             model.SerialNumber = dt.Rows[0]["SerialNumber"].ToString();
             model.TagName = dt.Rows[0]["TagName"].ToString();
+            model.CheckTime = Convert.ToDateTime(dt.Rows[0]["CheckTime"]);
+            model.GasValue = Convert.ToSingle(dt.Rows[0]["GasValue"]);
         }
         return model;
     }
 
     public static ProbeModel SelectProbeBySerialNumber(string serialNumber)
     {
-        string sql = @"select ID,MailAddress,ProbeName,GasKind,Unit,FirstAlarmValue,SecondAlarmValue,MachineName,MachineID,PosDir,FactoryID,FactoryName,MachineType,Pos2D,SerialNumber,TagName from Probe where SerialNumber = @SerialNumber";
+        string sql = @"select ID,MailAddress,ProbeName,GasKind,MachineID,Pos3D,Pos2D,SerialNumber,TagName,CheckTime,GasValue from Probe where SerialNumber = @SerialNumber";
         SqlParameter[] parameter = new SqlParameter[] {
                  new SqlParameter("@SerialNumber",serialNumber)
             };
@@ -86,47 +195,34 @@ public class ProbeDAL
             model.ID = Convert.ToInt32(dt.Rows[0]["ID"]);
             model.MailAddress = dt.Rows[0]["MailAddress"].ToString();
             model.ProbeName = dt.Rows[0]["ProbeName"].ToString();
-            model.GasKind = dt.Rows[0]["GasKind"].ToString();
-            model.Unit = dt.Rows[0]["Unit"].ToString();
-            model.FirstAlarmValue = Convert.ToSingle(dt.Rows[0]["FirstAlarmValue"]);
-            model.SecondAlarmValue = Convert.ToSingle(dt.Rows[0]["SecondAlarmValue"]);
-            model.MachineName = dt.Rows[0]["MachineName"].ToString();
+            model.GasKind = (EGasKind)(dt.Rows[0]["GasKind"]);
             model.MachineID = Convert.ToInt32(dt.Rows[0]["MachineID"]);
-            model.PosDir = dt.Rows[0]["PosDir"].ToString();
-            model.FactoryID = Convert.ToInt32(dt.Rows[0]["FactoryID"]);
-            model.FactoryName = dt.Rows[0]["FactoryName"].ToString();
-            model.MachineType = Convert.ToInt32(dt.Rows[0]["MachineType"]);
+            model.Pos3D = dt.Rows[0]["Pos3D"].ToString();
             model.Pos2D = dt.Rows[0]["Pos2D"].ToString();
             model.SerialNumber = dt.Rows[0]["SerialNumber"].ToString();
             model.TagName = dt.Rows[0]["TagName"].ToString();
+            model.CheckTime = Convert.ToDateTime(dt.Rows[0]["CheckTime"]);
+            model.GasValue = Convert.ToSingle(dt.Rows[0]["GasValue"]);
         }
         return model;
     }
 
     public static bool DeleteProbeByID(string idList)
     {
-        string sql = @"delete from Probe where ID in (" + idList + @");
-        delete from RealtimeData where ProbeID in (" + idList + @");
-        ";
+        string sql = @"delete from Probe where ID in (" + idList + @");";
         int result = SqlHelper.ExecuteNonQuery(sql, null);
         return result >= 1 ? true : false;
     }
 
-    public static bool EditProbeByID(int id, string mailAddress, string probeName, int machineID, string gasKind, string unit, string firstAlarmValue, string secondAlarmValue, string machineName, string tagName, string serialNumber)
+    public static bool EditProbeByID(int id, string mailAddress, string probeName, int machineID, int gasKind, string tagName, string serialNumber)
     {
-        //没必要更新历史数据
-        string sql = @"update Probe set MailAddress=@MailAddress,ProbeName=@ProbeName,GasKind=@GasKind,Unit=@Unit,FirstAlarmValue=@FirstAlarmValue,SecondAlarmValue=@SecondAlarmValue,MachineID=@MachineID,MachineName=@MachineName,SerialNumber=@SerialNumber,TagName=@TagName where ID=@ID;
-          update RealtimeData set ProbeName=@ProbeName,GasKind=@GasKind,Unit=@Unit,FirstAlarmValue=@FirstAlarmValue,SecondAlarmValue=@SecondAlarmValue,MachineID=@MachineID,MachineName=@MachineName,TagName=@TagName where ProbeID=@ID;";
+        string sql = @"update Probe set MailAddress=@MailAddress,ProbeName=@ProbeName,GasKind=@GasKind,MachineID=@MachineID,SerialNumber=@SerialNumber,TagName=@TagName where ID=@ID;";
         SqlParameter[] parameter = new SqlParameter[] {
                  new SqlParameter("@ID",id),
                  new SqlParameter("@MailAddress",mailAddress),
                  new SqlParameter("@ProbeName",probeName),
                  new SqlParameter("@GasKind",gasKind),
-                 new SqlParameter("@Unit",unit),
-                 new SqlParameter("@FirstAlarmValue",firstAlarmValue),
-                 new SqlParameter("@SecondAlarmValue",secondAlarmValue),
                  new SqlParameter("@MachineID",machineID),
-                 new SqlParameter("@MachineName",machineName),
                  new SqlParameter("@SerialNumber",serialNumber),
                  new SqlParameter("@TagName",tagName),
             };
@@ -134,48 +230,37 @@ public class ProbeDAL
         return result >= 1 ? true : false;
     }
 
-    public static bool EditProbePosDirByID(int id, string posDir)
+    public static bool EditProbePos3DByID(int id, string pos3D)
     {
-        //没必要更新历史数据
-        string sql = @"update Probe set PosDir=@PosDir where ID=@ID;";
+        string sql = @"update Probe set Pos3D=@Pos3D where ID=@ID;";
         SqlParameter[] parameter = new SqlParameter[] {
                  new SqlParameter("@ID",id),
-                 new SqlParameter("@PosDir",posDir)
+                 new SqlParameter("@Pos3D",pos3D)
             };
         int result = SqlHelper.ExecuteNonQuery(sql, parameter);
         return result >= 1 ? true : false;
     }
 
-    public static int InsertProbe(string mailAddress, string probeName, string gasKind, string unit, string firstAlarmValue, string secondAlarmValue, string posdir, int machineID, string machineName, int factoryID, string factoryName, int machineType, string tagName, string serialNumber)
+    public static int InsertProbe(string mailAddress, string probeName, int gasKind, int machineID, string pos3D, string tagName, string serialNumber)
     {
-        string sql = @"insert into Probe (MailAddress,ProbeName,GasKind,Unit,FirstAlarmValue,SecondAlarmValue,MachineName,MachineID,PosDir,FactoryID,FactoryName,MachineType,SerialNumber,TagName)values(@MailAddress,@ProbeName,@GasKind,@Unit,@FirstAlarmValue,@SecondAlarmValue,@MachineName,@MachineID,@PosDir,@FactoryID,@FactoryName,@MachineType,@SerialNumber,@TagName) SELECT @@IDENTITY AS ID;";
+        string sql = @"insert into Probe (MailAddress,ProbeName,GasKind,MachineID,Pos3D,SerialNumber,TagName)values(@MailAddress,@ProbeName,@GasKind,@MachineID,@Pos3D,@SerialNumber,@TagName) SELECT @@IDENTITY AS ID;";
         List<SqlParameter> parameter = new List<SqlParameter>{
                  new SqlParameter("@MailAddress",mailAddress),
                  new SqlParameter("@ProbeName",probeName),
                  new SqlParameter("@GasKind",gasKind),
-                 new SqlParameter("@Unit",unit),
-                 new SqlParameter("@FirstAlarmValue",firstAlarmValue),
-                 new SqlParameter("@SecondAlarmValue",secondAlarmValue),
-                 new SqlParameter("@MachineName",machineName),
                  new SqlParameter("@MachineID",machineID),
-                 new SqlParameter("@PosDir",posdir),
-                 new SqlParameter("@FactoryID",factoryID),
-                 new SqlParameter("@FactoryName",factoryName),
-                 new SqlParameter("@MachineType",machineType),
+                 new SqlParameter("@Pos3D",pos3D),
                  new SqlParameter("@SerialNumber",serialNumber),
                  new SqlParameter("@TagName",tagName),
             };
         DataTable dt = SqlHelper.ExecuteDataTable(sql, parameter.ToArray());
         int insertIndex = Convert.ToInt32(dt.Rows[0][0]);
-        sql = @"insert into RealtimeData (ProbeID,ProbeName,GasKind,Unit,FirstAlarmValue,SecondAlarmValue,MachineName,MachineID,FactoryID,FactoryName,MachineType,GasValue,TagName)values(@ProbeID,@ProbeName,@GasKind,@Unit,@FirstAlarmValue,@SecondAlarmValue,@MachineName,@MachineID,@FactoryID,@FactoryName,@MachineType,0,@TagName)";
-        parameter.Add(new SqlParameter("@ProbeID", insertIndex));
-        SqlHelper.ExecuteNonQuery(sql, parameter.ToArray());
         return insertIndex;
     }
 
-    public static List<ProbeModel> SelectAllProbeNameByMachineID(int machineID)
+    public static List<ProbeModel> SelectIDProbeNameGasKindWithMachineID(int machineID)
     {
-        string sql = @"select ProbeName from Probe where MachineID=@MachineID ";
+        string sql = @"select ID,ProbeName,GasKind from Probe where MachineID=@MachineID ";
         List<SqlParameter> parameter = new List<SqlParameter>{
                  new SqlParameter("@MachineID",machineID),
             };
@@ -186,11 +271,34 @@ public class ProbeDAL
             for (int i = 0; i < dt.Rows.Count; i++)
             {
                 ProbeModel model = new ProbeModel();
+                model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
                 model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
+                model.GasKind = (EGasKind)(dt.Rows[i]["GasKind"]);
                 modelList.Add(model);
             }
         }
         return modelList;
+    }
+
+    public static bool EditProbePos2DByID(int id, string pos2D)
+    {
+        string sql = @"update Probe set Pos2D=@Pos2D where ID=@ID";
+        SqlParameter[] parameter = new SqlParameter[] {
+                 new SqlParameter("@ID",id),
+                 new SqlParameter("@Pos2D",pos2D)
+            };
+        int result = SqlHelper.ExecuteNonQuery(sql, parameter);
+        return result >= 1 ? true : false;
+    }
+
+    public static bool DeleteProbePos2DByID(int id)
+    {
+        string sql = @"update Probe set Pos2D='' where ID=@ID";
+        SqlParameter[] parameter = new SqlParameter[] {
+                 new SqlParameter("@ID",id)
+            };
+        int result = SqlHelper.ExecuteNonQuery(sql, parameter);
+        return result >= 1 ? true : false;
     }
 
 }

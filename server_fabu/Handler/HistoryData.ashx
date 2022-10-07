@@ -21,13 +21,11 @@ public class HistoryData : IHttpHandler
         {
             int pageIndex = Convert.ToInt32(context.Request["pageIndex"]);
             int pageSize = Convert.ToInt32(context.Request["pageSize"]);
-            string probeName = context.Request["probeName"];
-            string gasKind = context.Request["gasKind"];
             string startTime = context.Request["startTime"];
             string endTime = context.Request["endTime"];
             int pageCount = Convert.ToInt32(context.Request["pageCount"]);
             int rowCount = Convert.ToInt32(context.Request["rowCount"]);
-            List<HistoryDataModel> list = HistoryDataDAL.SelectAllHistoryDataByCondition(pageIndex, pageSize, probeName, gasKind, startTime, endTime, out pageCount, out rowCount);
+            List<HistoryDataModel> list = HistoryDataDAL.SelectAllHistoryDataByCondition(pageIndex, pageSize, startTime, endTime, out pageCount, out rowCount);
             if (list.Count > 0)
             {
                 string data = JsonConvert.SerializeObject(list);

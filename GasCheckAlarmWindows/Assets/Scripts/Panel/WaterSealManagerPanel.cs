@@ -72,10 +72,7 @@ public class WaterSealManagerPanel : UIEventHelper
                 }
                 sb = sb.Remove(sb.Length - 1, 1);
                 WaterSealDAL.DeleteWaterSealByID(sb.ToString());
-                MessageBox.Instance.PopOK("删除成功", () =>
-                {
-                    EventManager.Instance.DisPatch(NotifyType.UpdateWaterSealList);
-                }, "确定");
+                EventManager.Instance.DisPatch(NotifyType.UpdateWaterSealList);
             }, "取消", "确定");
         }
     }

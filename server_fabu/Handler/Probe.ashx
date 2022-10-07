@@ -37,50 +37,41 @@ public class Probe : IHttpHandler
             ProbeModel model = ProbeDAL.SelectProbeBySerialNumber(serialNumber);
             content = JsonConvert.SerializeObject(model);
         }
+        else if (requestType == "SelectIDProbeNameTagName")
+        {
+            List<ProbeModel> model = ProbeDAL.SelectIDProbeNameTagName();
+            content = JsonConvert.SerializeObject(model);
+        }
+        else if (requestType == "SelectIDProbeNameMachineIDPos2DWherePos2DHasValue")
+        {
+            List<ProbeModel> model = ProbeDAL.SelectIDProbeNameMachineIDPos2DWherePos2DHasValue();
+            content = JsonConvert.SerializeObject(model);
+        }
+        else if (requestType == "SelectIDCheckTimeGasValueGasKindMachineID")
+        {
+            List<ProbeModel> model = ProbeDAL.SelectIDCheckTimeGasValueGasKindMachineID();
+            content = JsonConvert.SerializeObject(model);
+        }
+        else if (requestType == "SelectIDProbeNameGasKindMachineID")
+        {
+            List<ProbeModel> model = ProbeDAL.SelectIDProbeNameGasKindMachineID();
+            content = JsonConvert.SerializeObject(model);
+        }
         else if (requestType == "DeleteProbeByID")
         {
             string idList = context.Request["idList"];
             ProbeDAL.DeleteProbeByID(idList);
         }
-        else if (requestType == "EditProbeByID")
+        else if (requestType == "DeleteProbePos2DByID")
         {
             int id = Convert.ToInt32(context.Request["id"]);
-            string mailAddress = context.Request["mailAddress"];
-            string probeName = context.Request["probeName"];
-            int machineID = Convert.ToInt32(context.Request["machineID"]);
-            string gasKind = context.Request["gasKind"];
-            string unit = context.Request["unit"];
-            string firstAlarmValue = context.Request["firstAlarmValue"];
-            string secondAlarmValue = context.Request["secondAlarmValue"];
-            string machineName = context.Request["machineName"];
-            string serialNumber = context.Request["serialNumber"];
-            string tagName = context.Request["tagName"];
-            ProbeDAL.EditProbeByID(id, mailAddress, probeName, machineID, gasKind, unit, firstAlarmValue, secondAlarmValue, machineName, tagName, serialNumber);
+            ProbeDAL.DeleteProbePos2DByID(id);
         }
-        else if (requestType == "EditProbePosDirByID")
+        else if (requestType == "EditProbePos2DByID")
         {
             int id = Convert.ToInt32(context.Request["id"]);
-            string posDir = context.Request["posDir"];
-            ProbeDAL.EditProbePosDirByID(id, posDir);
-        }
-        else if (requestType == "InsertProbe")
-        {
-            string mailAddress = context.Request["mailAddress"];
-            string probeName = context.Request["probeName"];
-            string gasKind = context.Request["gasKind"];
-            string unit = context.Request["unit"];
-            string firstAlarmValue = context.Request["firstAlarmValue"];
-            string secondAlarmValue = context.Request["secondAlarmValue"];
-            string posdir = context.Request["posdir"];
-            int machineID = Convert.ToInt32(context.Request["machineID"]);
-            string machineName = context.Request["machineName"];
-            int factoryID = Convert.ToInt32(context.Request["factoryID"]);
-            string factoryName = context.Request["factoryName"];
-            int machineType = Convert.ToInt32(context.Request["machineType"]);
-            string tagName = context.Request["tagName"];
-            string serialNumber = context.Request["serialNumber"];
-            int id = ProbeDAL.InsertProbe(mailAddress, probeName, gasKind, unit, firstAlarmValue, secondAlarmValue, posdir, machineID, machineName, factoryID, factoryName, machineType, tagName, serialNumber);
-            content = id.ToString();
+            string pos2D = context.Request["pos2D"].ToString();
+            ProbeDAL.EditProbePos2DByID(id, pos2D);
         }
         else if (requestType == "UploadPlanarGraphFile")
         {

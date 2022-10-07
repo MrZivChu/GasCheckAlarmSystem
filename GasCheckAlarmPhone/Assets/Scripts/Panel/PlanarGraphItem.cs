@@ -7,11 +7,18 @@ public class PlanarGraphItem : MonoBehaviour
 {
     public Text probeNameText;
 
-    public RealtimeDataModel realtimeDataModel;
-    public void InitData(RealtimeDataModel realtimeDataModel)
+    public ProbeModel currentModel;
+    public void InitBaseData(ProbeModel realtimeDataModel)
     {
-        this.realtimeDataModel = realtimeDataModel;
+        currentModel = realtimeDataModel;
         probeNameText.text = realtimeDataModel.ProbeName;
+    }
+
+    public void InitRealtimeData(ProbeModel realtimeDataModel)
+    {
+        currentModel.CheckTime = realtimeDataModel.CheckTime;
+        currentModel.GasValue = realtimeDataModel.GasValue;
+        currentModel.GasKind = realtimeDataModel.GasKind;
         color = FormatData.warningColorDic[realtimeDataModel.warningLevel];
     }
 
@@ -20,9 +27,9 @@ public class PlanarGraphItem : MonoBehaviour
     float flashTime = 0.5f;
     void Update()
     {
-        if (realtimeDataModel != null)
+        if (currentModel != null)
         {
-            if (realtimeDataModel.warningLevel == 2 || realtimeDataModel.warningLevel == 1)
+            if (currentModel.warningLevel == EWarningLevel.FirstAlarm || currentModel.warningLevel == EWarningLevel.SecondAlarm)
             {
                 tempTime += Time.deltaTime;
                 if (tempTime >= 0 && tempTime <= flashTime)

@@ -19,8 +19,8 @@ public class ProbePointCheckItem : UIEventHelper
     {
         currentModel = model;
         txt_probeName.text = model.ProbeName;
-        txt_factoryName.text = model.FactoryName;
-        txt_gasKind.text = model.GasKind;
+        txt_factoryName.text = MachineFactoryDataManager.GetMachineData(model.MachineID).MachineName;
+        txt_gasKind.text = FormatData.gasKindFormat[model.GasKind].name;
     }
 
     public void SetBackgroundColor(Color color)

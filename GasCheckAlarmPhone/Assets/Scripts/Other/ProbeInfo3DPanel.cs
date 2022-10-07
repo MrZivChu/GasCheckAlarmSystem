@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class ProbeInfo3DPanel : UIEventHelper
 {
-    ProbeModel currentModel;
+    public ProbeModel currentModel;
+
     public Text txt_name;
     public Text txt_gasKind;
     public Text txt_gasValue;
@@ -13,23 +14,26 @@ public class ProbeInfo3DPanel : UIEventHelper
     public Text txt_secondValue;
 
     public Button deleteBtn;
+    public Button okBtn;
     private void Start()
     {
+        deleteBtn.gameObject.SetActive(FormatData.currentUser.Authority == EAuthority.Admin);
         RegisterBtnClick(deleteBtn, OnDelete);
+        RegisterBtnClick(okBtn, OnOk);
+    }
+
+    void OnOk(Button btn)
+    {
+        gameObject.SetActive(false);
     }
 
     void OnDelete(Button btn)
     {
         MessageBox.Instance.PopYesNo("确认删除？", null, () =>
         {
-            WWWForm form = new WWWForm();
-            form.AddField("requestType", "DeleteProbeByID");
-            form.AddField("idList", currentModel.ID.ToString());
-            GameUtils.PostHttp("Probe.ashx", form, null, null);
-
+            gameObject.SetActive(false);
+            ProbeDAL.DeleteProbeByID(currentModel.ID.ToString());
             EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
-            ProbeInSceneHelper.instance.DeleteProbe(currentModel);
-            MessageBox.Instance.PopOK("删除成功", null, "确定");
         }, "取消", "确定");
     }
 
@@ -37,33 +41,9 @@ public class ProbeInfo3DPanel : UIEventHelper
     {
         currentModel = model;
         txt_name.text = currentModel.ProbeName;
-        txt_gasKind.text = currentModel.GasKind;
-        txt_gasValue.text = "0";
-        txt_firstValue.text = currentModel.FirstAlarmValue.ToString();
-        txt_secondValue.text = currentModel.SecondAlarmValue.ToString();
-    }
-
-    public void RefreshRealtimeData(float gasValue)
-    {
-        txt_gasValue.text = gasValue.ToString();
-    }
-
-    void Update()
-    {
-        if (Camera.main)
-        {
-            transform.LookAt(Camera.main.transform);
-            transform.Rotate(Vector3.up, 180);
-
-            float distance = Vector3.Distance(Camera.main.transform.position, transform.position);
-            if (distance > 20)
-            {
-                transform.GetChild(0).gameObject.SetActive(false);
-            }
-            else
-            {
-                transform.GetChild(0).gameObject.SetActive(true);
-            }
-        }
+        txt_gasKind.text = FormatData.gasKindFormat[model.GasKind].name;
+        txt_gasValue.text = model.GasValue.ToString();
+        txt_firstValue.text = FormatData.gasKindFormat[model.GasKind].minValue.ToString();
+        txt_secondValue.text = FormatData.gasKindFormat[model.GasKind].maxValue.ToString();
     }
 }

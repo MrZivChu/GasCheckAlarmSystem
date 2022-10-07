@@ -1,24 +1,37 @@
-﻿using LitJson;
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 
-public class RealtimeEventData
-{
-    public List<RealtimeDataModel> secondList;
-    public List<RealtimeDataModel> firstList;
-    public List<RealtimeDataModel> normalList;
-    public List<RealtimeDataModel> noResponseList;
-}
-
 public class GlobalCheckGas : MonoBehaviour
 {
-    private void Start()
+    private void Awake()
     {
+        MachineFactoryDataManager.Init();
+        UpdateProbeListEvent(null);
         //程序启动执行一次删除历史数据的操作
         HistoryDataDAL.DeleteHistoryDataBeforeWeek();
+    }
+
+    private void Start()
+    {
+        EventManager.Instance.AddEventListener(NotifyType.UpdateProbeList, UpdateProbeListEvent);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateProbeList, UpdateProbeListEvent);
+    }
+
+    Dictionary<int, ProbeModel> baseInfoDic_ = new Dictionary<int, ProbeModel>();
+    void UpdateProbeListEvent(object data)
+    {
+        baseInfoDic_.Clear();
+        List<ProbeModel> list = ProbeDAL.SelectIDProbeNameTagName();
+        list.ForEach(it =>
+        {
+            baseInfoDic_[it.ID] = it;
+        });
     }
 
     float refreshTime = 1;//1秒
@@ -31,11 +44,10 @@ public class GlobalCheckGas : MonoBehaviour
         if (tempRefreshTime > refreshTime)
         {
             tempRefreshTime = 0;
-            List<RealtimeDataModel> result = RealtimeDataDAL.SelectAllRealtimeDataByCondition();
-            RealtimeEventData data = HandleRealtimeData(result);
-            JudgeWarningShout(data);
-            HandleSMS(data);
-            EventManager.Instance.DisPatch(NotifyType.UpdateRealtimeDataList, data);
+            List<ProbeModel> result = ProbeDAL.SelectIDCheckTimeGasValueGasKindMachineID();
+            HandleRealtimeData(result);
+            SMSHelper.HandleProbeInfo(result);
+            EventManager.Instance.DisPatch(NotifyType.UpdateRealtimeDataList, result);
         }
         tempDeleteHistoryDataTime += Time.deltaTime;
         if (tempDeleteHistoryDataTime >= deleteHistoryDataTime)
@@ -45,88 +57,77 @@ public class GlobalCheckGas : MonoBehaviour
         }
     }
 
-    RealtimeEventData HandleRealtimeData(List<RealtimeDataModel> list)
+    void HandleRealtimeData(List<ProbeModel> list)
     {
-        RealtimeEventData realtimeEventData = new RealtimeEventData();
-        realtimeEventData.firstList = new List<RealtimeDataModel>();
-        realtimeEventData.secondList = new List<RealtimeDataModel>();
-        realtimeEventData.normalList = new List<RealtimeDataModel>();
-        realtimeEventData.noResponseList = new List<RealtimeDataModel>();
-
-        //level：-1超时 0正常 1低报 2高报
+        int abnormalCount = 0;
         int overTimeMax = list.Count * 2;
         foreach (var model in list)
         {
+            if (baseInfoDic_.ContainsKey(model.ID))
+            {
+                model.ProbeName = baseInfoDic_[model.ID].ProbeName;
+                model.TagName = baseInfoDic_[model.ID].TagName;
+            }
             TimeSpan ts = DateTime.Now - model.CheckTime;
             if (ts.TotalSeconds > overTimeMax && !Application.isEditor)
             {
-                model.warningLevel = -1;
-                realtimeEventData.noResponseList.Add(model);
+                model.warningLevel = EWarningLevel.NoResponse;
             }
             else
             {
-                if (model.GasKind == "氧气")
+                if (model.GasKind == EGasKind.YangQi)
                 {
                     model.GasValue = model.GasValue / 10.0f;
-                    if (model.GasValue > model.SecondAlarmValue)
+                    if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].maxValue)
                     {
-                        model.warningLevel = 2;
-                        realtimeEventData.secondList.Add(model);
+                        model.warningLevel = EWarningLevel.SecondAlarm;
+                        abnormalCount++;
                     }
-                    else if (model.GasValue < model.FirstAlarmValue)
+                    else if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].minValue)
                     {
-                        model.warningLevel = 1;
-                        realtimeEventData.firstList.Add(model);
+                        model.warningLevel = EWarningLevel.FirstAlarm;
+                        abnormalCount++;
                     }
                     else
                     {
-                        model.warningLevel = 0;
-                        realtimeEventData.normalList.Add(model);
+                        model.warningLevel = EWarningLevel.Normal;
                     }
                 }
                 else
                 {
-                    if (model.MachineType == 4)
+                    if (MachineFactoryDataManager.GetMachineData(model.MachineID).ProtocolType == 4)
                     {
                         if (model.GasValue == 1)
                         {
-                            model.warningLevel = 2;
-                            realtimeEventData.secondList.Add(model);
+                            model.warningLevel = EWarningLevel.SecondAlarm;
+                            abnormalCount++;
                         }
                         else
                         {
-                            model.warningLevel = 0;
-                            realtimeEventData.normalList.Add(model);
+                            model.warningLevel = EWarningLevel.Normal;
                         }
                     }
                     else
                     {
-                        if (model.GasValue >= model.SecondAlarmValue)
+                        if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].maxValue)
                         {
-                            model.warningLevel = 2;
-                            realtimeEventData.secondList.Add(model);
+                            model.warningLevel = EWarningLevel.SecondAlarm;
+                            abnormalCount++;
                         }
-                        else if (model.GasValue >= model.FirstAlarmValue)
+                        else if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].minValue)
                         {
-                            model.warningLevel = 1;
-                            realtimeEventData.firstList.Add(model);
+                            model.warningLevel = EWarningLevel.FirstAlarm;
+                            abnormalCount++;
                         }
                         else
                         {
-                            model.warningLevel = 0;
-                            realtimeEventData.normalList.Add(model);
+                            model.warningLevel = EWarningLevel.Normal;
                         }
                     }
                 }
             }
         }
-        return realtimeEventData;
-    }
-
-    void JudgeWarningShout(RealtimeEventData realtimeEventData)
-    {
-        bool hasAlarm = realtimeEventData.firstList.Count + realtimeEventData.secondList.Count > 0;
-        if (hasAlarm)
+        if (abnormalCount > 0)
         {
             AudioManager.instance.PlayWarningShout();
             CameraShake.instance.StartShake();
@@ -136,67 +137,5 @@ public class GlobalCheckGas : MonoBehaviour
             AudioManager.instance.PauseWarningShout();
             CameraShake.instance.StopShake();
         }
-    }
-
-    static List<int> smsDic = new List<int>();
-    static bool hasNew = false;
-    static DateTime preTime = DateTime.Now;
-    void HandleSMS(RealtimeEventData realtimeEventData)
-    {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < realtimeEventData.normalList.Count; i++)
-        {
-            RealtimeDataModel model = realtimeEventData.normalList[i];
-            if (smsDic.Contains(model.ProbeID))
-            {
-                smsDic.Remove(model.ProbeID);
-            }
-        }
-        hasNew = false;
-        for (int i = 0; i < realtimeEventData.firstList.Count; i++)
-        {
-            RealtimeDataModel model = realtimeEventData.firstList[i];
-            sb = sb.Append(HandleSMSProbeStr(model));
-        }
-        for (int i = 0; i < realtimeEventData.secondList.Count; i++)
-        {
-            RealtimeDataModel model = realtimeEventData.secondList[i];
-            sb = sb.Append(HandleSMSProbeStr(model));
-        }
-        for (int i = 0; i < realtimeEventData.noResponseList.Count; i++)
-        {
-            RealtimeDataModel model = realtimeEventData.noResponseList[i];
-            sb = sb.Append(HandleSMSProbeStr(model));
-        }
-        if (hasNew)
-        {
-            if (!string.IsNullOrEmpty(sb.ToString()))
-            {
-                preTime = DateTime.Now;
-                SMSHelper.SendSMS(sb.ToString());
-            }
-        }
-        else
-        {
-            int overTime = Application.isEditor ? 15 : 60 * 60 * 1;//1个小时
-            if (DateTime.Now.Subtract(preTime).TotalSeconds > overTime)
-            {
-                if (!string.IsNullOrEmpty(sb.ToString()))
-                {
-                    preTime = DateTime.Now;
-                    SMSHelper.SendSMS(sb.ToString());
-                }
-            }
-        }
-    }
-
-    string HandleSMSProbeStr(RealtimeDataModel model)
-    {
-        if (!smsDic.Contains(model.ProbeID))
-        {
-            smsDic.Add(model.ProbeID);
-            hasNew = true;
-        }
-        return "[" + model.ProbeName + "]";
     }
 }

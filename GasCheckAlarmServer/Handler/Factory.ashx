@@ -38,6 +38,11 @@ public class Factory : IHttpHandler
             string factoryName = context.Request["factoryName"];
             FactoryDAL.InsertFactory(factoryName);
         }
+        else if (requestType == "SelectAllFactoryDic")
+        {
+            Dictionary<int, FactoryModel> model = FactoryDAL.SelectAllFactoryDic();
+            content = JsonConvert.SerializeObject(model);
+        }
         context.Response.Write(content);
         context.Response.End();
     }

@@ -72,10 +72,7 @@ public class ProbeManagerPanel : UIEventHelper
                 }
                 sb = sb.Remove(sb.Length - 1, 1);
                 ProbeDAL.DeleteProbeByID(sb.ToString());
-                MessageBox.Instance.PopOK("删除成功", () =>
-                {
-                    EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
-                }, "确定");
+                EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
             }, "取消", "确定");
         }
     }
@@ -127,15 +124,10 @@ public class ProbeManagerPanel : UIEventHelper
     }
 
     List<ProbeItem> probeItemList = new List<ProbeItem>();
-    private void InitData()
-    {
-        List<ProbeModel> list = ProbeDAL.SelectAllProbeByCondition();
-        InitGrid(list);
-    }
-
-    void InitGrid(List<ProbeModel> list)
+    void InitData()
     {
         probeItemList.Clear();
+        List<ProbeModel> list = ProbeDAL.SelectAllProbeByCondition();
         GameUtils.SpawnCellForTable<ProbeModel>(contentTrans, list, (go, data, isSpawn, index) =>
         {
             GameObject currentObj = go;

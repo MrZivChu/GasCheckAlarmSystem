@@ -60,14 +60,11 @@ public class ExcelAccess
                 for (int i = 0; i < datalist.Count; i++)
                 {
                     HistoryDataModel model = datalist[i];
-                    worksheet.Cells["A" + (i + 2)].Value = model.ProbeName;
-                    worksheet.Cells["B" + (i + 2)].Value = model.MachineName;
-                    worksheet.Cells["C" + (i + 2)].Value = model.FactoryName;
-                    worksheet.Cells["D" + (i + 2)].Value = model.GasKind;
-                    worksheet.Cells["E" + (i + 2)].Value = model.GasValue;
-                    worksheet.Cells["F" + (i + 2)].Value = model.FirstAlarmValue;
-                    worksheet.Cells["G" + (i + 2)].Value = model.SecondAlarmValue;
-                    worksheet.Cells["H" + (i + 2)].Value = model.CheckTime.ToString("yyyy-MM-dd HH:mm:ss");
+                    worksheet.Cells["A" + (i + 2)].Value = model.gasKind;
+                    worksheet.Cells["B" + (i + 2)].Value = model.GasValue;
+                    worksheet.Cells["C" + (i + 2)].Value = FormatData.gasKindFormat[model.gasKind].minValue;
+                    worksheet.Cells["D" + (i + 2)].Value = FormatData.gasKindFormat[model.gasKind].maxValue;
+                    worksheet.Cells["E" + (i + 2)].Value = model.CheckTime.ToString("yyyy-MM-dd HH:mm:ss");
                 }
                 package.Save();
             }

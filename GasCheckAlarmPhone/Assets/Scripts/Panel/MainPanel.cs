@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MainPanel : UIEventHelper
@@ -30,17 +31,17 @@ public class MainPanel : UIEventHelper
         {
             RegisterTogClick<int>(togList[i], i, OnTogClick);
         }
+        togList[1].gameObject.SetActive(FormatData.currentUser.Authority == EAuthority.Admin);
         togList[0].isOn = true;
-        togList[1].gameObject.SetActive(FormatData.currentUser.Authority == 1);
+
+        txt_userName.text = FormatData.currentUser.UserName + FormatData.authorityFormat[FormatData.currentUser.Authority];
 
         RegisterBtnClick(btn_exitGame, OnExitGame);
         RegisterTogClick(tog_openShoutWarning, OnTogOpenShoutWarning);
         RegisterTogClick(tog_closeShoutWarning, OnTogCloseShoutWarning);
         RegisterTogClick(tog_openShakeWarning, OnTogOpenShakeWarning);
         RegisterTogClick(tog_closeShakeWarning, OnTogCloseShaketWarning);
-
         EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
-        txt_userName.text = FormatData.currentUser.UserName + FormatData.authorityNameDic[FormatData.currentUser.Authority];
     }
 
     private void OnDestroy()
@@ -50,15 +51,18 @@ public class MainPanel : UIEventHelper
 
     void OnTogClick(Toggle tog, bool isOn, int index)
     {
-        for (int i = 0; i < panelList.Count; i++)
+        if (isOn)
         {
-            if (i == index)
+            for (int i = 0; i < panelList.Count; i++)
             {
-                panelList[i].SetActive(true);
-            }
-            else
-            {
-                panelList[i].SetActive(false);
+                if (i == index)
+                {
+                    panelList[i].SetActive(true);
+                }
+                else
+                {
+                    panelList[i].SetActive(false);
+                }
             }
         }
     }
@@ -90,24 +94,25 @@ public class MainPanel : UIEventHelper
 
     void UpdateRealtimeDataListEvent(object tdata)
     {
-        RealtimeEventData realtimeEventData = (RealtimeEventData)tdata;
-        txt_normalCount.text = realtimeEventData.normalList.Count.ToString();
-        txt_warningCount.text = realtimeEventData.firstList.Count.ToString();
-        txt_errorCount.text = realtimeEventData.secondList.Count.ToString();
-        txt_noConnectCount.text = realtimeEventData.noResponseList.Count.ToString();
-        txt_allCount.text = (realtimeEventData.normalList.Count + realtimeEventData.firstList.Count + realtimeEventData.secondList.Count + realtimeEventData.noResponseList.Count).ToString();
+        List<ProbeModel> list = (List<ProbeModel>)tdata;
+        txt_normalCount.text = list.FindAll((it) => { return it.warningLevel == EWarningLevel.Normal; }).Count.ToString();
+        txt_warningCount.text = list.FindAll((it) => { return it.warningLevel == EWarningLevel.FirstAlarm; }).Count.ToString();
+        txt_errorCount.text = list.FindAll((it) => { return it.warningLevel == EWarningLevel.SecondAlarm; }).Count.ToString();
+        txt_noConnectCount.text = list.FindAll((it) => { return it.warningLevel == EWarningLevel.NoResponse; }).Count.ToString();
+        txt_allCount.text = list.Count.ToString();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         UpdateTime(Time.deltaTime);
     }
 
+    float updateTime = 1;
     float tempUpdateTime = 0;
     void UpdateTime(float deltaTime)
     {
         tempUpdateTime += deltaTime;
-        if (tempUpdateTime >= 1.0f)
+        if (tempUpdateTime >= updateTime)
         {
             tempUpdateTime = 0;
             txt_time.text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

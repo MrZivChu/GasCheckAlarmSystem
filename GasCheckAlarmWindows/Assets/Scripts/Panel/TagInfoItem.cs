@@ -9,15 +9,15 @@ public class TagInfoItem : MonoBehaviour
     public Text probeCountText;
 
     public TreeMap treeMap;
-    public void InitData(List<RealtimeDataModel> realtimeDataModelList, TreeMap treeMap)
+    public void InitData(List<ProbeModel> realtimeDataModelList, TreeMap treeMap)
     {
         this.treeMap = treeMap;
         tagNameText.text = treeMap.tagName;
         probeCountText.text = "（" + realtimeDataModelList.Count.ToString() + "）个";
-        int warningLevel = -1;
+        EWarningLevel warningLevel = EWarningLevel.Normal;
         for (int i = 0; i < realtimeDataModelList.Count; i++)
         {
-            RealtimeDataModel model = realtimeDataModelList[i];
+            ProbeModel model = realtimeDataModelList[i];
             if (model.warningLevel > warningLevel)
             {
                 warningLevel = model.warningLevel;

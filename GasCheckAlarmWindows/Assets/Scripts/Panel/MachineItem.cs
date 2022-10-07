@@ -10,23 +10,20 @@ public class MachineItem : UIEventHelper
     public Text txt_machineType;
     public Text txt_machineAddress;
     public Text txt_factory;
+    public Text txt_baudRate;
 
     public Toggle tog_select;
     public Image img_background;
-
-    void Start()
-    {
-
-    }
 
     public void InitData(MachineModel model)
     {
         currentModel = model;
         tog_select.isOn = false;
         txt_machineName.text = model.MachineName;
-        txt_machineType.text = FormatData.machineTypeFormat[model.MachineType];
+        txt_machineType.text = FormatData.protocolTypeFormat[(EProtocolType)MachineFactoryDataManager.GetMachineData(model.ID).ProtocolType];
         txt_machineAddress.text = model.MailAddress;
-        txt_factory.text = model.FactoryName;
+        txt_factory.text = MachineFactoryDataManager.GetFactoryData(MachineFactoryDataManager.GetMachineData(model.ID).FactoryID).FactoryName;
+        txt_baudRate.text = FormatData.baudRateFormat[model.BaudRate].ToString();
     }
 
     public void SetToggle(bool isOn)

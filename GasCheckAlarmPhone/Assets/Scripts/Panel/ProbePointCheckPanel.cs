@@ -101,7 +101,7 @@ public class ProbePointCheckPanel : MonoBehaviour
             string[] contentArray = content.Split(new string[] { "\r\n" }, StringSplitOptions.None);
             if (contentArray.Length > 1)
             {
-                string[] content1 = contentArray[1].Split(':');
+                string[] content1 = contentArray[1].Split('：');
                 if (content1.Length > 1)
                 {
                     OnSaoMaComplete(content1[1], camera);

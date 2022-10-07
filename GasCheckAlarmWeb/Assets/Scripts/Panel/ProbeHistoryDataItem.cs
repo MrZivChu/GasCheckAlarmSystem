@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,38 +28,11 @@ public class ProbeHistoryDataItem : UIEventHelper
     {
         currentModel = model;
         txt_index.text = index.ToString();
-        txt_probeName.text = model.ProbeName;
-        txt_machineName.text = model.MachineName;
-        txt_factoryName.text = model.FactoryName;
-        txt_gasKind.text = model.GasKind;
-        if (model.MachineType == 4)
-        {
-            if (FormatData.haiwanDic.ContainsKey((int)model.GasValue))
-            {
-                txt_gasValue.text = FormatData.haiwanDic[(int)model.GasValue];
-            }
-        }
-        else if (model.MachineType == 1)
-        {
-            if (model.GasValue.ToString() == "-1")
-            {
-                txt_gasValue.text = "预热";
-            }
-            else if (model.GasValue.ToString() == "-2")
-            {
-                txt_gasValue.text = "不在线";
-            }
-            else
-            {
-                txt_gasValue.text = model.GasValue.ToString();
-            }
-        }
-        else
-        {
-            txt_gasValue.text = model.GasValue.ToString();
-        }
-        txt_firstAlarmValue.text = model.FirstAlarmValue.ToString();
-        txt_secondAlarmValue.text = model.SecondAlarmValue.ToString();
+        txt_probeName.text = model.probeName;
+        txt_gasKind.text = FormatData.gasKindFormat[currentModel.gasKind].name;
+        txt_gasValue.text = FormatData.GetGasValue(MachineFactoryDataManager.GetMachineData(model.MachineID).ProtocolType, model.gasKind, Convert.ToSingle(model.GasValue));
+        txt_firstAlarmValue.text = FormatData.gasKindFormat[model.gasKind].minValue.ToString();
+        txt_secondAlarmValue.text = FormatData.gasKindFormat[model.gasKind].maxValue.ToString();
         txt_checkTime.text = model.CheckTime.ToString("MM-dd HH:mm:ss");
     }
 

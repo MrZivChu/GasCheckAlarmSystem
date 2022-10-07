@@ -1,7 +1,9 @@
-﻿using System;
+﻿using LitJson;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -9,7 +11,6 @@ using UnityEngine.UI;
 public class PlanarGraphPanel : UIEventHelper
 {
     public GameObject itemRes;
-    public Camera uiCamera;
     public Transform contentTrans;
     public SelectProbeForGraphPanel selectProbeForGraphPanel;
     public EditProbeForGraphPanel editProbeForGraphPanel;
@@ -18,11 +19,18 @@ public class PlanarGraphPanel : UIEventHelper
     {
         LoadServerGraphImg();
         EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeData);
+        EventManager.Instance.AddEventListener(NotifyType.UpdatePos2D, UpdatePos2D);
     }
 
     private void OnDestroy()
     {
         EventManager.Instance.DeleteEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeData);
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdatePos2D, UpdatePos2D);
+    }
+
+    void UpdatePos2D(object data)
+    {
+        InitData();
     }
 
     void UpdateRealtimeData(object data)
@@ -31,8 +39,14 @@ public class PlanarGraphPanel : UIEventHelper
         {
             return;
         }
-        RealtimeEventData realtimeEventData = (RealtimeEventData)data;
-        InitData(realtimeEventData);
+        List<ProbeModel> realtimeEventData = (List<ProbeModel>)data;
+        realtimeEventData.ForEach(it =>
+        {
+            if (dic.ContainsKey(it.ID))
+            {
+                dic[it.ID].InitRealtimeData(it);
+            }
+        });
     }
 
     float doublePreTime = 0;
@@ -43,7 +57,7 @@ public class PlanarGraphPanel : UIEventHelper
             if (!EventSystem.current.IsPointerOverGameObject())
             {
                 float doubleNowTime = Time.realtimeSinceStartup;
-                if (doubleNowTime - doublePreTime < 0.3f && FormatData.currentUser.Authority == 1)
+                if (doubleNowTime - doublePreTime < 0.3f && FormatData.currentUser.Authority == EAuthority.Admin)
                 {
                     InsertProbe();
                 }
@@ -58,7 +72,7 @@ public class PlanarGraphPanel : UIEventHelper
         float halfWidth = graphPanelRT.rect.size.x / 2;
         float halfHeight = graphPanelRT.rect.size.y / 2;
         Vector2 uiPosition;
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(graphPanelRT, Input.mousePosition, uiCamera, out uiPosition);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(graphPanelRT, Input.mousePosition, Camera.main, out uiPosition);
         print(uiPosition.x + "," + uiPosition.y);
         if (Mathf.Abs(uiPosition.x) > halfWidth || Mathf.Abs(uiPosition.y) > halfHeight)
         {
@@ -69,31 +83,27 @@ public class PlanarGraphPanel : UIEventHelper
         selectProbeForGraphPanel.gameObject.SetActive(true);
     }
 
-    private void InitData(RealtimeEventData realtimeEventData)
+    private void OnEnable()
     {
-        List<RealtimeDataModel> list = new List<RealtimeDataModel>();
-        list.AddRange(realtimeEventData.firstList.FindAll((item) =>
-        {
-            return !string.IsNullOrEmpty(item.Pos2D) ? true : false;
-        }));
-        list.AddRange(realtimeEventData.noResponseList.FindAll((item) =>
-        {
-            return !string.IsNullOrEmpty(item.Pos2D) ? true : false;
-        }));
-        list.AddRange(realtimeEventData.normalList.FindAll((item) =>
-        {
-            return !string.IsNullOrEmpty(item.Pos2D) ? true : false;
-        }));
-        list.AddRange(realtimeEventData.secondList.FindAll((item) =>
-        {
-            return !string.IsNullOrEmpty(item.Pos2D) ? true : false;
-        }));
-        InitGrid(list);
+        InitData();
     }
 
-    void InitGrid(List<RealtimeDataModel> list)
+    void InitData()
     {
-        GameUtils.SpawnCellForTable<RealtimeDataModel>(contentTrans, list, (go, data, isSpawn, index) =>
+        WWWForm form = new WWWForm();
+        form.AddField("requestType", "SelectIDProbeNameMachineIDPos2DWherePos2DHasValue");
+        GameUtils.PostHttpWebRequest("Probe.ashx", form, (bytes) =>
+        {
+            string content = Encoding.UTF8.GetString(bytes);
+            List<ProbeModel> list = JsonMapper.ToObject<List<ProbeModel>>(content);
+            InitGrid(list);
+        }, null);
+    }
+
+    Dictionary<int, PlanarGraphItem> dic = new Dictionary<int, PlanarGraphItem>();
+    void InitGrid(List<ProbeModel> list)
+    {
+        GameUtils.SpawnCellForTable<ProbeModel>(contentTrans, list, (go, data, isSpawn, index) =>
         {
             GameObject currentObj = go;
             if (isSpawn)
@@ -109,12 +119,16 @@ public class PlanarGraphPanel : UIEventHelper
             planarGraphItem.InitData(data);
             RegisterBtnClick<PlanarGraphItem>(currentObj.GetComponent<Button>(), planarGraphItem, OnButtonClick);
             currentObj.SetActive(true);
+            if (!dic.ContainsKey(data.ID))
+            {
+                dic[data.ID] = planarGraphItem;
+            }
         }, false);
     }
 
     void OnButtonClick(Button btn, PlanarGraphItem data)
     {
-        editProbeForGraphPanel.InitInfo(data.realtimeDataModel);
+        editProbeForGraphPanel.InitInfo(data.currentModel);
         editProbeForGraphPanel.gameObject.SetActive(true);
     }
 

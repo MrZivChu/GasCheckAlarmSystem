@@ -26,12 +26,45 @@ public class FactoryDAL
         return modelList;
     }
 
+    public static Dictionary<int, FactoryModel> SelectAllFactoryDic()
+    {
+        string sql = @"select * from Factory";
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
+        Dictionary<int, FactoryModel> dic = new Dictionary<int, FactoryModel>();
+        if (dt.Rows.Count > 0)
+        {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                FactoryModel model = new FactoryModel();
+                model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
+                model.FactoryName = dt.Rows[i]["FactoryName"].ToString();
+                if (!dic.ContainsKey(model.ID))
+                {
+                    dic[model.ID] = model;
+                }
+            }
+        }
+        return dic;
+    }
+
     public static bool DeleteFactoryByID(string idList)
     {
-        string sql = @"delete from Probe where FactoryID in ("+ idList + @");
-        delete from Machine where FactoryID in ("+ idList + @");
-        delete from RealtimeData where FactoryID in (" + idList + @");
-        delete from Factory where ID in ("+ idList + @");
+        string sql = @"select ID from Machine where FactoryID in (" + idList + @")";
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
+        if (dt.Rows.Count > 0)
+        {
+            string machineIDStr = string.Empty;
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                machineIDStr += Convert.ToInt32(dt.Rows[i]["ID"]) + ",";
+            }
+            machineIDStr = machineIDStr.TrimEnd(',');
+            sql = @"delete from Probe where MachineID in (" + machineIDStr + @")";
+            SqlHelper.ExecuteNonQuery(sql, null);
+        }
+
+        sql = @"delete from Machine where FactoryID in (" + idList + @");
+        delete from Factory where ID in (" + idList + @");
         ";
         int result = SqlHelper.ExecuteNonQuery(sql, null);
         return result >= 1 ? true : false;
@@ -40,11 +73,7 @@ public class FactoryDAL
     public static bool EditFactoryByID(int id, string factoryName)
     {
         //没必要更新历史数据
-        string sql = @"update Factory set FactoryName=@FactoryName where ID=@ID;
-        update Machine set FactoryName=@FactoryName where FactoryID=@ID;
-        update Probe set FactoryName=@FactoryName where FactoryID=@ID;
-        update RealtimeData set FactoryName=@FactoryName where FactoryID=@ID;
-        ";
+        string sql = @"update Factory set FactoryName=@FactoryName where ID=@ID;";
         SqlParameter[] parameter = new SqlParameter[] {
                  new SqlParameter("@ID",id),
                  new SqlParameter("@FactoryName",factoryName)

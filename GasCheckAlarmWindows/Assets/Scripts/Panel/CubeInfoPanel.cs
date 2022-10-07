@@ -35,23 +35,13 @@ public class CubeInfoPanel : UIEventHelper
         {
             return;
         }
-        RealtimeEventData realtimeEventData = (RealtimeEventData)data;
-        InitData(realtimeEventData);
-    }
-
-    private void InitData(RealtimeEventData realtimeEventData)
-    {
-        List<RealtimeDataModel> list = new List<RealtimeDataModel>();
-        list.AddRange(realtimeEventData.secondList);
-        list.AddRange(realtimeEventData.firstList);
-        list.AddRange(realtimeEventData.noResponseList);
-        list.AddRange(realtimeEventData.normalList);
+        List<ProbeModel> list = (List<ProbeModel>)data;
         InitGrid(list);
     }
 
-    void InitGrid(List<RealtimeDataModel> list)
+    void InitGrid(List<ProbeModel> list)
     {
-        GameUtils.SpawnCellForTable<RealtimeDataModel>(contentTrans, list, (go, data, isSpawn, index) =>
+        GameUtils.SpawnCellForTable<ProbeModel>(contentTrans, list, (go, data, isSpawn, index) =>
         {
             GameObject currentObj = go;
             if (isSpawn)

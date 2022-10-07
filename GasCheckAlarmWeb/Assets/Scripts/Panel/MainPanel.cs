@@ -31,11 +31,11 @@ public class MainPanel : UIEventHelper
         {
             RegisterTogClick<int>(togList[i], i, OnTogClick);
         }
-        togList[0].gameObject.SetActive(FormatData.currentUser.Authority == 1);
-        int selectIndex = FormatData.currentUser.Authority == 1 ? 0 : 1;
+        togList[0].gameObject.SetActive(FormatData.currentUser.Authority == EAuthority.Admin);
+        int selectIndex = FormatData.currentUser.Authority == EAuthority.Admin ? 0 : 1;
         togList[selectIndex].isOn = true;
 
-        txt_userName.text = FormatData.currentUser.UserName + FormatData.authorityNameDic[FormatData.currentUser.Authority];
+        txt_userName.text = FormatData.currentUser.UserName + FormatData.authorityFormat[FormatData.currentUser.Authority];
 
         RegisterBtnClick(btn_exitGame, OnExitGame);
         RegisterTogClick(tog_openShoutWarning, OnTogOpenShoutWarning);
@@ -95,12 +95,12 @@ public class MainPanel : UIEventHelper
 
     void UpdateRealtimeDataListEvent(object tdata)
     {
-        RealtimeEventData realtimeEventData = (RealtimeEventData)tdata;
-        txt_normalCount.text = realtimeEventData.normalList.Count.ToString();
-        txt_warningCount.text = realtimeEventData.firstList.Count.ToString();
-        txt_errorCount.text = realtimeEventData.secondList.Count.ToString();
-        txt_noConnectCount.text = realtimeEventData.noResponseList.Count.ToString();
-        txt_allCount.text = (realtimeEventData.normalList.Count + realtimeEventData.firstList.Count + realtimeEventData.secondList.Count + realtimeEventData.noResponseList.Count).ToString();
+        List<ProbeModel> list = (List<ProbeModel>)tdata;
+        txt_normalCount.text = list.FindAll((it) => { return it.warningLevel == EWarningLevel.Normal; }).Count.ToString();
+        txt_warningCount.text = list.FindAll((it) => { return it.warningLevel == EWarningLevel.FirstAlarm; }).Count.ToString();
+        txt_errorCount.text = list.FindAll((it) => { return it.warningLevel == EWarningLevel.SecondAlarm; }).Count.ToString();
+        txt_noConnectCount.text = list.FindAll((it) => { return it.warningLevel == EWarningLevel.NoResponse; }).Count.ToString();
+        txt_allCount.text = list.Count.ToString();
     }
 
     void FixedUpdate()

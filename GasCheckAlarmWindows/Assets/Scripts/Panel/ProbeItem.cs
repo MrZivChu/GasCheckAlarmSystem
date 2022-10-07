@@ -18,22 +18,17 @@ public class ProbeItem : UIEventHelper
     public Toggle tog_select;
     public Image img_background;
 
-    void Start()
-    {
-        
-    }
-
     public void InitData(ProbeModel model)
     {
         currentModel = model;
         tog_select.isOn = false;
         txt_probeName.text = model.ProbeName;
-        txt_machineName.text = model.MachineName;     
+        txt_machineName.text = MachineFactoryDataManager.GetMachineData(model.MachineID).MachineName;
         txt_probeAddress.text = model.MailAddress;
-        txt_gasKind.text = model.GasKind;
+        txt_gasKind.text = FormatData.gasKindFormat[currentModel.GasKind].name;
         txt_tagName.text = model.TagName;
-        txt_firstAlarmValue.text = model.FirstAlarmValue.ToString();
-        txt_secondAlarmValue.text = model.SecondAlarmValue.ToString();
+        txt_firstAlarmValue.text = FormatData.gasKindFormat[model.GasKind].minValue.ToString();
+        txt_secondAlarmValue.text = FormatData.gasKindFormat[model.GasKind].maxValue.ToString();
     }
 
     public void SetToggle(bool isOn)

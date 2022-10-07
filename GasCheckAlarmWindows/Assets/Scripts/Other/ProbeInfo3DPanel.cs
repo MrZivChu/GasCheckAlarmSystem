@@ -17,7 +17,7 @@ public class ProbeInfo3DPanel : UIEventHelper
     public Button okBtn;
     private void Start()
     {
-        deleteBtn.gameObject.SetActive(FormatData.currentUser.Authority == 1);
+        deleteBtn.gameObject.SetActive(FormatData.currentUser.Authority == EAuthority.Admin);
         RegisterBtnClick(deleteBtn, OnDelete);
         RegisterBtnClick(okBtn, OnOk);
     }
@@ -34,7 +34,6 @@ public class ProbeInfo3DPanel : UIEventHelper
             gameObject.SetActive(false);
             ProbeDAL.DeleteProbeByID(currentModel.ID.ToString());
             EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
-            MessageBox.Instance.PopOK("删除成功", null, "确定");
         }, "取消", "确定");
     }
 
@@ -42,14 +41,9 @@ public class ProbeInfo3DPanel : UIEventHelper
     {
         currentModel = model;
         txt_name.text = currentModel.ProbeName;
-        txt_gasKind.text = currentModel.GasKind;
-        txt_gasValue.text = "0";
-        txt_firstValue.text = currentModel.FirstAlarmValue.ToString();
-        txt_secondValue.text = currentModel.SecondAlarmValue.ToString();
-    }
-
-    public void RefreshRealtimeData(float gasValue)
-    {
-        txt_gasValue.text = gasValue.ToString();
+        txt_gasKind.text = FormatData.gasKindFormat[model.GasKind].name;
+        txt_gasValue.text = model.GasValue.ToString();
+        txt_firstValue.text = FormatData.gasKindFormat[model.GasKind].minValue.ToString();
+        txt_secondValue.text = FormatData.gasKindFormat[model.GasKind].maxValue.ToString();
     }
 }

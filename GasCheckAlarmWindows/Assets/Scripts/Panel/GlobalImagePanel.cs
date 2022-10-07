@@ -34,24 +34,14 @@ public class GlobalImagePanel : UIEventHelper
         }
     }
 
+    List<ProbeModel> realtimeData_ = new List<ProbeModel>();
     void UpdateRealtimeData(object data)
     {
         if (!gameObject || !gameObject.activeSelf)
         {
             return;
         }
-        RealtimeEventData realtimeEventData = (RealtimeEventData)data;
-        InitData(realtimeEventData);
-    }
-    
-    List<RealtimeDataModel> realtimeDataModelList = new List<RealtimeDataModel>();
-    private void InitData(RealtimeEventData realtimeEventData)
-    {
-        realtimeDataModelList.Clear();
-        realtimeDataModelList.AddRange(realtimeEventData.secondList);
-        realtimeDataModelList.AddRange(realtimeEventData.firstList);
-        realtimeDataModelList.AddRange(realtimeEventData.noResponseList);
-        realtimeDataModelList.AddRange(realtimeEventData.normalList);
+        realtimeData_ = (List<ProbeModel>)data;
         InitTagGrid();
     }
 
@@ -122,7 +112,7 @@ public class GlobalImagePanel : UIEventHelper
             }
             else
             {
-                List<RealtimeDataModel> list = GetRealtimeDataModelList(new List<string>() { treeMap.tagName });
+                List<ProbeModel> list = GetRealtimeDataModelList(new List<string>() { treeMap.tagName });
                 for (int i = 0; i < list.Count; i++)
                 {
                     InstanceProbe(list[i]);
@@ -131,7 +121,7 @@ public class GlobalImagePanel : UIEventHelper
         }
     }
 
-    void InstanceProbe(RealtimeDataModel model)
+    void InstanceProbe(ProbeModel model)
     {
         GameObject currentObj = Instantiate(probeItemRes) as GameObject;
         currentObj.transform.SetParent(probeContentTrans);
@@ -185,13 +175,20 @@ public class GlobalImagePanel : UIEventHelper
         }
     }
 
-    List<RealtimeDataModel> GetRealtimeDataModelList(List<string> ids)
+    List<ProbeModel> GetRealtimeDataModelList(List<string> ids)
     {
-        List<RealtimeDataModel> list = new List<RealtimeDataModel>();
+        List<ProbeModel> list = new List<ProbeModel>();
         for (int i = 0; i < ids.Count; i++)
         {
             string tagName = ids[i];
-            List<RealtimeDataModel> modelList = realtimeDataModelList.FindAll(it => it.TagName == tagName);
+            List<ProbeModel> modelList = new List<ProbeModel>();
+            realtimeData_.ForEach(it =>
+            {
+                if (it.TagName == tagName)
+                {
+                    modelList.Add(it);
+                }
+            });
             list.AddRange(modelList);
         }
         return list;

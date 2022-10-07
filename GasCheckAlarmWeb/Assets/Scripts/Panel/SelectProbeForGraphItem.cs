@@ -13,6 +13,6 @@ public class SelectProbeForGraphItem : MonoBehaviour
     {
         this.probeModel = probeModel;
         probeNameText.text = probeModel.ProbeName;
-        machineNameText.text = probeModel.MachineName;
+        machineNameText.text = MachineFactoryDataManager.GetMachineData(probeModel.MachineID).MachineName;
     }
 }

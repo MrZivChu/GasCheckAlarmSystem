@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class EditProbeForGraphPanel : UIEventHelper
 {
-    RealtimeDataModel currentModel;
+    ProbeModel currentModel;
     public Text txt_name;
     public Text txt_gasKind;
     public Text txt_gasValue;
@@ -18,7 +18,7 @@ public class EditProbeForGraphPanel : UIEventHelper
     {
         RegisterBtnClick(deleteBtn, OnDelete);
         RegisterBtnClick(btn_cancel, OnCancel);
-        deleteBtn.gameObject.SetActive(FormatData.currentUser != null && FormatData.currentUser.Authority == 1);
+        deleteBtn.gameObject.SetActive(FormatData.currentUser.Authority == EAuthority.Admin);
     }
 
     void OnCancel(Button btn)
@@ -30,26 +30,19 @@ public class EditProbeForGraphPanel : UIEventHelper
     {
         MessageBox.Instance.PopYesNo("确认删除？", null, () =>
         {
-            WWWForm form = new WWWForm();
-            form.AddField("requestType", "DeleteRealtimePos2DByID");
-            form.AddField("id", currentModel.ProbeID);
-            GameUtils.PostHttp("RealtimeData.ashx", form, null, null);
-
-            MessageBox.Instance.PopOK("删除成功", () =>
-            {
-                gameObject.SetActive(false);
-            }, "确定");
+            ProbeDAL.DeleteProbePos2DByID(currentModel.ID);
+            EventManager.Instance.DisPatch(NotifyType.UpdatePos2D);
             gameObject.SetActive(false);
         }, "取消", "确定");
     }
 
-    public void InitInfo(RealtimeDataModel model)
+    public void InitInfo(ProbeModel model)
     {
         currentModel = model;
         txt_name.text = currentModel.ProbeName;
-        txt_gasKind.text = currentModel.GasKind;
+        txt_gasKind.text = FormatData.gasKindFormat[currentModel.GasKind].name;
         txt_gasValue.text = model.GasValue.ToString();
-        txt_firstValue.text = currentModel.FirstAlarmValue.ToString();
-        txt_secondValue.text = currentModel.SecondAlarmValue.ToString();
+        txt_firstValue.text = FormatData.gasKindFormat[model.GasKind].minValue.ToString();
+        txt_secondValue.text = FormatData.gasKindFormat[model.GasKind].maxValue.ToString();
     }
 }

@@ -9,10 +9,7 @@ public class EditProbePanel : UIEventHelper
     public ProbeModel currentModel;
     public InputField input_probeName;
     public InputField input_probeAddress;
-    public InputField input_gasKind;
-    public InputField input_unit;
-    public InputField input_firstAlarmValue;
-    public InputField input_secondAlarmValue;
+    public Dropdown dropdown_gasKind;
     public Dropdown dropdown_deviceTag;
     public Dropdown dropdown_machine;
     public InputField input_serialNumber;
@@ -36,15 +33,11 @@ public class EditProbePanel : UIEventHelper
         {
             string probeName = input_probeName.text;
             string address = input_probeAddress.text;
-            string gasKind = input_gasKind.text;
-            string unit = input_unit.text;
-            string firstAlarmValue = input_firstAlarmValue.text;
-            string secondAlarmValue = input_secondAlarmValue.text;
             string serialNumber = input_serialNumber.text;
 
             int dd = dropdown_machine.value;
             MachineModel model = machineList[dd];
-            ProbeDAL.EditProbeByID(currentModel.ID, address, probeName, model.ID, gasKind, unit, firstAlarmValue, secondAlarmValue, model.MachineName, dropdown_deviceTag.captionText.text, serialNumber);
+            ProbeDAL.EditProbeByID(currentModel.ID, address, probeName, model.ID, dropdown_gasKind.value, dropdown_deviceTag.captionText.text, serialNumber);
             MessageBox.Instance.PopOK("修改成功", () =>
             {
                 EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
@@ -56,16 +49,26 @@ public class EditProbePanel : UIEventHelper
     List<MachineModel> machineList;
     public void InitData(ProbeModel model)
     {
+        InitMachine(model);
+        InitDeviceTag(model);
+        InitGasKind(model);
+
         currentModel = model;
         input_probeName.text = model.ProbeName;
         input_probeAddress.text = model.MailAddress;
-        input_gasKind.text = model.GasKind;
-        input_unit.text = model.Unit;
-        input_firstAlarmValue.text = model.FirstAlarmValue.ToString();
-        input_secondAlarmValue.text = model.SecondAlarmValue.ToString();
         input_serialNumber.text = model.SerialNumber;
-        InitMachine(model);
-        InitDeviceTag(model);
+    }
+
+    void InitGasKind(ProbeModel model)
+    {
+        dropdown_gasKind.ClearOptions();
+        foreach (var item in FormatData.gasKindFormat)
+        {
+            Dropdown.OptionData data = new Dropdown.OptionData(item.Value.name);
+            dropdown_gasKind.options.Add(data);
+        }
+        dropdown_gasKind.value = (int)model.GasKind;
+        dropdown_gasKind.RefreshShownValue();
     }
 
     void InitMachine(ProbeModel model)
@@ -84,6 +87,7 @@ public class EditProbePanel : UIEventHelper
             }
             dropdown_machine.AddOptions(optionList);
             dropdown_machine.value = selectIndex;
+            dropdown_gasKind.RefreshShownValue();
         }
     }
 
@@ -110,6 +114,7 @@ public class EditProbePanel : UIEventHelper
             }
             dropdown_deviceTag.AddOptions(optionList);
             dropdown_deviceTag.value = selectIndex;
+            dropdown_gasKind.RefreshShownValue();
         }
     }
 }

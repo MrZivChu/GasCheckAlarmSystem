@@ -9,7 +9,7 @@ public class SelectProbeForGraphPanel : UIEventHelper
     ProbeModel probeModel;
     public Transform contentTrans;
     public GameObject itemRes;
-    ToggleGroup togGroup;
+    public ToggleGroup togGroup;
 
     public Button btn_cancel;
     public Button btn_ok;
@@ -17,7 +17,6 @@ public class SelectProbeForGraphPanel : UIEventHelper
     public Vector3 uiPos;
     void Awake()
     {
-        togGroup = itemRes.GetComponent<ToggleGroup>();
         RegisterBtnClick(btn_cancel, OnCancel);
         RegisterBtnClick(btn_ok, OnOk);
     }
@@ -29,9 +28,10 @@ public class SelectProbeForGraphPanel : UIEventHelper
 
     void OnOk(Button btn)
     {
-        RealtimeDataDAL.EditRealtimePos2DByID(probeModel.ID, uiPos.x + "," + uiPos.y);
+        ProbeDAL.EditProbePos2DByID(probeModel.ID, uiPos.x + "," + uiPos.y);
         MessageBox.Instance.PopOK("新增成功", () =>
         {
+            EventManager.Instance.DisPatch(NotifyType.UpdatePos2D);
             gameObject.SetActive(false);
         }, "确定");
     }
@@ -44,11 +44,7 @@ public class SelectProbeForGraphPanel : UIEventHelper
 
     private void InitData()
     {
-        List<ProbeModel> list = ProbeDAL.SelectAllProbeByCondition();
-        list = list.FindAll((item) =>
-        {
-            return string.IsNullOrEmpty(item.Pos2D) ? true : false;
-        });
+        List<ProbeModel> list = ProbeDAL.SelectIDProbeNameMachineIDWherePos2DNoValue();
         InitGrid(list);
     }
 

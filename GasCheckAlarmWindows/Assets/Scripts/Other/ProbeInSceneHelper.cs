@@ -15,12 +15,6 @@ public class ProbeInSceneHelper : UIEventHelper
     public UnityEngine.Object probeResObj;
     public UnityEngine.Object mainRealtimeDataItemResObj;
 
-    public static ProbeInSceneHelper instance;
-    private void Awake()
-    {
-        instance = this;
-    }
-
     private void Start()
     {
         LoadAllProbe();
@@ -45,7 +39,7 @@ public class ProbeInSceneHelper : UIEventHelper
         if (Input.GetMouseButtonDown(0))
         {
             bool isHasHandle = RaycastHitProbe();
-            if (!isHasHandle && FormatData.currentUser.Authority == 1)
+            if (!isHasHandle && FormatData.currentUser.Authority == EAuthority.Admin)
             {
                 if (!EventSystem.current.IsPointerOverGameObject())
                 {
@@ -62,19 +56,13 @@ public class ProbeInSceneHelper : UIEventHelper
 
     bool RaycastHitProbe()
     {
-        if (!probeInfo3DPanel)
-        {
-            return false;
-        }
         RaycastHit hit;
-        bool isHit = RayHit(out hit);
-        if (isHit)
+        if (RayHit(out hit))
         {
             ProbeInfo probeInfo = hit.collider.GetComponent<ProbeInfo>();
             if (probeInfo != null)
             {
                 probeInfo3DPanel.InitInfo(probeInfo.currentModel);
-                probeInfo3DPanel.RefreshRealtimeData(probeIdValueDic[probeInfo.currentModel.ID]);
                 probeInfo3DPanel.gameObject.SetActive(true);
                 return true;
             }
@@ -118,27 +106,27 @@ public class ProbeInSceneHelper : UIEventHelper
     }
 
     public Dictionary<int, ProbeInfo> probeIdInfoDic = new Dictionary<int, ProbeInfo>();
-    public Dictionary<int, float> probeIdValueDic = new Dictionary<int, float>();
+    public Dictionary<int, ProbeModel> probeIdProbeModelDic = new Dictionary<int, ProbeModel>();
     public void LoadAllProbe()
     {
         probeIdInfoDic.Clear();
-        probeIdValueDic.Clear();
+        probeIdProbeModelDic.Clear();
         foreach (Transform item in probeListRoot)
         {
             Destroy(item.gameObject);
         }
-        List<ProbeModel> list = ProbeDAL.SelectAllProbeByCondition();
-        for (int i = 0; i < list.Count; i++)
+        List<ProbeModel> list = ProbeDAL.SelectIDProbeNameGasKindPos3D();
+        list.ForEach(it =>
         {
-            SpawnProbe(list[i]);
-        }
+            SpawnProbe(it);
+        });
     }
 
     public void SpawnProbe(ProbeModel model)
     {
         Vector3 position = Vector3.zero;
         Vector3 direction = Vector3.zero;
-        string posDir = model.PosDir;
+        string posDir = model.Pos3D;
         if (!string.IsNullOrEmpty(posDir))
         {
             string[] temp = posDir.Split(new string[] { ";" }, System.StringSplitOptions.None);
@@ -160,7 +148,7 @@ public class ProbeInSceneHelper : UIEventHelper
         ProbeInfo info = probeObj.GetComponent<ProbeInfo>();
         info.InitInfo(model);
         probeIdInfoDic.Add(model.ID, info);
-        probeIdValueDic.Add(model.ID, 0);
+        probeIdProbeModelDic[model.ID] = model;
     }
 
     public void UpdateRealtimeDataListEvent(object data)
@@ -169,51 +157,28 @@ public class ProbeInSceneHelper : UIEventHelper
         {
             return;
         }
-        RealtimeEventData realtimeEventData = (RealtimeEventData)data;
+        List<ProbeModel> realtimeEventData = (List<ProbeModel>)data;
+        realtimeEventData.ForEach(it => { it.ProbeName = probeIdProbeModelDic[it.ID].ProbeName; });
         Update3DProbeList(realtimeEventData);
-        UpdateErrorDataList(realtimeEventData);
+        Update2DProbeList(realtimeEventData);
     }
 
-    void Update3DProbeList(RealtimeEventData realtimeEventData)
+    void Update3DProbeList(List<ProbeModel> list)
     {
-        List<RealtimeDataModel> list = new List<RealtimeDataModel>();
-        list.AddRange(realtimeEventData.secondList);
-        list.AddRange(realtimeEventData.firstList);
-        list.AddRange(realtimeEventData.noResponseList);
-        list.AddRange(realtimeEventData.normalList);
-        for (int i = 0; i < list.Count; i++)
+        foreach (var model in list)
         {
-            RealtimeDataModel realtimeDataModel = list[i];
-            if (probeIdInfoDic.ContainsKey(realtimeDataModel.ProbeID))
+            if (probeIdInfoDic.ContainsKey(model.ID))
             {
-                ProbeInfo probeInfo = probeIdInfoDic[realtimeDataModel.ProbeID];
-                if (realtimeDataModel.GasValue > realtimeDataModel.SecondAlarmValue)
-                {
-                    GameUtils.SetObjectHighLight(probeInfo.gameObject, true, Color.red, Color.white);
-                }
-                else if (realtimeDataModel.GasValue > realtimeDataModel.FirstAlarmValue)
-                {
-                    GameUtils.SetObjectHighLight(probeInfo.gameObject, true, Color.yellow, Color.white);
-                }
-                else
-                {
-                    GameUtils.SetObjectHighLight(probeInfo.gameObject, true, Color.white, Color.white);
-                }
-            }
-            if (probeIdValueDic.ContainsKey(realtimeDataModel.ProbeID))
-            {
-                probeIdValueDic[realtimeDataModel.ProbeID] = Convert.ToSingle(realtimeDataModel.GasValue);
+                ProbeInfo probeInfo = probeIdInfoDic[model.ID];
+                probeInfo.currentModel.GasValue = model.GasValue;
+                GameUtils.SetObjectHighLight(probeInfo.gameObject, true, FormatData.warningColorDic[model.warningLevel], Color.white);
             }
         }
     }
 
-    void UpdateErrorDataList(RealtimeEventData realtimeEventData)
+    void Update2DProbeList(List<ProbeModel> list)
     {
-        List<RealtimeDataModel> list = new List<RealtimeDataModel>();
-        list.AddRange(realtimeEventData.secondList);
-        list.AddRange(realtimeEventData.firstList);
-        list.AddRange(realtimeEventData.noResponseList);
-        GameUtils.SpawnCellForTable<RealtimeDataModel>(errorProbeListRoot, list, (go, data, isSpawn, index) =>
+        GameUtils.SpawnCellForTable<ProbeModel>(errorProbeListRoot, list, (go, data, isSpawn, index) =>
         {
             GameObject currentObj = go;
             if (isSpawn)

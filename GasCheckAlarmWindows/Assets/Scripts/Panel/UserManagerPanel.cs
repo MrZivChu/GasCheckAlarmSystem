@@ -89,11 +89,7 @@ public class UserManagerPanel : UIEventHelper
                 }
                 sb = sb.Remove(sb.Length - 1, 1);
                 UserDAL.DeleteUserByID(sb.ToString());
-                MessageBox.Instance.PopOK("删除成功", () =>
-                {
-                    EventManager.Instance.DisPatch(NotifyType.UpdateUserList);
-                }, "确定");
-
+                EventManager.Instance.DisPatch(NotifyType.UpdateUserList);
             }, "取消", "确定");
         }
     }

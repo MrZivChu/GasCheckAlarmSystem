@@ -5,11 +5,15 @@ using UnityEngine;
 public enum NotifyType
 {
     UpdateProbeList,
+    UpdateWaterSealList,
     UpdateMachineList,
     UpdateFactoryList,
     UpdateUserList,
     UpdateRealtimeDataList,
     UpdateSerialPortStatus,
+    InsertDeviceTag,
+    DeleteDeviceTag,
+    UpdatePos2D,
 }
 
 public class EventManager

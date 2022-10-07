@@ -1,11 +1,66 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text;
 using UnityEngine;
 
 public class SMSHelper
 {
-    public static void SendSMS(string probeName)
+    static bool hasNew = false;
+    static List<int> smsDic = new List<int>();
+    static DateTime preTime = DateTime.Now;
+    public static void HandleProbeInfo(List<ProbeModel> list)
+    {
+        StringBuilder sb = new StringBuilder();
+        hasNew = false;
+        for (int i = 0; i < list.Count; i++)
+        {
+            ProbeModel model = list[i];
+            if (model.warningLevel == EWarningLevel.Normal)
+            {
+                if (smsDic.Contains(model.ID))
+                {
+                    smsDic.Remove(model.ID);
+                }
+            }
+            else
+            {
+                sb = sb.Append(HandleSMSProbeStr(model));
+            }
+        }
+        if (hasNew)
+        {
+            if (!string.IsNullOrEmpty(sb.ToString()))
+            {
+                preTime = DateTime.Now;
+                SMSHelper.SendSMS(sb.ToString());
+            }
+        }
+        else
+        {
+            int overTime = Application.isEditor ? 15 : 60 * 60 * 1;//1个小时
+            if (DateTime.Now.Subtract(preTime).TotalSeconds > overTime)
+            {
+                if (!string.IsNullOrEmpty(sb.ToString()))
+                {
+                    preTime = DateTime.Now;
+                    SMSHelper.SendSMS(sb.ToString());
+                }
+            }
+        }
+    }
+
+    static string HandleSMSProbeStr(ProbeModel model)
+    {
+        if (!smsDic.Contains(model.ID))
+        {
+            smsDic.Add(model.ID);
+            hasNew = true;
+        }
+        return "[" + model.ProbeName + "]";
+    }
+
+    static void SendSMS(string probeName)
     {
         if (string.IsNullOrEmpty(probeName))
         {

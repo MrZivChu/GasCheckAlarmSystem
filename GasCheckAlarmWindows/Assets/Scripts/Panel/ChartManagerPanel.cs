@@ -51,7 +51,7 @@ public class ChartManagerPanel : UIEventHelper
     void InitMachine()
     {
         dropdown_machine.ClearOptions();
-        machineList_ = MachineDAL.SelectAllMachineByCondition();
+        machineList_ = MachineDAL.SelectMachineName();
         if (machineList_ != null && machineList_.Count > 0)
         {
             List<string> optionList = new List<string>();
@@ -74,10 +74,19 @@ public class ChartManagerPanel : UIEventHelper
             string startTime = dateRange.FromDate.Date.ToString("yyyy-MM-dd 00:00:01");
             string endTime = dateRange.ToDate.Date.ToString("yyyy-MM-dd 23:59:59");
             int machineID = machineList_[dropdown_machine.value].ID;
-            probeList_ = ProbeDAL.SelectAllProbeNameByMachineID(machineID);
+            probeList_ = ProbeDAL.SelectIDProbeNameGasKindWithMachineID(machineID);
             if (probeList_.Count > 0)
             {
-                historyDataList_ = HistoryDataDAL.SelectHistoryDataForChart(machineID, startTime, endTime);
+                float firstAlarmValue = FormatData.gasKindFormat[probeList_[0].GasKind].minValue;
+                historyDataList_ = HistoryDataDAL.SelectHistoryDataForChart(machineID, firstAlarmValue, startTime, endTime);
+                historyDataList_.ForEach(it =>
+                {
+                    ProbeModel model = probeList_.Find(temp => temp.ID == it.ProbeID);
+                    if (model != null)
+                    {
+                        it.probeName = model.ProbeName;
+                    }
+                });
                 InitChart();
             }
         }
@@ -119,9 +128,9 @@ public class ChartManagerPanel : UIEventHelper
         });
         historyDataList_.ForEach((it) =>
         {
-            if (probeNameCount.ContainsKey(it.ProbeName))
+            if (probeNameCount.ContainsKey(it.probeName))
             {
-                probeNameCount[it.ProbeName] = probeNameCount[it.ProbeName] + 1;
+                probeNameCount[it.probeName] = probeNameCount[it.probeName] + 1;
             }
         });
         Pie pie = pieChart.AddSerie<Pie>();
@@ -152,12 +161,12 @@ public class ChartManagerPanel : UIEventHelper
         timeList.Add(dateRange.FromDate.Date.ToString("MM-dd 00:00:01"));
         historyDataList_.ForEach((it) =>
         {
-            if (probeNameValue.ContainsKey(it.ProbeName))
+            if (probeNameValue.ContainsKey(it.probeName))
             {
                 ChartSeriesModel model = new ChartSeriesModel();
                 model.checkTime = it.CheckTime.ToString("MM-dd HH:mm:ss");
                 model.gasValue = it.GasValue;
-                probeNameValue[it.ProbeName].Add(model);
+                probeNameValue[it.probeName].Add(model);
 
                 if (!timeList.Contains(it.CheckTime.ToString("MM-dd HH:mm:ss")))
                 {
@@ -214,12 +223,12 @@ public class ChartManagerPanel : UIEventHelper
         timeList.Add(dateRange.FromDate.Date.ToString("MM-dd 00:00:01"));
         historyDataList_.ForEach((it) =>
         {
-            if (probeNameValue.ContainsKey(it.ProbeName))
+            if (probeNameValue.ContainsKey(it.probeName))
             {
                 ChartSeriesModel model = new ChartSeriesModel();
                 model.checkTime = it.CheckTime.ToString("MM-dd HH:mm:ss");
                 model.gasValue = it.GasValue;
-                probeNameValue[it.ProbeName].Add(model);
+                probeNameValue[it.probeName].Add(model);
 
                 if (!timeList.Contains(it.CheckTime.ToString("MM-dd HH:mm:ss")))
                 {

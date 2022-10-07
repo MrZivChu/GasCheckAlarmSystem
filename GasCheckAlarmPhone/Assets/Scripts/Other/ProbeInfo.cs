@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ProbeInfo : MonoBehaviour
 {
-    ProbeModel currentModel;
+    public ProbeModel currentModel;
     public void InitInfo(ProbeModel model)
     {
         currentModel = model;

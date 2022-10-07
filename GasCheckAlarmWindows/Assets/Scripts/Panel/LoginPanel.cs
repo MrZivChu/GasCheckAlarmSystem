@@ -20,16 +20,8 @@ public class LoginPanel : UIEventHelper
         productNameText.text = JsonHandleHelper.gameConfig.productName;
         RegisterBtnClick(btn_login, OnLogin);
 
-        bool hasNameKey = GameUtils.HasKey(nameKey);
-        if (hasNameKey)
-        {
-            input_name.text = GameUtils.GetString(nameKey, "");
-        }
-        bool hasPwdKey = GameUtils.HasKey(pwdKey);
-        if (hasPwdKey)
-        {
-            input_pwd.text = GameUtils.GetString(pwdKey, "");
-        }
+        input_name.text = GameUtils.GetString(nameKey, "");
+        input_pwd.text = GameUtils.GetString(pwdKey, "");
     }
 
     void OnLogin(Button btn)

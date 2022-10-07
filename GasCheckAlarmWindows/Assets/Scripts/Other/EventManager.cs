@@ -13,6 +13,7 @@ public enum NotifyType
     UpdateSerialPortStatus,
     InsertDeviceTag,
     DeleteDeviceTag,
+    UpdatePos2D,
 }
 
 public class EventManager

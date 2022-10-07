@@ -15,7 +15,7 @@ public class DeviceManagerPanel : UIEventHelper
             RegisterBtnClick<int>(btnList[i], i, OnClick);
         }
         OnClick(btnList[0], 0);
-        btnList[4].gameObject.SetActive(FormatData.currentUser.Authority == 1 && JsonHandleHelper.gameConfig.isOpenWaterSeal);
+        btnList[4].gameObject.SetActive(FormatData.currentUser.Authority == EAuthority.Admin && JsonHandleHelper.gameConfig.isOpenWaterSeal);
     }
 
     void OnClick(Button btn, int index)

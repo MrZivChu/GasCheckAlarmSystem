@@ -7,31 +7,33 @@ public class LightSetting : MonoBehaviour
     public Light mainLight;
     public List<Light> subLights;
 
-    public static LightSetting instance;
-
-    private void Awake()
-    {
-        instance = this;
-    }
-
-    string mainValue = string.Empty;
-    string subValue = string.Empty;
+    bool isShowUI = false;
+    float mainValue = 1.5f;
+    float subValue = 0.1f;
     private void OnGUI()
     {
-        if (JsonHandleHelper.gameConfig.isSetLightByUI)
+        if (isShowUI)
         {
-            mainValue = GUI.TextField(new Rect(200, 200, 300, 100), mainValue);
-            float getMainValue = 1.5f;
-            if (float.TryParse(mainValue, out getMainValue))
+            float itemWidht = 200;
+            float itemHeight = 60;
+            float halfWidth = Screen.width / 2;
+            float halfHeight = Screen.height / 2;
+            mainValue = GUI.HorizontalSlider(new Rect(halfWidth - itemWidht, halfHeight, itemWidht, itemHeight), mainValue, 0.0f, 3);
+            SetMainLight(mainValue);
+            subValue = GUI.HorizontalSlider(new Rect(halfWidth - itemWidht, halfHeight + itemHeight, itemWidht, itemHeight), subValue, 0.0f, 1.0f);
+            SetSubLight(subValue);
+            if (GUI.Button(new Rect(halfWidth - itemWidht, halfHeight + itemHeight * 2, itemWidht, itemHeight), "关闭"))
             {
-                SetMainLight(getMainValue);
+                isShowUI = false;
             }
-            subValue = GUI.TextField(new Rect(200, 300, 300, 100), subValue);
-            float getSubValue = 0.3f;
-            if (float.TryParse(subValue, out getSubValue))
-            {
-                SetSubLight(getSubValue);
-            }
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.F6))
+        {
+            isShowUI = true;
         }
     }
 

@@ -80,16 +80,6 @@ public class ServerSocketHelper : MonoBehaviour
         {
             Debug.Log("start HandleRealtimeData ");
             HistoryDataModel model = LitJson.JsonMapper.ToObject<HistoryDataModel>(receiveData);
-            Debug.Log("end HandleRealtimeData ");
-            string key = model.MachineID + "*" + model.ProbeID;
-            if (realtimeDataModelDic.ContainsKey(key))
-            {
-                realtimeDataModelDic[key] = model;
-            }
-            else
-            {
-                realtimeDataModelDic.Add(key, model);
-            }
         }
     }
 

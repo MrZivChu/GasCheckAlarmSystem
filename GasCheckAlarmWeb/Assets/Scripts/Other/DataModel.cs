@@ -4,94 +4,35 @@ using System.Collections.Generic;
 using System.Data;
 using UnityEngine;
 
-public class RealtimeDataModel
+
+public enum EWarningLevel
 {
-    public int ID;
-    public int ProbeID;
-    public string ProbeName;
-    public DateTime CheckTime;
-    public double GasValue;
-    public string GasKind;
-    public string Unit;
-    public double FirstAlarmValue;
-    public double SecondAlarmValue;
-    public string MachineName;
-    public int MachineID;
-    public int FactoryID;
-    public string FactoryName;
-    public int MachineType;
-    public string Pos2D;
-    public string TagName;
-
-    //扩展字段
-    public int warningLevel = 0;
-
-    public RealtimeDataModel(int iD, int probeID, string probeName, DateTime checkTime, double gasValue, string gasKind, string unit, double firstAlarmValue, double secondAlarmValue, string machineName, int machineID, int factoryID, string factoryName, int machineType, string pos2D, string tagName, int warningLevel)
-    {
-        ID = iD;
-        ProbeID = probeID;
-        ProbeName = probeName;
-        CheckTime = checkTime;
-        GasValue = gasValue;
-        GasKind = gasKind;
-        Unit = unit;
-        FirstAlarmValue = firstAlarmValue;
-        SecondAlarmValue = secondAlarmValue;
-        MachineName = machineName;
-        MachineID = machineID;
-        FactoryID = factoryID;
-        FactoryName = factoryName;
-        MachineType = machineType;
-        Pos2D = pos2D;
-        TagName = tagName;
-        this.warningLevel = warningLevel;
-    }
-
-    public RealtimeDataModel()
-    {
-    }
+    Normal,
+    NoResponse,
+    FirstAlarm,
+    SecondAlarm,
 }
 
-public class UserModel
+public enum EProtocolType
 {
-    public int ID;
-    public string AccountName;
-    public string AccountPwd;
-    public int Authority;
-    public string Phone;
-    public string UserName;
-    public string UserNumber;
-
-    public UserModel()
-    {
-    }
+    StandardOne,
+    DZ40New,
+    DZ40Old,
+    Standard,
+    HaiWan
 }
 
-public class ProbeModel
+public enum EGasKind
 {
-    public int ID;
-    public string MailAddress;
-    public string ProbeName;
-    public string GasKind;
-    public string Unit;
-    public double FirstAlarmValue;
-    public double SecondAlarmValue;
-    public string MachineName;
-    public int MachineID;
-    public string PosDir;
-    public int FactoryID;
-    public string FactoryName;
-    public int MachineType;
-    public string Pos2D;
-    public string TagName;
-    public string SerialNumber;
+    YanGan,
+    YiYangHuaTan,
+    YangQi,
+}
 
-    //扩展字段
-    public bool isCheck = false;
-
-    public ProbeModel()
-    {
-    }
+public enum EAuthority
+{
+    Consumer,
+    Admin,
 }
 
 public class DeviceTagModel
@@ -100,10 +41,26 @@ public class DeviceTagModel
     public string TagName;
     public int ParentID;
     public string Position;
+}
 
-    public DeviceTagModel()
-    {
-    }
+public class FactoryModel
+{
+    public int ID;
+    public string FactoryName;
+}
+
+public class HistoryDataModel
+{
+    public int ID;
+    public int ProbeID;
+    public double GasValue;
+    public DateTime CheckTime;
+    public int MachineID;
+
+    //扩展字段
+    public EGasKind gasKind;
+    public EWarningLevel warningLevel;
+    public string probeName;
 }
 
 public class MachineModel
@@ -111,23 +68,52 @@ public class MachineModel
     public int ID;
     public string MailAddress;
     public string MachineName;
-    public string FactoryName;
     public int FactoryID;
-    public int MachineType;
-
-    public MachineModel()
-    {
-    }
+    public int ProtocolType;
+    public int BaudRate;
 }
 
-public class FactoryModel
+public class PointCheckModel
 {
     public int ID;
-    public string FactoryName;
+    public int DeviceID;
+    public string DeviceName;
+    public int DeviceType;
+    public string UserName;
+    public string QrCodePath;
+    public DateTime CheckTime;
+    public string Description;
+    public string Result;
+}
 
-    public FactoryModel()
-    {
-    }
+public class ProbeModel
+{
+    public int ID;
+    public string MailAddress;
+    public string ProbeName;
+    public EGasKind GasKind;
+    public int MachineID;
+    public string Pos3D;
+    public string Pos2D;
+    public string SerialNumber;
+    public string TagName;
+    public DateTime CheckTime;
+    public double GasValue;
+
+    //扩展字段
+    public bool isCheck = false;
+    public EWarningLevel warningLevel;
+}
+
+public class UserModel
+{
+    public int ID;
+    public string AccountName;
+    public string AccountPwd;
+    public string UserName;
+    public string UserNumber;
+    public string Phone;
+    public EAuthority Authority;
 }
 
 public class WaterSealModel
@@ -142,118 +128,63 @@ public class WaterSealModel
 
     //扩展字段
     public bool isCheck = false;
-
-    public WaterSealModel()
-    {
-    }
 }
 
-public class PointCheckModel
+public class GasKindInfo
 {
-    public int ID;
-    public int DeviceID;
-    public int DeviceType;
-    public string DeviceName;
-    public string UserName;
-    public string QrCodePath;
-    public DateTime CheckTime;
-    public string Description;
-    public string Result;
-
-    public PointCheckModel()
-    {
-    }
-}
-
-public class HistoryDataModel
-{
-    public int ID;
-    public int ProbeID;
-    public string ProbeName;
-    public DateTime CheckTime;
-    public double GasValue;
-    public int FactoryID;
-    public string FactoryName;
-    public int MachineID;
-    public string MachineName;
-    public string GasKind;
-    public double FirstAlarmValue;
-    public double SecondAlarmValue;
-    public int MachineType;
-
-    //扩展字段
-    public int warningLevel = 0;
-
-    public HistoryDataModel()
-    {
-    }
-}
-
-public class MachineSerialPortInfo
-{
-    public int MachineID;
-    public string MachineAddress;
-    public string ProbeAddress;
-    public string MachineName;
-    public string ProbeName;
-    public int ProbeID;
-    public double FirstAlarmValue;
-    public double SecondAlarmValue;
-    public string GasKind;
-
-    public MachineSerialPortInfo()
-    {
-    }
-}
-
-public class MachineSerialPortInfoBase
-{
-    public string MachineAddress;
-    public string command = "03";
-    public string FirstProbeHexAddress = "0001";
-    public string ReadProbeHexCount;
-    public List<MachineSerialPortInfo> list;
-
-    public MachineSerialPortInfoBase()
-    {
-    }
+    public string name;
+    public string unit;
+    public float minValue;
+    public float maxValue;
 }
 
 public class FormatData
 {
-    public static List<string> machineTypeFormat = new List<string>()
-    {
-        "标1协议","DZ-40-New","DZ-40-Old","标准协议","海湾"
+    public static Dictionary<EProtocolType, string> protocolTypeFormat = new Dictionary<EProtocolType, string>() {
+        { EProtocolType.StandardOne,"标1协议" },
+        { EProtocolType.DZ40New,"DZ-40-New" },
+        { EProtocolType.DZ40Old,"DZ-40-Old" },
+        { EProtocolType.Standard,"标准协议" },
+        { EProtocolType.HaiWan,"海湾" },
     };
 
-    public static List<string> gasKindList = new List<string>() { "烟感", "一氧化碳", "可燃气", "氧气", "氢气", "硫化氢", "氨气", "氯气", "一氧化氮", "二氧化硫", "二氧化氮", "二氧化碳", "臭氧", "ETO", "氰化氢", "PH", "氯化氢", "LPG", "LNG", "氯甲烷" };
-
-    public static List<string> unitList = new List<string>() { "%OBS/M", "ppm", "%LEL", "kppm", "ppb", "V/V%", "umol/mol", "mg/m3" };
+    public static Dictionary<EGasKind, GasKindInfo> gasKindFormat = new Dictionary<EGasKind, GasKindInfo>() {
+        { EGasKind.YanGan, new GasKindInfo(){ name="烟感", unit="%OBS/M", minValue=5, maxValue=15} },
+        { EGasKind.YiYangHuaTan, new GasKindInfo(){ name="一氧化碳", unit="ppm", minValue=24, maxValue=100} },
+        { EGasKind.YangQi, new GasKindInfo(){ name="氧气", unit="O₂", minValue=5, maxValue=100} },
+    };
 
     public static Dictionary<int, string> haiwanDic = new Dictionary<int, string>() {
         {0,"无事件应答" },{1,"火警" },{2,"故障" },{3,"动作" },{4,"恢复" },{5,"启动" },{6,"停动" },{7,"隔离" },{8,"释放" },{9,"主电备电恢复" }
     };
 
-    public static Dictionary<int, Color> warningColorDic = new Dictionary<int, Color>() {
-        {2, new Color(1f, 0f, 0f)},
-        {1, new Color(1f, 1f, 0f)},
-        {0, new Color(0.2f, 0.6f, 0.2f, 0.5f)},
-        {-1, new Color(0.75f, 0.75f, 0.75f)}
+    public static List<int> baudRateFormat = new List<int>() { 4800, 9600 };
+
+    public static Dictionary<EWarningLevel, Color> warningColorDic = new Dictionary<EWarningLevel, Color>() {
+        {EWarningLevel.SecondAlarm, new Color(1f, 0f, 0f)},
+        {EWarningLevel.FirstAlarm, new Color(1f, 1f, 0f)},
+        {EWarningLevel.Normal, new Color(0.2f, 0.6f, 0.2f, 0.5f)},
+        {EWarningLevel.NoResponse, new Color(0.75f, 0.75f, 0.75f)}
     };
 
-    public static Dictionary<int, string> authorityNameDic = new Dictionary<int, string>() {
-        {0, "普通用户"},
-        {1, "管理员"}
+    public static Dictionary<EAuthority, string> authorityFormat = new Dictionary<EAuthority, string>() {
+        {EAuthority.Consumer, "普通用户"},
+        {EAuthority.Admin, "管理员"}
     };
 
     public static UserModel currentUser = new UserModel()
     {
-        Authority = 1,
+        Authority = EAuthority.Admin,
         UserName = "--"
     };
 
-    public static string GetGasValue(int machineType, float gasValue)
+    public static string GetGasValue(int machineType, EGasKind gasKind, float gasValue)
     {
+        if (gasKind == EGasKind.YangQi)
+        {
+            gasValue = gasValue / 10.0f;
+
+        }
         if (machineType == 4)
         {
             if (FormatData.haiwanDic.ContainsKey((int)gasValue))

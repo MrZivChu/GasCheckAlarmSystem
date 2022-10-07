@@ -19,8 +19,6 @@ public class ProbeHistoryDataPanel : UIEventHelper
     int rowCount = 1;
     int pageSize = 13;
 
-    public InputField input_probeName;
-    public InputField input_gasKind;
     public UI.Dates.DatePicker_DateRange dateRange;
 
     public Transform contentTrans;
@@ -32,11 +30,13 @@ public class ProbeHistoryDataPanel : UIEventHelper
 
         RegisterBtnClick(btn_prePage, OnPrePagel);
         RegisterBtnClick(btn_nextPage, OnNextPage);
-        btn_deleteAllData.gameObject.SetActive(FormatData.currentUser.Authority == 1);
+        btn_deleteAllData.gameObject.SetActive(FormatData.currentUser.Authority == EAuthority.Admin);
     }
 
+    List<ProbeModel> baseInfoList_ = new List<ProbeModel>();
     private void OnEnable()
     {
+        baseInfoList_ = ProbeDAL.SelectIDProbeNameGasKindMachineID();
         InitData();
     }
 
@@ -70,16 +70,24 @@ public class ProbeHistoryDataPanel : UIEventHelper
         InitData();
     }
 
+    List<HistoryDataModel> historyDataModelList;
     private void InitData()
     {
-        string startTime = string.Empty;
-        if (dateRange.FromDate.HasValue)
-            startTime = dateRange.FromDate.Date.ToString("yyyy-MM-dd");
-        string endTime = string.Empty;
-        if (dateRange.ToDate.HasValue)
-            endTime = dateRange.ToDate.Date.AddDays(1).ToString("yyyy-MM-dd");
-
-        List<HistoryDataModel> historyDataModelList = HistoryDataDAL.SelectAllHistoryDataByCondition(pageIndex, pageSize, input_probeName.text, input_gasKind.text, startTime, endTime, out pageCount, out rowCount);
+        string startTime = dateRange.FromDate.HasValue ? dateRange.FromDate.Date.ToString("yyyy-MM-dd") : string.Empty; ;
+        string endTime = dateRange.ToDate.HasValue ? dateRange.ToDate.Date.AddDays(1).ToString("yyyy-MM-dd") : string.Empty; ;
+        historyDataModelList = HistoryDataDAL.SelectAllHistoryDataByCondition(pageIndex, pageSize, startTime, endTime, out pageCount, out rowCount);
+        foreach (var item in historyDataModelList)
+        {
+            ProbeModel model = baseInfoList_.Find(it => it.ID == item.ProbeID);
+            if (model != null)
+            {
+                item.ProbeID = model.ID;
+                item.probeName = model.ProbeName;
+                item.gasKind = model.GasKind;
+                item.MachineID = model.MachineID;
+            }
+        }
+        txt_pageCount.text = pageIndex + "/" + pageCount;
         InitGrid(historyDataModelList);
     }
 

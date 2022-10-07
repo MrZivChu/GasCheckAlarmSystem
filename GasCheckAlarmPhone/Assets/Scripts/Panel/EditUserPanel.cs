@@ -47,8 +47,11 @@ public class EditUserPanel : UIEventHelper
         input_phone.text = model.Phone;
 
         dropdown_authority.ClearOptions();
-        List<string> optionList = new List<string>() { "普通用户", "管理员" };
-        dropdown_authority.AddOptions(optionList);
-        dropdown_authority.value = model.Authority;
+        foreach (var item in FormatData.authorityFormat)
+        {
+            Dropdown.OptionData data = new Dropdown.OptionData(item.Value);
+            dropdown_authority.options.Add(data);
+        }
+        dropdown_authority.value = (int)model.Authority;
     }
 }

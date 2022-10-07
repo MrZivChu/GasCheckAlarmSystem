@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class RealtimeDataItem : UIEventHelper
 {
-    public RealtimeDataModel currentModel;
+    public ProbeModel currentModel;
     public Text txt_probeName;
     public Text txt_machineName;
     public Text txt_gasKind;
@@ -16,15 +16,15 @@ public class RealtimeDataItem : UIEventHelper
 
     public Image img_background;
 
-    public void InitData(RealtimeDataModel model)
+    public void InitInfo(ProbeModel model)
     {
         currentModel = model;
         txt_probeName.text = model.ProbeName;
-        txt_machineName.text = model.MachineName;
-        txt_gasKind.text = model.GasKind;
-        txt_gasValue.text = FormatData.GetGasValue(model.MachineType, Convert.ToSingle(model.GasValue));
-        txt_firstAlarmValue.text = model.FirstAlarmValue.ToString();
-        txt_secondAlarmValue.text = model.SecondAlarmValue.ToString();
+        txt_machineName.text = MachineFactoryDataManager.GetMachineData(model.MachineID).MachineName;
+        txt_gasKind.text = FormatData.gasKindFormat[currentModel.GasKind].name;
+        txt_gasValue.text = currentModel.GasValue.ToString();
+        txt_firstAlarmValue.text = FormatData.gasKindFormat[currentModel.GasKind].minValue.ToString();
+        txt_secondAlarmValue.text = FormatData.gasKindFormat[currentModel.GasKind].maxValue.ToString();
     }
 
     public void SetBackgroundColor(Color color)
