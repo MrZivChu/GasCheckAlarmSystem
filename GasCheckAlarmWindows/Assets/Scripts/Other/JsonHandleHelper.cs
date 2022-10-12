@@ -6,7 +6,6 @@ public struct SGameConfig
     public bool isLog;
     public bool isEnterPosDir;
     public bool isOpenWaterSeal;
-    public string commName;
     public string productName;
     public string sqlIP;
     public string sqlDatabase;
@@ -48,13 +47,6 @@ public class JsonHandleHelper : UIEventHelper
         SqlHelper.InitSqlConnection(gameConfig.sqlIP, gameConfig.sqlDatabase, gameConfig.sqlUserId, gameConfig.sqlUserPwd);
         isRemoteServer = gameConfig.sqlIP != "127.0.0.1";
         Debug.unityLogger.logEnabled = Application.isEditor ? true : gameConfig.isLog;
-    }
-
-    public static void UpdateConfigWithCommName(string commName)
-    {
-        gameConfig.commName = commName;
-        string json = LitJson.JsonMapper.ToJson(gameConfig);
-        File.WriteAllText(configPath, json);
     }
 
     public static void UpdateConfig(bool isLog, bool isEnterPosDir, bool isOpenWaterSeal, string productName, string sqlIP, string sqlDatabase, string sqlUserId, string sqlUserPwd, string smsPhone)

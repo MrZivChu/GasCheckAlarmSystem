@@ -8,7 +8,7 @@ public class MachineDAL
 {
     public static List<MachineModel> SelectAllMachineByCondition(string machineName = "", int factoryID = -1)
     {
-        string sql = @"select ID,MailAddress,MachineName,FactoryID,ProtocolType,BaudRate
+        string sql = @"select ID,MailAddress,MachineName,FactoryID,ProtocolType,BaudRate,PortName
         from Machine where 1=1 ";
         if (!string.IsNullOrEmpty(machineName))
             sql += " and MachineName like '%" + machineName + "%' ";
@@ -25,15 +25,16 @@ public class MachineDAL
                 model.MailAddress = dt.Rows[i]["MailAddress"].ToString();
                 model.MachineName = dt.Rows[i]["MachineName"].ToString();
                 model.FactoryID = Convert.ToInt32(dt.Rows[i]["FactoryID"]);
-                model.ProtocolType = Convert.ToInt32(dt.Rows[i]["ProtocolType"]);
+                model.ProtocolType = (EProtocolType)(dt.Rows[i]["ProtocolType"]);
                 model.BaudRate = Convert.ToInt32(dt.Rows[i]["BaudRate"]);
+                model.PortName = dt.Rows[i]["PortName"].ToString();
                 modelList.Add(model);
             }
         }
         return modelList;
     }
 
-    public static List<MachineModel> SelectMachineName()
+    public static List<MachineModel> SelectIDMachineName()
     {
         string sql = @"select ID,MachineName from Machine ";
         List<MachineModel> modelList = new List<MachineModel>();
@@ -53,7 +54,6 @@ public class MachineDAL
 
     public static Dictionary<int, MachineModel> SelectAllMachineDic()
     {
-
         string sql = @"select * from Machine";
         DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
         Dictionary<int, MachineModel> dic = new Dictionary<int, MachineModel>();
@@ -66,8 +66,9 @@ public class MachineDAL
                 model.MailAddress = dt.Rows[i]["MailAddress"].ToString();
                 model.MachineName = dt.Rows[i]["MachineName"].ToString();
                 model.FactoryID = Convert.ToInt32(dt.Rows[i]["FactoryID"]);
-                model.ProtocolType = Convert.ToInt32(dt.Rows[i]["ProtocolType"]);
+                model.ProtocolType = (EProtocolType)(dt.Rows[i]["ProtocolType"]);
                 model.BaudRate = Convert.ToInt32(dt.Rows[i]["BaudRate"]);
+                model.PortName = dt.Rows[i]["PortName"].ToString();
                 if (!dic.ContainsKey(model.ID))
                 {
                     dic[model.ID] = model;
@@ -86,10 +87,10 @@ public class MachineDAL
         return result >= 1 ? true : false;
     }
 
-    public static bool EditMachineByID(int id, string mailAddress, string machineName, int factoryID, int protocolType, int baudRate)
+    public static bool EditMachineByID(int id, string mailAddress, string machineName, int factoryID, int protocolType, int baudRate, string portName)
     {
         //没必要更新历史数据
-        string sql = @"update Machine set MailAddress=@MailAddress,MachineName=@MachineName,FactoryID=@FactoryID,ProtocolType=@ProtocolType,BaudRate=@BaudRate where ID=@ID;";
+        string sql = @"update Machine set MailAddress=@MailAddress,MachineName=@MachineName,FactoryID=@FactoryID,ProtocolType=@ProtocolType,BaudRate=@BaudRate,PortName=@PortName where ID=@ID;";
         SqlParameter[] parameter = new SqlParameter[] {
                  new SqlParameter("@ID",id),
                  new SqlParameter("@MailAddress",mailAddress),
@@ -97,20 +98,22 @@ public class MachineDAL
                  new SqlParameter("@FactoryID",factoryID),
                  new SqlParameter("@ProtocolType",protocolType),
                  new SqlParameter("@BaudRate",baudRate),
+                 new SqlParameter("@PortName",portName),
             };
         int result = SqlHelper.ExecuteNonQuery(sql, parameter);
         return result >= 1 ? true : false;
     }
 
-    public static bool InsertMachine(string mailAddress, string machineName, int factoryID, int protocolType, int baudRate)
+    public static bool InsertMachine(string mailAddress, string machineName, int factoryID, int protocolType, int baudRate, string portName)
     {
-        string sql = @"insert into Machine (MailAddress,MachineName,FactoryID,ProtocolType,BaudRate)values(@MailAddress,@MachineName,@FactoryID,@ProtocolType,@BaudRate)";
+        string sql = @"insert into Machine (MailAddress,MachineName,FactoryID,ProtocolType,BaudRate,PortName)values(@MailAddress,@MachineName,@FactoryID,@ProtocolType,@BaudRate,@PortName)";
         SqlParameter[] parameter = new SqlParameter[] {
                  new SqlParameter("@MailAddress",mailAddress),
                  new SqlParameter("@MachineName",machineName),
                  new SqlParameter("@FactoryID",factoryID),
                  new SqlParameter("@ProtocolType",protocolType),
                  new SqlParameter("@BaudRate",baudRate),
+                 new SqlParameter("@PortName",portName),
             };
         int result = SqlHelper.ExecuteNonQuery(sql, parameter);
         return result >= 1 ? true : false;

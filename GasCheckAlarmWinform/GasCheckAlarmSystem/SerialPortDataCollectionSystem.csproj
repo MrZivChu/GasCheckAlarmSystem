@@ -40,6 +40,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -49,7 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DataModel.cs" />
+    <Compile Include="ConfigHandleHelper.cs" />
     <Compile Include="DZ40NewProtocol.cs" />
     <Compile Include="DZ40OldProtocol.cs" />
     <Compile Include="Form1.cs">
@@ -61,13 +62,15 @@
     <Compile Include="HaiWanProtocol.cs" />
     <Compile Include="HexHelper.cs" />
     <Compile Include="HistoryDataDAL.cs" />
+    <Compile Include="LogHelper.cs" />
     <Compile Include="MachineDAL.cs" />
+    <Compile Include="ProbeDAL.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtocolBase.cs" />
-    <Compile Include="RealtimeDataDAL.cs" />
     <Compile Include="SerialPortHelper.cs" />
     <Compile Include="ClientSocketHelper.cs" />
+    <Compile Include="SerialPortRunner.cs" />
     <Compile Include="SqlHelper.cs" />
     <Compile Include="StandardOneProtocol.cs" />
     <Compile Include="StandardProtocol.cs" />

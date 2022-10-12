@@ -11,6 +11,7 @@ public class AddMachinePanel : UIEventHelper
     public Dropdown dropdown_factory;
     public Dropdown dropdown_protocol;
     public Dropdown dropdown_baundRate;
+    public Dropdown dropdown_portName;
 
     public Button btn_cancel;
     public Button btn_ok;
@@ -32,7 +33,7 @@ public class AddMachinePanel : UIEventHelper
         int machineProtocol = dropdown_protocol.value;
         int dd = dropdown_factory.value;
         FactoryModel model = factoryList[dd];
-        MachineDAL.InsertMachine(machineAddress, machineName, model.ID, machineProtocol, dropdown_baundRate.value);
+        MachineDAL.InsertMachine(machineAddress, machineName, model.ID, machineProtocol, FormatData.baudRateFormat[dropdown_baundRate.value], portNameList[dropdown_portName.value]);
         MessageBox.Instance.PopOK("新增成功", () =>
         {
             EventManager.Instance.DisPatch(NotifyType.UpdateMachineList);
@@ -41,6 +42,7 @@ public class AddMachinePanel : UIEventHelper
     }
 
     List<FactoryModel> factoryList;
+    List<string> portNameList;
     private void OnEnable()
     {
         dropdown_factory.ClearOptions();
@@ -74,5 +76,11 @@ public class AddMachinePanel : UIEventHelper
         }
         dropdown_baundRate.value = 0;
         dropdown_baundRate.RefreshShownValue();
+
+        dropdown_portName.ClearOptions();
+        string[] portNameArray = System.IO.Ports.SerialPort.GetPortNames();
+        portNameList = new List<string>() { };
+        portNameList.AddRange(portNameArray);
+        dropdown_portName.AddOptions(portNameList);
     }
 }

@@ -20,14 +20,14 @@ namespace GasCheckAlarmSystem
             }
             tempReadAllByteLength_ += bytesToReadCount;
             stageByteList_.AddRange(buffer);
-            GasCheckAlarmSystem.Form1.instance.AddLog("本次接收数据量：" + bytesToReadCount + ",数据接收进度：" + tempReadAllByteLength_ + "/" + readAllByteLength_);
+            LogHelper.AddLog("本次接收数据量:{0} 数据接收进度:{1}/{2}", bytesToReadCount, tempReadAllByteLength_, readAllByteLength_);
             if (tempReadAllByteLength_ < readAllByteLength_)
             {
                 return false;
             }
             if (Convert.ToInt32(stageByteList_[0].ToString()) != Convert.ToInt32(machineSerialPortInfo_.MachineAddress))
             {
-                GasCheckAlarmSystem.Form1.instance.AddLog("数据校验没通过");
+                LogHelper.AddLog("数据校验没通过");
                 return false;
             }
 
@@ -41,15 +41,10 @@ namespace GasCheckAlarmSystem
             float decValue = (highByte * 256 + lowByte);
 
             //插入历史数据
-            HistoryDataDAL.SingleInsertHistoryData(probeSerialPortInfo_, decValue);
+            HistoryDataDAL.AddHistoryData(probeSerialPortInfo_.ProbeID, decValue, probeSerialPortInfo_.MachineID);
             //更新实时数据
-            RealtimeDataDAL.EditRealtimeDataByID(probeSerialPortInfo_.ProbeID, DateTime.Now, decValue);
-
-            if (Form1.gameConfig_.isLog)
-            {
-                string log = "解析【Type=" + machineSerialPortInfo_.MachineType + "-地址=" + machineSerialPortInfo_.MachineAddress + "】主机数据：probeID=" + probeSerialPortInfo_.ProbeID + " probeName=" + probeSerialPortInfo_.ProbeName + " index = " + index + " highByte = " + highByte + " lowByte=" + lowByte + " decvalue=" + decValue;
-                GasCheckAlarmSystem.Form1.instance.AddLog(log);
-            }
+            ProbeDAL.EditRealtimeDataByID(probeSerialPortInfo_.ProbeID, DateTime.Now, decValue);
+            LogHelper.AddLog("probeID:{0} highByte:{1} lowByte:{2} decvalue:{3}", probeSerialPortInfo_.ProbeID, highByte, lowByte, decValue);
             return true;
         }
 
@@ -58,7 +53,7 @@ namespace GasCheckAlarmSystem
         public override void HandleSendData(MachineSerialPortInfo machineSerialPortInfo, out string sendContent)
         {
             machineSerialPortInfo_ = machineSerialPortInfo;
-            GasCheckAlarmSystem.Form1.instance.AddLog("标准协议发送进度:" + (readProbeIndex_ + 1) + "/" + machineSerialPortInfo_.list.Count);
+            LogHelper.AddLog("标准协议发送进度:{0}/{1}", (readProbeIndex_ + 1), machineSerialPortInfo_.list.Count);
             if (readProbeIndex_ >= machineSerialPortInfo_.list.Count)
             {
                 sendContent = string.Empty;
@@ -76,16 +71,7 @@ namespace GasCheckAlarmSystem
             stageByteList_.Clear();
             readProbeIndex_++;
 
-            if (Form1.gameConfig_.isLog)
-            {
-                sb = new StringBuilder("SendData:").Append(sendContent);
-                StringBuilder sb2 = new StringBuilder();
-                for (int i = 0; i < machineSerialPortInfo_.list.Count; i++)
-                {
-                    sb2.Append("   " + machineSerialPortInfo_.list[i].ProbeID);
-                }
-                GasCheckAlarmSystem.Form1.instance.AddLog(sb.ToString() + " readAllByteLength:" + readAllByteLength_ + " probeList:" + sb2.ToString());
-            }
+            LogHelper.AddLog("SendData:{0} readAllByteLength:{1}", sendContent, readAllByteLength_);
         }
 
         public override bool IsHandleOver()

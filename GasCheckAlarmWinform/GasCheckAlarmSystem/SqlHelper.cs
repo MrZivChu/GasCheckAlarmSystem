@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Configuration;
+﻿using System.Data;
 using System.Data.SqlClient;
-using System.Data;
 
 public class SqlHelper
 {
-    public static string connectionString = "server=hds16173015.my3w.com;database=hds16173015_db;Integrated Security=false;User ID=hds16173015;Password=!@#Dz123";
+    static string connectionString = "server={0};database={1};Integrated Security=false;User ID={2};Password={3}";
+
+    public static void InitSqlConnection(string sqlIP, string sqlDatabase, string sqlUserId, string sqlUserPwd)
+    {
+        connectionString = string.Format(connectionString, sqlIP, sqlDatabase, sqlUserId, sqlUserPwd);
+    }
 
     public static int ExecuteNonQuery(string cmdText,
         params SqlParameter[] parameters)

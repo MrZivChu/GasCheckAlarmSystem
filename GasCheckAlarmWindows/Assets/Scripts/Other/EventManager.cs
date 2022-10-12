@@ -10,7 +10,6 @@ public enum NotifyType
     UpdateFactoryList,
     UpdateUserList,
     UpdateRealtimeDataList,
-    UpdateSerialPortStatus,
     InsertDeviceTag,
     DeleteDeviceTag,
     UpdatePos2D,

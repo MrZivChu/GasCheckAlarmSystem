@@ -11,6 +11,7 @@ public class MachineItem : UIEventHelper
     public Text txt_machineAddress;
     public Text txt_factory;
     public Text txt_baudRate;
+    public Text txt_probeName;
 
     public Toggle tog_select;
     public Image img_background;
@@ -23,7 +24,8 @@ public class MachineItem : UIEventHelper
         txt_machineType.text = FormatData.protocolTypeFormat[(EProtocolType)MachineFactoryDataManager.GetMachineData(model.ID).ProtocolType];
         txt_machineAddress.text = model.MailAddress;
         txt_factory.text = MachineFactoryDataManager.GetFactoryData(MachineFactoryDataManager.GetMachineData(model.ID).FactoryID).FactoryName;
-        txt_baudRate.text = FormatData.baudRateFormat[model.BaudRate].ToString();
+        txt_baudRate.text = model.BaudRate.ToString();
+        txt_probeName.text = model.PortName;
     }
 
     public void SetToggle(bool isOn)

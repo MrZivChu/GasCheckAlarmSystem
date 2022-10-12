@@ -52,7 +52,6 @@ public class ServerSocketHelper : MonoBehaviour
     void ReciveData(object mySocket)
     {
         SendData(currentCommName);
-        EventManager.Instance.DisPatch(NotifyType.UpdateSerialPortStatus);
         while (isReceiveData)
         {
             try

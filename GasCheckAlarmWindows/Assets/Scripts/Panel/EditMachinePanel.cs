@@ -12,6 +12,7 @@ public class EditMachinePanel : UIEventHelper
     public Dropdown dropdown_factory;
     public Dropdown dropdown_protocol;
     public Dropdown dropdown_baundRate;
+    public Dropdown dropdown_portName;
 
     public Button btn_cancel;
     public Button btn_ok;
@@ -33,7 +34,8 @@ public class EditMachinePanel : UIEventHelper
             string machineName = input_machineName.text;
             string machineAddress = input_machineAddress.text;
             FactoryModel model = factoryList[dropdown_factory.value];
-            MachineDAL.EditMachineByID(currentModel.ID, machineAddress, machineName, model.ID, dropdown_protocol.value, dropdown_baundRate.value);
+            string portName = portNameList != null && portNameList.Count > 0 ? portNameList[dropdown_portName.value] : string.Empty;
+            MachineDAL.EditMachineByID(currentModel.ID, machineAddress, machineName, model.ID, dropdown_protocol.value, FormatData.baudRateFormat[dropdown_baundRate.value], portName);
             MessageBox.Instance.PopOK("修改成功", () =>
             {
                 EventManager.Instance.DisPatch(NotifyType.UpdateMachineList);
@@ -43,6 +45,7 @@ public class EditMachinePanel : UIEventHelper
     }
 
     List<FactoryModel> factoryList;
+    List<string> portNameList;
     public void InitData(MachineModel model)
     {
         currentModel = model;
@@ -71,7 +74,7 @@ public class EditMachinePanel : UIEventHelper
         int selectIndex = 0;
         foreach (var item in FormatData.protocolTypeFormat)
         {
-            if (model.ProtocolType == index)
+            if ((int)model.ProtocolType == index)
             {
                 selectIndex = index;
             }
@@ -96,5 +99,23 @@ public class EditMachinePanel : UIEventHelper
         }
         dropdown_baundRate.value = selectIndex;
         dropdown_baundRate.RefreshShownValue();
+
+        dropdown_portName.ClearOptions();
+        string[] portNameArray = System.IO.Ports.SerialPort.GetPortNames();
+        portNameList = new List<string>() { };
+        portNameList.AddRange(portNameArray);
+        index = 0;
+        foreach (var item in portNameList)
+        {
+            if (item == model.PortName)
+            {
+                selectIndex = index;
+            }
+            Dropdown.OptionData data = new Dropdown.OptionData(item);
+            dropdown_portName.options.Add(data);
+            index++;
+        }
+        dropdown_portName.value = selectIndex;
+        dropdown_portName.RefreshShownValue();
     }
 }

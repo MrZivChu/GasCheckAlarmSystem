@@ -51,7 +51,7 @@ public class ChartManagerPanel : UIEventHelper
     void InitMachine()
     {
         dropdown_machine.ClearOptions();
-        machineList_ = MachineDAL.SelectMachineName();
+        machineList_ = MachineDAL.SelectIDMachineName();
         if (machineList_ != null && machineList_.Count > 0)
         {
             List<string> optionList = new List<string>();

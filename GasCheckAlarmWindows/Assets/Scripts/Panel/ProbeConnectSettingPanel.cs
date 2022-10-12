@@ -35,7 +35,6 @@ public class ProbeConnectSettingPanel : UIEventHelper
         {
             int portIndex = dropdown_portName.value;
             string commName = portList[portIndex].Trim();
-            JsonHandleHelper.UpdateConfigWithCommName(commName);
             OpenWinformExeProcess();
             UpdateShowTip();
         }

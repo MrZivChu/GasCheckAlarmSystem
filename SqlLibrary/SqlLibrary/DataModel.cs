@@ -64,8 +64,9 @@ public class MachineModel
     public string MailAddress;
     public string MachineName;
     public int FactoryID;
-    public int ProtocolType;
+    public EProtocolType ProtocolType;
     public int BaudRate;
+    public string PortName;
 }
 
 public class PointCheckModel

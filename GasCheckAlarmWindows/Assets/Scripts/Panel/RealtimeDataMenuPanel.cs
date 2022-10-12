@@ -14,15 +14,7 @@ public class RealtimeDataMenuPanel : UIEventHelper
         {
             RegisterBtnClick<int>(btnList[i], i, OnClick);
         }
-        btnList[0].gameObject.SetActive(FormatData.currentUser.Authority == EAuthority.Admin);
-        if(FormatData.currentUser.Authority == EAuthority.Admin)
-        {
-            OnClick(btnList[0], 0);
-        }
-        else
-        {
-            OnClick(btnList[1], 1);
-        }
+        OnClick(btnList[0], 0);
     }
 
     void OnClick(Button btn, int index)

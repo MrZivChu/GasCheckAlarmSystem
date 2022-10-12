@@ -51,14 +51,14 @@ public class FormatData
         UserName = "--"
     };
 
-    public static string GetGasValue(int machineType, EGasKind gasKind, float gasValue)
+    public static string GetGasValue(EProtocolType protocolType, EGasKind gasKind, float gasValue)
     {
         if (gasKind == EGasKind.YangQi)
         {
             gasValue = gasValue / 10.0f;
 
         }
-        if (machineType == 4)
+        if (protocolType == EProtocolType.HaiWan)
         {
             if (FormatData.haiwanDic.ContainsKey((int)gasValue))
             {
@@ -69,7 +69,7 @@ public class FormatData
                 return "未找到此值对应的状态：" + gasValue;
             }
         }
-        else if (machineType == 1)
+        else if (protocolType == EProtocolType.DZ40New)
         {
             if (gasValue.ToString() == "-1")
             {

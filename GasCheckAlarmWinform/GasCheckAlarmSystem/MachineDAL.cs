@@ -4,36 +4,92 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
+public enum EProtocolType
+{
+    StandardOne,
+    DZ40New,
+    DZ40Old,
+    Standard,
+    HaiWan
+}
+
+public class ProbeSerialPortInfo
+{
+    public int ProbeID;
+    public string ProbeAddress;
+    public int MachineID;
+}
+public class MachineSerialPortInfo
+{
+    public string MachineAddress;
+    public EProtocolType ProtocolType;
+    public string command = "03";
+    public string FirstProbeDecAddress;
+    public string EndProbeDecAddress;
+    public int BaudRate;
+    public List<ProbeSerialPortInfo> list;
+}
+
 public class MachineDAL
 {
-    public static List<ProbeSerialPortInfo> SelectAllMachineSerialPortInfo()
+    public static Dictionary<string, List<MachineSerialPortInfo>> SelectAllMachineSerialPortInfo()
     {
-        string sql = @"select p.FactoryName,p.FactoryID,p.ProbeName,m.ID as MachineID,m.MailAddress as MachineAddress,m.MachineName,m.MachineType,p.ProbeName,p.ID as ProbeID,p.MailAddress as ProbeAddress,p.FirstAlarmValue,p.SecondAlarmValue,p.GasKind
-        from Machine as m
-        inner join Probe as p
-        on m.ID = p.MachineID";
-        List<ProbeSerialPortInfo> modelList = new List<ProbeSerialPortInfo>();
+        Dictionary<string, List<MachineSerialPortInfo>> dic = new Dictionary<string, List<MachineSerialPortInfo>>();
+        string sql = @"select ID,MailAddress,MachineID from Probe";
+        List<ProbeSerialPortInfo> probeList = new List<ProbeSerialPortInfo>();
         DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
-        if (dt.Rows.Count > 0)
+        for (int i = 0; i < dt.Rows.Count; i++)
         {
-            for (int i = 0; i < dt.Rows.Count; i++)
+            ProbeSerialPortInfo model = new ProbeSerialPortInfo();
+            model.ProbeID = Convert.ToInt32(dt.Rows[i]["ID"].ToString());
+            model.ProbeAddress = dt.Rows[i]["MailAddress"].ToString();
+            model.MachineID = Convert.ToInt32(dt.Rows[i]["MachineID"]);
+            probeList.Add(model);
+        }
+
+        sql = @"select ID,MailAddress,ProtocolType,BaudRate,PortName from Machine";
+        dt = SqlHelper.ExecuteDataTable(sql, null);
+        for (int i = 0; i < dt.Rows.Count; i++)
+        {
+            string portName = dt.Rows[i]["PortName"].ToString();
+            if (string.IsNullOrEmpty(portName))
             {
-                ProbeSerialPortInfo model = new ProbeSerialPortInfo();
-                model.ProbeID = Convert.ToInt32(dt.Rows[i]["ProbeID"].ToString());
-                model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
-                model.MachineID = Convert.ToInt32(dt.Rows[i]["MachineID"]);
-                model.MachineName = dt.Rows[i]["MachineName"].ToString();
-                model.MachineType = Convert.ToInt32(dt.Rows[i]["MachineType"]);
-                model.FactoryID = Convert.ToInt32(dt.Rows[i]["FactoryID"]);
-                model.FactoryName = dt.Rows[i]["FactoryName"].ToString();
-                model.MachineAddress = dt.Rows[i]["MachineAddress"].ToString();
-                model.ProbeAddress = dt.Rows[i]["ProbeAddress"].ToString();
-                model.FirstAlarmValue = Convert.ToSingle(dt.Rows[i]["FirstAlarmValue"].ToString());
-                model.SecondAlarmValue = Convert.ToSingle(dt.Rows[i]["SecondAlarmValue"].ToString());
-                model.GasKind = dt.Rows[i]["GasKind"].ToString();
-                modelList.Add(model);
+                continue;
+            }
+            int machineID = Convert.ToInt32(dt.Rows[i]["ID"].ToString());
+            List<ProbeSerialPortInfo> list = probeList.FindAll(it => { return it.MachineID == machineID; });
+            if (list != null && list.Count > 0)
+            {
+                int firstProbeDecAddress = Convert.ToInt32(list[0].ProbeAddress);
+                int endProbeDecAddress = firstProbeDecAddress;
+                if (list.Count > 1)
+                {
+                    for (int j = 1; j < list.Count; j++)
+                    {
+                        if (Convert.ToInt32(list[i].ProbeAddress) > endProbeDecAddress)
+                        {
+                            endProbeDecAddress = Convert.ToInt32(list[i].ProbeAddress);
+                        }
+                        else if (Convert.ToInt32(list[i].ProbeAddress) < firstProbeDecAddress)
+                        {
+                            firstProbeDecAddress = Convert.ToInt32(list[i].ProbeAddress);
+                        }
+                    }
+                }
+                MachineSerialPortInfo machineSerialPortInfo = new MachineSerialPortInfo();
+                machineSerialPortInfo.ProtocolType = (EProtocolType)dt.Rows[i]["ProtocolType"];
+                machineSerialPortInfo.MachineAddress = dt.Rows[i]["MailAddress"].ToString();
+                machineSerialPortInfo.BaudRate = Convert.ToInt32(dt.Rows[i]["BaudRate"]);
+                machineSerialPortInfo.list = list;
+                machineSerialPortInfo.FirstProbeDecAddress = firstProbeDecAddress.ToString();
+                machineSerialPortInfo.EndProbeDecAddress = endProbeDecAddress.ToString();
+                if (!dic.ContainsKey(portName))
+                {
+                    dic[portName] = new List<MachineSerialPortInfo>();
+                }
+                dic[portName].Add(machineSerialPortInfo);
             }
         }
-        return modelList;
+        return dic;
     }
 }
