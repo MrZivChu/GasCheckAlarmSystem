@@ -30,7 +30,7 @@ public class ProbeHistoryDataItem : UIEventHelper
         txt_index.text = index.ToString();
         txt_probeName.text = model.probeName;
         txt_gasKind.text = FormatData.gasKindFormat[currentModel.gasKind].name;
-        txt_gasValue.text = FormatData.GetGasValue(MachineFactoryDataManager.GetMachineData(model.MachineID).ProtocolType, model.gasKind, Convert.ToSingle(model.GasValue));
+        txt_gasValue.text = FormatData.GetGasValue((int)MachineFactoryDataManager.GetMachineData(model.MachineID).ProtocolType, model.gasKind, Convert.ToSingle(model.GasValue));
         txt_firstAlarmValue.text = FormatData.gasKindFormat[model.gasKind].minValue.ToString();
         txt_secondAlarmValue.text = FormatData.gasKindFormat[model.gasKind].maxValue.ToString();
         txt_checkTime.text = model.CheckTime.ToString("MM-dd HH:mm:ss");

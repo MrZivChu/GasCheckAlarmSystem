@@ -114,7 +114,7 @@ public class GlobalCheckGas : MonoBehaviour
                 }
                 else
                 {
-                    if (MachineFactoryDataManager.GetMachineData(model.MachineID).ProtocolType == 4)
+                    if (MachineFactoryDataManager.GetMachineData(model.MachineID).ProtocolType == EProtocolType.HaiWan)
                     {
                         if (model.GasValue == 1)
                         {

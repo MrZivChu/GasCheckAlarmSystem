@@ -1,0 +1,5 @@
+E:\GasCheckAlarmSystem\SqlLibrary\CopyFileToPath\bin\Debug\CopyFileToPath.exe
+E:\GasCheckAlarmSystem\SqlLibrary\CopyFileToPath\bin\Debug\CopyFileToPath.pdb
+E:\GasCheckAlarmSystem\SqlLibrary\CopyFileToPath\obj\Debug\CopyFileToPath.csproj.CoreCompileInputs.cache
+E:\GasCheckAlarmSystem\SqlLibrary\CopyFileToPath\obj\Debug\CopyFileToPath.exe
+E:\GasCheckAlarmSystem\SqlLibrary\CopyFileToPath\obj\Debug\CopyFileToPath.pdb

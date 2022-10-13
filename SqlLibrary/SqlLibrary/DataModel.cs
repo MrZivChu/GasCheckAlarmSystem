@@ -30,6 +30,7 @@ public enum EAuthority
     Admin,
 }
 
+[System.Serializable]
 public class DeviceTagModel
 {
     public int ID;
@@ -38,12 +39,14 @@ public class DeviceTagModel
     public string Position;
 }
 
+[System.Serializable]
 public class FactoryModel
 {
     public int ID;
     public string FactoryName;
 }
 
+[System.Serializable]
 public class HistoryDataModel
 {
     public int ID;
@@ -58,6 +61,7 @@ public class HistoryDataModel
     public string probeName;
 }
 
+[System.Serializable]
 public class MachineModel
 {
     public int ID;
@@ -69,6 +73,7 @@ public class MachineModel
     public string PortName;
 }
 
+[System.Serializable]
 public class PointCheckModel
 {
     public int ID;
@@ -82,6 +87,7 @@ public class PointCheckModel
     public string Result;
 }
 
+[System.Serializable]
 public class ProbeModel
 {
     public int ID;
@@ -101,6 +107,7 @@ public class ProbeModel
     public EWarningLevel warningLevel;
 }
 
+[System.Serializable]
 public class UserModel
 {
     public int ID;
@@ -112,6 +119,7 @@ public class UserModel
     public EAuthority Authority;
 }
 
+[System.Serializable]
 public class WaterSealModel
 {
     public int ID;
