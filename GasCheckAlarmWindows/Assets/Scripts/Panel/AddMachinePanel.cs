@@ -55,7 +55,6 @@ public class AddMachinePanel : UIEventHelper
                 optionList.Add(factoryList[i].FactoryName);
             }
             dropdown_factory.AddOptions(optionList);
-            dropdown_factory.value = 0;
             dropdown_factory.RefreshShownValue();
         }
 
@@ -65,7 +64,6 @@ public class AddMachinePanel : UIEventHelper
             Dropdown.OptionData data = new Dropdown.OptionData(item.Value);
             dropdown_protocol.options.Add(data);
         }
-        dropdown_protocol.value = 0;
         dropdown_protocol.RefreshShownValue();
 
         dropdown_baundRate.ClearOptions();
@@ -74,7 +72,6 @@ public class AddMachinePanel : UIEventHelper
             Dropdown.OptionData data = new Dropdown.OptionData(item.ToString());
             dropdown_baundRate.options.Add(data);
         }
-        dropdown_baundRate.value = 0;
         dropdown_baundRate.RefreshShownValue();
 
         dropdown_portName.ClearOptions();

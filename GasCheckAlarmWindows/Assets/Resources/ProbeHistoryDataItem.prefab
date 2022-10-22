@@ -1073,6 +1073,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1afda1e5db95d445aa22545d2479cb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentModel:
+    ID: 0
+    ProbeID: 0
+    GasValue: 0
+    MachineID: 0
+    gasKind: 0
+    warningLevel: 0
+    probeName: 
   txt_index: {fileID: 539377798444800604}
   txt_probeName: {fileID: 1364807628042927327}
   txt_gasKind: {fileID: 1364807628298109042}

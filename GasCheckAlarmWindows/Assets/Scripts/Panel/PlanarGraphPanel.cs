@@ -83,7 +83,7 @@ public class PlanarGraphPanel : UIEventHelper
         float halfHeight = graphPanelRT.rect.size.y / 2;
         Vector2 uiPosition;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(graphPanelRT, Input.mousePosition, Camera.main, out uiPosition);
-        print(uiPosition.x + "," + uiPosition.y);
+        print(Input.mousePosition + "    " + uiPosition);
         if (Mathf.Abs(uiPosition.x) > halfWidth || Mathf.Abs(uiPosition.y) > halfHeight)
         {
             print("click out range");

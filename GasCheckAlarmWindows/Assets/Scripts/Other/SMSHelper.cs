@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text;
 using UnityEngine;
 
@@ -9,8 +10,14 @@ public class SMSHelper
     static bool hasNew = false;
     static List<int> smsDic = new List<int>();
     static DateTime preTime = DateTime.Now;
+    static string smsFilePath = string.Empty;
     public static void HandleProbeInfo(List<ProbeModel> list)
     {
+        smsFilePath = Application.streamingAssetsPath + "/SMS/SMS.exe";
+        if (!File.Exists(smsFilePath) || list == null || list.Count == 0)
+        {
+            return;
+        }
         StringBuilder sb = new StringBuilder();
         hasNew = false;
         for (int i = 0; i < list.Count; i++)
@@ -38,7 +45,7 @@ public class SMSHelper
         }
         else
         {
-            int overTime = Application.isEditor ? 15 : 60 * 60 * 1;//1个小时
+            int overTime = Application.isEditor ? 300 : 3600;// 60 * 60 * 1 = 1个小时
             if (DateTime.Now.Subtract(preTime).TotalSeconds > overTime)
             {
                 if (!string.IsNullOrEmpty(sb.ToString()))
@@ -69,10 +76,9 @@ public class SMSHelper
         string content = string.Format("{0} 小盒子科技 SMS_251132221 {1}", JsonHandleHelper.gameConfig.smsPhone, probeName);
         if (Application.isEditor)
         {
-            UnityEngine.Debug.Log(content);
             return;
         }
-        ProcessStartInfo startInfo = new ProcessStartInfo(Application.streamingAssetsPath + "/SMS/SMS.exe");
+        ProcessStartInfo startInfo = new ProcessStartInfo(smsFilePath);
         startInfo.UseShellExecute = false;
         startInfo.RedirectStandardOutput = true;
         startInfo.RedirectStandardError = true;

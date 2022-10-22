@@ -1035,6 +1035,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79bc5425b2594564a8969a26f969dc76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentModel:
+    ID: 0
+    MailAddress: 
+    ProbeName: 
+    GasKind: 0
+    MachineID: 0
+    Pos3D: 
+    Pos2D: 
+    SerialNumber: 
+    TagName: 
+    GasValue: 0
+    isCheck: 0
+    warningLevel: 0
   txt_probeName: {fileID: 1364807628042927327}
   txt_machineName: {fileID: 1364807628814297769}
   txt_gasKind: {fileID: 1364807628298109042}

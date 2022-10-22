@@ -1419,6 +1419,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 130da9e2b23da0d438a61a33452bc742, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentModel:
+    ID: 0
+    AccountName: 
+    AccountPwd: 
+    UserName: 
+    UserNumber: 
+    Phone: 
+    Authority: 0
   txt_accountName: {fileID: 395}
   txt_userName: {fileID: 397}
   txt_userNumber: {fileID: 390}

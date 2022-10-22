@@ -373,6 +373,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 79a69f5268f1eaa41937104f22314416, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentModel:
+    ID: 0
+    FactoryName: 
   txt_factoryName: {fileID: 6295832236170949078}
   tog_select: {fileID: 6295832236395388841}
   img_background: {fileID: 6295832235573927200}

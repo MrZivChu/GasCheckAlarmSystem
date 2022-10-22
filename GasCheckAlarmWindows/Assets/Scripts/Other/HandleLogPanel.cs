@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -19,6 +20,13 @@ public class HandleLogPanel : UIEventHelper
     public InputField sqlUserIDInput;
     public InputField sqlPwdInput;
     public InputField smsPhoneInput;
+
+    public InputField yanGanMinInput;
+    public InputField yanGanMaxInput;
+    public InputField yiYangHuaTanMinInput;
+    public InputField yiYangHuaTanMaxInput;
+    public InputField yangQiMinInput;
+    public InputField yangQiMaxInput;
     void Start()
     {
         RegisterBtnClick(btn_cancel, OnCancel);
@@ -37,6 +45,13 @@ public class HandleLogPanel : UIEventHelper
         sqlUserIDInput.text = JsonHandleHelper.gameConfig.sqlUserId;
         sqlPwdInput.text = JsonHandleHelper.gameConfig.sqlUserPwd;
         smsPhoneInput.text = JsonHandleHelper.gameConfig.smsPhone;
+
+        yanGanMinInput.text = JsonHandleHelper.gameConfig.yanGanMinValue.ToString();
+        yanGanMaxInput.text = JsonHandleHelper.gameConfig.yanGanMaxValue.ToString();
+        yiYangHuaTanMinInput.text = JsonHandleHelper.gameConfig.yiYangHuaTanMinValue.ToString();
+        yiYangHuaTanMaxInput.text = JsonHandleHelper.gameConfig.yiYangHuaTanMaxValue.ToString();
+        yangQiMinInput.text = JsonHandleHelper.gameConfig.yangQiMinValue.ToString();
+        yangQiMaxInput.text = JsonHandleHelper.gameConfig.yangQiMaxValue.ToString();
     }
 
     void OnCancel(Button btn)
@@ -56,10 +71,7 @@ public class HandleLogPanel : UIEventHelper
         string sqlUserPwd = sqlPwdInput.text;
         string smsPhone = smsPhoneInput.text;
 
-        JsonHandleHelper.UpdateConfig(isLog, isEnterPosDir, isOpenWaterSeal, productName, sqlIP, sqlDatabase, sqlUserId, sqlUserPwd, smsPhone);
+        JsonHandleHelper.UpdateConfig(isLog, isEnterPosDir, isOpenWaterSeal, productName, sqlIP, sqlDatabase, sqlUserId, sqlUserPwd, smsPhone, Convert.ToDouble(yanGanMinInput.text), Convert.ToDouble(yanGanMaxInput.text), Convert.ToDouble(yiYangHuaTanMinInput.text), Convert.ToDouble(yiYangHuaTanMaxInput.text), Convert.ToDouble(yangQiMinInput.text), Convert.ToDouble(yangQiMaxInput.text));
         Application.Quit();
-        string exePath = Application.streamingAssetsPath + "/../../GasCheckAlarmSystem.exe";
-        File.WriteAllText("d:\\121.txt", exePath);
-        System.Diagnostics.Process.Start(exePath);
     }
 }

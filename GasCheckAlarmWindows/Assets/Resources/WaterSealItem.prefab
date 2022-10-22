@@ -506,6 +506,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b4091ddc4237cc45a03f4490527401d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentModel:
+    ID: 0
+    Medium: 
+    Number: 
+    InstallPosition: 
+    Category: 
+    DesignPressure: 0
+    SerialNumber: 
+    isCheck: 0
   txt_Medium: {fileID: 2124522074730536531}
   txt_Number: {fileID: 2124522075100006437}
   txt_InstallPosition: {fileID: 2124522075484139728}

@@ -66,13 +66,13 @@ public class MachineDAL
                 {
                     for (int j = 1; j < list.Count; j++)
                     {
-                        if (Convert.ToInt32(list[i].ProbeAddress) > endProbeDecAddress)
+                        if (Convert.ToInt32(list[j].ProbeAddress) > endProbeDecAddress)
                         {
-                            endProbeDecAddress = Convert.ToInt32(list[i].ProbeAddress);
+                            endProbeDecAddress = Convert.ToInt32(list[j].ProbeAddress);
                         }
-                        else if (Convert.ToInt32(list[i].ProbeAddress) < firstProbeDecAddress)
+                        else if (Convert.ToInt32(list[j].ProbeAddress) < firstProbeDecAddress)
                         {
-                            firstProbeDecAddress = Convert.ToInt32(list[i].ProbeAddress);
+                            firstProbeDecAddress = Convert.ToInt32(list[j].ProbeAddress);
                         }
                     }
                 }

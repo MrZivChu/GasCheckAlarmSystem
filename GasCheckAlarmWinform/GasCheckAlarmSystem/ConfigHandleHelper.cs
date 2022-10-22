@@ -8,13 +8,18 @@ namespace GasCheckAlarmSystem
         public bool isLog;
         public bool isEnterPosDir;
         public bool isOpenWaterSeal;
-        public string commName;
         public string productName;
         public string sqlIP;
         public string sqlDatabase;
         public string sqlUserId;
         public string sqlUserPwd;
         public string smsPhone;
+        public double yanGanMinValue;
+        public double yanGanMaxValue;
+        public double yiYangHuaTanMinValue;
+        public double yiYangHuaTanMaxValue;
+        public double yangQiMinValue;
+        public double yangQiMaxValue;
     }
     class ConfigHandleHelper
     {

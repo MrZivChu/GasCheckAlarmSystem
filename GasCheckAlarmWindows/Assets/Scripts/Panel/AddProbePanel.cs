@@ -21,11 +21,37 @@ public class AddProbePanel : UIEventHelper
 
     public Button btn_cancel;
     public Button btn_ok;
+    public Button reduceBtn;
+    public Button addBtn;
 
     void Start()
     {
         RegisterBtnClick(btn_cancel, OnCancel);
         RegisterBtnClick(btn_ok, OnOk);
+        RegisterBtnClick(reduceBtn, OnReduce);
+        RegisterBtnClick(addBtn, OnAdd);
+    }
+
+    void OnAdd(Button btn)
+    {
+        string content = input_probeAddress.text;
+        int result = 0;
+        if (int.TryParse(content, out result))
+        {
+            result = result + 1;
+            input_probeAddress.text = result.ToString().PadLeft(4, '0');
+        }
+    }
+
+    void OnReduce(Button btn)
+    {
+        string content = input_probeAddress.text;
+        int result = 0;
+        if (int.TryParse(content, out result))
+        {
+            result = result - 1;
+            input_probeAddress.text = result.ToString().PadLeft(4, '0');
+        }
     }
 
     void OnCancel(Button btn)
@@ -73,7 +99,6 @@ public class AddProbePanel : UIEventHelper
                 }
             }
             dropdown_deviceTag.AddOptions(optionList);
-            dropdown_deviceTag.value = 0;
             dropdown_deviceTag.RefreshShownValue();
         }
     }
@@ -90,7 +115,6 @@ public class AddProbePanel : UIEventHelper
                 optionList.Add(machineList[i].MachineName);
             }
             dropdown_machine.AddOptions(optionList);
-            dropdown_machine.value = 0;
             dropdown_machine.RefreshShownValue();
         }
     }
@@ -103,7 +127,6 @@ public class AddProbePanel : UIEventHelper
             Dropdown.OptionData data = new Dropdown.OptionData(item.Value.name);
             dropdown_gasKind.options.Add(data);
         }
-        dropdown_gasKind.value = 0;
         dropdown_gasKind.RefreshShownValue();
     }
 

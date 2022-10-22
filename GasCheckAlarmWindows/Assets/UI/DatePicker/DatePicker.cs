@@ -427,7 +427,7 @@ namespace UI.Dates
             foreach (var template in templateList)
             {
                 template.IsTemplate = true; // just in case
-                template.Text.font = Config.Days.Font;
+                //template.Text.font = Config.Days.Font;
                 template.Text.fontSize = Config.Days.FontSize;                
             }            
 

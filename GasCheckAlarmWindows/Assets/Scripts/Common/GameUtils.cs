@@ -82,6 +82,19 @@ public static class GameUtils
         }
     }
 
+    public static long GetLongTimeStamp(DateTime dateTime)
+    {
+        System.DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1));//当地时区
+        TimeSpan ts = dateTime - startTime;
+        return Convert.ToInt64(ts.TotalSeconds);
+    }
+
+    public static DateTime FromLongTimeStamp(long timeStamp)
+    {
+        System.DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1));//当地时区
+        return startTime.AddSeconds(timeStamp);
+    }
+
     #region PlayerPrefs
     static string GetKey(string key)
     {

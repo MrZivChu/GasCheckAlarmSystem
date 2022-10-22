@@ -26,11 +26,13 @@ public class WinformExeManager : MonoBehaviour
     void ReOpenWinformExeProcess()
     {
         CloseWinformExeProcess();
+        Debug.Log("ReOpenWinformExeProcess");
         System.Diagnostics.Process.Start(Application.streamingAssetsPath + "/SerialPortDataCollectionSystem.exe");
     }
 
     void CloseWinformExeProcess()
     {
+        Debug.Log("CloseWinformExeProcess");
         CSharpUtils.KillProcess("SerialPortDataCollectionSystem");
     }
 }

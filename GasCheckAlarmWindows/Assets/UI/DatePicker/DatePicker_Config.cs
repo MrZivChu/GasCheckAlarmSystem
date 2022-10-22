@@ -122,7 +122,7 @@ namespace UI.Dates
             if (!OverrideTemplate) return;
 
             header.HeaderText.color = TextColor;
-            header.HeaderText.font = Font;
+            //header.HeaderText.font = Font;
             header.HeaderText.fontSize = FontSize;
             header.Cell.image.sprite = BackgroundImage;
             header.Cell.image.color = BackgroundColor;            
@@ -184,7 +184,7 @@ namespace UI.Dates
             header.Background.color = BackgroundColor;
 
             header.HeaderText.color = TextColor;
-            header.HeaderText.font = Font;            
+            //header.HeaderText.font = Font;            
 
             if (ShowNextAndPreviousMonthButtons)
             {

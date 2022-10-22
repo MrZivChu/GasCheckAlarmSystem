@@ -1031,10 +1031,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 279ee9e9037737640a93869d516aa503, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentModel:
+    ID: 0
+    MailAddress: 
+    MachineName: 
+    FactoryID: 0
+    ProtocolType: 0
+    BaudRate: 0
+    PortName: 
   txt_machineName: {fileID: 4624137440255316804}
   txt_machineType: {fileID: 5748198969504398951}
   txt_machineAddress: {fileID: 4624137441488387527}
-  txt_factory: {fileID: 4624137440008777705}
+  txt_factory: {fileID: 7680470179131102402}
   txt_baudRate: {fileID: 6055831668310017362}
   txt_probeName: {fileID: 4624137440008777705}
   tog_select: {fileID: 4624137440047693115}

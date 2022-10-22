@@ -6,6 +6,7 @@ using System.IO.Ports;
 using System;
 using System.IO;
 using LitJson;
+using UnityEngine.EventSystems;
 
 public class TreeMap
 {
@@ -20,6 +21,7 @@ public class TreeMap
 public class DeviceTagManagerPanel : UIEventHelper
 {
     public EditorDeviceTagPanel editorDeviceTagPanel;
+    public AddDeviceTagPanel addDeviceTagPanel;
     public GameObject panel;
     public Line2DHelper line2DHelperClone;
     public MyButton cloneBtn;
@@ -83,13 +85,16 @@ public class DeviceTagManagerPanel : UIEventHelper
     void InstanceLine2DHelper(TreeMap treeMap)
     {
         TreeMap parentTreeMap = treeMapList.Find(it => it.ID == treeMap.parentID);
-        GameObject currentObj = Instantiate(line2DHelperClone.gameObject) as GameObject;
-        currentObj.transform.SetParent(panel.transform);
-        currentObj.transform.localScale = Vector3.one;
-        currentObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.one;
-        Line2DHelper line2DHelper = currentObj.GetComponent<Line2DHelper>();
-        line2DHelper.Init(parentTreeMap.target.GetComponent<RectTransform>(), treeMap.target.GetComponent<RectTransform>());
-        currentObj.SetActive(true);
+        if (parentTreeMap != null)
+        {
+            GameObject currentObj = Instantiate(line2DHelperClone.gameObject) as GameObject;
+            currentObj.transform.SetParent(panel.transform);
+            currentObj.transform.localScale = Vector3.one;
+            currentObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.one;
+            Line2DHelper line2DHelper = currentObj.GetComponent<Line2DHelper>();
+            line2DHelper.Init(parentTreeMap.target.GetComponent<RectTransform>(), treeMap.target.GetComponent<RectTransform>());
+            currentObj.SetActive(true);
+        }
     }
 
     void InstanceCloneBtn(TreeMap treeMap)
@@ -126,7 +131,6 @@ public class DeviceTagManagerPanel : UIEventHelper
 
     bool isLongPress = false;
     MyButton targetBtn = null;
-    Vector3 targetPosition;
     int parentID = 0;
     void OnLongPressTargetBtn(MyButton btn)
     {
@@ -153,8 +157,7 @@ public class DeviceTagManagerPanel : UIEventHelper
         editorDeviceTagPanel.parentID = parentID;
         Vector3 vec = btn.GetComponent<RectTransform>().anchoredPosition;
         Vector3 size = btn.GetComponent<RectTransform>().rect.size;
-        targetPosition.x = vec.x;
-        targetPosition.y = vec.y - size.y * 1.5f;
+        Vector3 targetPosition = new Vector3(vec.x, vec.y - size.y * 1.5f);
         editorDeviceTagPanel.position = targetPosition;
         editorDeviceTagPanel.gameObject.SetActive(true);
 
@@ -178,23 +181,50 @@ public class DeviceTagManagerPanel : UIEventHelper
         }
     }
 
+    float doublePreTime = 0;
     private void Update()
     {
         if (isLongPress && targetBtn)
         {
-            RectTransform graphPanelRT = panel.GetComponent<RectTransform>();
-            float halfWidth = graphPanelRT.rect.size.x / 2;
-            float halfHeight = graphPanelRT.rect.size.y / 2;
             Vector2 uiPosition;
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(graphPanelRT, Input.mousePosition, Camera.main, out uiPosition);
-            Vector2 targetSize = targetBtn.GetComponent<RectTransform>().rect.size;
-            if (Mathf.Abs(uiPosition.x) > halfWidth || Mathf.Abs(uiPosition.y) > halfHeight)
+            if (GetClickVector(out uiPosition))
             {
-                print("click out range");
-                return;
+                Vector2 targetSize = targetBtn.GetComponent<RectTransform>().rect.size;
+                uiPosition.y += targetSize.y / 2;
+                targetBtn.GetComponent<RectTransform>().localPosition = uiPosition;
             }
-            uiPosition.y += targetSize.y / 2;
-            targetBtn.GetComponent<RectTransform>().localPosition = uiPosition;
         }
+        else
+        {
+            if (Input.GetMouseButtonDown(0) && treeMapList != null && treeMapList.Count == 0)
+            {
+                float doubleNowTime = Time.realtimeSinceStartup;
+                if (doubleNowTime - doublePreTime < 0.3f)
+                {
+                    Vector2 uiPosition;
+                    if (GetClickVector(out uiPosition))
+                    {
+                        addDeviceTagPanel.position = uiPosition;
+                        addDeviceTagPanel.gameObject.SetActive(true);
+                    }
+                }
+                doublePreTime = doubleNowTime;
+            }
+        }
+    }
+
+    bool GetClickVector(out Vector2 uiPosition)
+    {
+        RectTransform graphPanelRT = panel.GetComponent<RectTransform>();
+        float halfWidth = graphPanelRT.rect.size.x / 2;
+        float halfHeight = graphPanelRT.rect.size.y / 2;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(graphPanelRT, Input.mousePosition, Camera.main, out uiPosition);
+        print(Input.mousePosition + "    " + uiPosition);
+        if (Mathf.Abs(uiPosition.x) > halfWidth || Mathf.Abs(uiPosition.y) > halfHeight)
+        {
+            print("click out range");
+            return false;
+        }
+        return true;
     }
 }
