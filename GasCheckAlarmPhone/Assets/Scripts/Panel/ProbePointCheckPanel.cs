@@ -98,18 +98,21 @@ public class ProbePointCheckPanel : MonoBehaviour
     {
         if (!string.IsNullOrEmpty(content))
         {
-            string[] contentArray = content.Split(new string[] { "\r\n" }, StringSplitOptions.None);
-            if (contentArray.Length > 1)
+            int startIndex = content.IndexOf("点位编号");
+            int endIndex = content.IndexOf("生产厂家");
+            if (endIndex > startIndex)
             {
-                string[] content1 = contentArray[1].Split('：');
-                if (content1.Length > 1)
-                {
-                    OnSaoMaComplete(content1[1], camera);
-                    return;
-                }
+                content = content.Substring(startIndex + 5, endIndex - startIndex - 6);
+                OnSaoMaComplete(content, camera);
+                return;
+            }
+            else
+            {
+                MessageBox.Instance.PopOK("生产厂家必须在点位编号后面，信息为：" + content, null, "确定");
+                return;
             }
         }
-        MessageBox.Instance.PopOK("二维码信息没有匹配成功，信息为：" + content, null, "确定");
+        MessageBox.Instance.PopOK("二维码信息为空", null, "确定");
     }
 
     ProbeModel currentProbeModel = null;

@@ -19,6 +19,7 @@ public class FormatData
         { EProtocolType.DZ40Old,"DZ-40-Old" },
         { EProtocolType.Standard,"标准协议" },
         { EProtocolType.HaiWan,"海湾" },
+        { EProtocolType.WeiTai,"惟泰" },
     };
 
     public static Dictionary<EGasKind, GasKindInfo> gasKindFormat = new Dictionary<EGasKind, GasKindInfo>() {

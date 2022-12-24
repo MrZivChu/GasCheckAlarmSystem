@@ -14,7 +14,8 @@ public enum EProtocolType
     DZ40New,
     DZ40Old,
     Standard,
-    HaiWan
+    HaiWan,
+    WeiTai
 }
 
 public enum EGasKind

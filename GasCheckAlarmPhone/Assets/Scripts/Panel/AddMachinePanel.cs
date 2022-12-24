@@ -32,7 +32,7 @@ public class AddMachinePanel : UIEventHelper
         int machineProtocol = dropdown_protocol.value;
         int dd = dropdown_factory.value;
         FactoryModel model = factoryList[dd];
-        MachineDAL.InsertMachine(machineAddress, machineName, model.ID, machineProtocol, dropdown_baundRate.value);
+        //MachineDAL.InsertMachine(machineAddress, machineName, model.ID, machineProtocol, dropdown_baundRate.value);
         MessageBox.Instance.PopOK("新增成功", () =>
         {
             EventManager.Instance.DisPatch(NotifyType.UpdateMachineList);

@@ -75,6 +75,7 @@
     <Compile Include="StandardOneProtocol.cs" />
     <Compile Include="StandardProtocol.cs" />
     <Compile Include="TimerHelper.cs" />
+    <Compile Include="WeiTaiProtocol.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>

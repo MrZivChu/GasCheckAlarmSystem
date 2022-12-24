@@ -41,10 +41,10 @@
             // saveLogBtn
             // 
             this.saveLogBtn.Font = new System.Drawing.Font("宋体", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.saveLogBtn.Location = new System.Drawing.Point(31, 162);
-            this.saveLogBtn.Margin = new System.Windows.Forms.Padding(2);
+            this.saveLogBtn.Location = new System.Drawing.Point(41, 202);
+            this.saveLogBtn.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.saveLogBtn.Name = "saveLogBtn";
-            this.saveLogBtn.Size = new System.Drawing.Size(398, 55);
+            this.saveLogBtn.Size = new System.Drawing.Size(531, 69);
             this.saveLogBtn.TabIndex = 1;
             this.saveLogBtn.Text = "保存日志";
             this.saveLogBtn.UseVisualStyleBackColor = true;
@@ -52,12 +52,12 @@
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(465, 409);
+            this.ClientSize = new System.Drawing.Size(620, 511);
             this.ControlBox = false;
             this.Controls.Add(this.saveLogBtn);
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "Form1";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

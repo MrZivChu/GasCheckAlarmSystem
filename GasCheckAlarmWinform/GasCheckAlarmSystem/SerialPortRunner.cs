@@ -110,8 +110,6 @@ namespace GasCheckAlarmSystem
                     UpdateCurrentData();
                     OpenSerialPort(currentData_.BaudRate);
                     SendData(false);
-                    tempMachineResponseOutTime = 0;
-                    canTimeMachineResponseOutTime = true;
                 }
             }
             if (canTimeMachineResponseOutTime)
@@ -119,10 +117,9 @@ namespace GasCheckAlarmSystem
                 tempMachineResponseOutTime += deltaTime;
                 if (tempMachineResponseOutTime >= machineResponseOutTime)
                 {
+                    LogHelper.AddLog("！！！！！！！！！！！请求数据超时！！！！！！！！！！！");
                     tempMachineResponseOutTime = 0;
                     canTimeMachineResponseOutTime = false;
-                    LogHelper.AddLog("！！！！！！！！！！！请求数据超时！！！！！！！！！！！");
-                    //标准协议需要一个探头一个探头去要数据
                     if (protocol_ != null && protocol_.IsHandleOver())
                     {
                         tempQueryNextMachineDataIntervalTime = 0;
@@ -130,6 +127,7 @@ namespace GasCheckAlarmSystem
                     }
                     else
                     {
+                        LogHelper.AddLog("标准协议需要一个探头一个探头去要数据");
                         SendData(true);
                     }
                 }
@@ -168,6 +166,11 @@ namespace GasCheckAlarmSystem
                         protocol_ = new HaiWanProtocol();
                         LogHelper.AddLog("######使用海湾协议######");
                     }
+                    else if (currentData_.ProtocolType == EProtocolType.WeiTai)
+                    {
+                        protocol_ = new WeiTaiProtocol();
+                        LogHelper.AddLog("######使用惟泰协议######");
+                    }
                 }
                 string sendContent = string.Empty;
                 protocol_.HandleSendData(currentData_, out sendContent);
@@ -177,6 +180,8 @@ namespace GasCheckAlarmSystem
                     serialPort_.Write(sendbuffer, 0, sendbuffer.Length);
                 }
             }
+            tempMachineResponseOutTime = 0;
+            canTimeMachineResponseOutTime = true;
         }
 
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
@@ -191,8 +196,9 @@ namespace GasCheckAlarmSystem
                     bool isReceiveOver = protocol_.HandleReceiveData(buffer, bytesToReadCount);
                     if (isReceiveOver)
                     {
+                        tempMachineResponseOutTime = 0;
                         canTimeMachineResponseOutTime = false;
-                        if (protocol_.IsHandleOver())
+                        if (protocol_ != null && protocol_.IsHandleOver())
                         {
                             tempQueryNextMachineDataIntervalTime = 0;
                             canQueryNextMachineData = true;

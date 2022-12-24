@@ -88,8 +88,8 @@ namespace GasCheckAlarmSystem
             readAllByteLength_ = 3 + 2 * endDec + 2;
             tempReadAllByteLength_ = 0;
             stageByteList_.Clear();
-
-            LogHelper.AddLog("SendData:{0} readAllByteLength:{1}", sendContent, readAllByteLength_);
+            
+            LogHelper.AddLog("SendData:{0} readAllByteLength:{1} FirstProbeDecAddress:{2} EndProbeDecAddress:{3}", sendContent, readAllByteLength_, machineSerialPortInfo_.FirstProbeDecAddress, machineSerialPortInfo_.EndProbeDecAddress);
         }
     }
 }
