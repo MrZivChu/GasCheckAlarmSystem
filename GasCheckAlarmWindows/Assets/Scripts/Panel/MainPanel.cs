@@ -103,19 +103,42 @@ public class MainPanel : UIEventHelper
         SceneManager.LoadScene("Env", LoadSceneMode.Single);
     }
 
+    int allCount_ = 0;
+    int noConnectCount_ = 0;
     void UpdateRealtimeDataListEvent(object tdata)
     {
         List<ProbeModel> list = (List<ProbeModel>)tdata;
         txt_normalCount.text = list.FindAll((it) => { return it.warningLevel == EWarningLevel.Normal; }).Count.ToString();
         txt_warningCount.text = list.FindAll((it) => { return it.warningLevel == EWarningLevel.FirstAlarm; }).Count.ToString();
         txt_errorCount.text = list.FindAll((it) => { return it.warningLevel == EWarningLevel.SecondAlarm; }).Count.ToString();
-        txt_noConnectCount.text = list.FindAll((it) => { return it.warningLevel == EWarningLevel.NoResponse; }).Count.ToString();
-        txt_allCount.text = list.Count.ToString();
+        noConnectCount_ = list.FindAll((it) => { return it.warningLevel == EWarningLevel.NoResponse; }).Count;
+        allCount_ = list.Count;
+        txt_noConnectCount.text = noConnectCount_.ToString();
+        txt_allCount.text = allCount_.ToString();
     }
 
     void FixedUpdate()
     {
         UpdateTime(Time.deltaTime);
+        HandleOffLine(Time.deltaTime);
+    }
+
+    float tempOfflineTime = 0;
+    void HandleOffLine(float deltaTime)
+    {
+        if (allCount_ == noConnectCount_)
+        {
+            tempOfflineTime += deltaTime;
+            if (tempOfflineTime > 60)
+            {
+                tempOfflineTime = 0;
+                EventManager.Instance.DisPatch(NotifyType.OffLine);
+            }
+        }
+        else
+        {
+            tempOfflineTime = 0;
+        }
     }
 
     float updateTime = 1;

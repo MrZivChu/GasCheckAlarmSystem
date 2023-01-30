@@ -13,6 +13,7 @@ public enum NotifyType
     InsertDeviceTag,
     DeleteDeviceTag,
     UpdatePos2D,
+    OffLine,
 }
 
 public class EventManager

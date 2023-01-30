@@ -9,12 +9,14 @@ public class WinformExeManager : MonoBehaviour
         ReOpenWinformExeProcess();
         EventManager.Instance.AddEventListener(NotifyType.UpdateProbeList, ReFresh);
         EventManager.Instance.AddEventListener(NotifyType.UpdateMachineList, ReFresh);
+        EventManager.Instance.AddEventListener(NotifyType.OffLine, ReFresh);
     }
 
     private void OnDestroy()
     {
         EventManager.Instance.DeleteEventListener(NotifyType.UpdateProbeList, ReFresh);
         EventManager.Instance.DeleteEventListener(NotifyType.UpdateMachineList, ReFresh);
+        EventManager.Instance.DeleteEventListener(NotifyType.OffLine, ReFresh);
         CloseWinformExeProcess();
     }
 
@@ -25,8 +27,8 @@ public class WinformExeManager : MonoBehaviour
 
     void ReOpenWinformExeProcess()
     {
-        CloseWinformExeProcess();
         Debug.Log("ReOpenWinformExeProcess");
+        CloseWinformExeProcess();
         System.Diagnostics.Process.Start(Application.streamingAssetsPath + "/SerialPortDataCollectionSystem.exe");
     }
 
