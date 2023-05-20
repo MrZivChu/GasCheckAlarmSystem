@@ -27,6 +27,8 @@ public class HandleLogPanel : UIEventHelper
     public InputField yiYangHuaTanMaxInput;
     public InputField yangQiMinInput;
     public InputField yangQiMaxInput;
+    public InputField alertWarnValueInput;
+    public InputField alertWarnSecondsInput;
     void Start()
     {
         RegisterBtnClick(btn_cancel, OnCancel);
@@ -52,6 +54,8 @@ public class HandleLogPanel : UIEventHelper
         yiYangHuaTanMaxInput.text = JsonHandleHelper.gameConfig.yiYangHuaTanMaxValue.ToString();
         yangQiMinInput.text = JsonHandleHelper.gameConfig.yangQiMinValue.ToString();
         yangQiMaxInput.text = JsonHandleHelper.gameConfig.yangQiMaxValue.ToString();
+        alertWarnValueInput.text = JsonHandleHelper.gameConfig.alertWarnValue.ToString();
+        alertWarnSecondsInput.text = JsonHandleHelper.gameConfig.alertWarnSeconds.ToString();
     }
 
     void OnCancel(Button btn)
@@ -71,7 +75,7 @@ public class HandleLogPanel : UIEventHelper
         string sqlUserPwd = sqlPwdInput.text;
         string smsPhone = smsPhoneInput.text;
 
-        JsonHandleHelper.UpdateConfig(isLog, isEnterPosDir, isOpenWaterSeal, productName, sqlIP, sqlDatabase, sqlUserId, sqlUserPwd, smsPhone, Convert.ToDouble(yanGanMinInput.text), Convert.ToDouble(yanGanMaxInput.text), Convert.ToDouble(yiYangHuaTanMinInput.text), Convert.ToDouble(yiYangHuaTanMaxInput.text), Convert.ToDouble(yangQiMinInput.text), Convert.ToDouble(yangQiMaxInput.text));
+        JsonHandleHelper.UpdateConfig(isLog, isEnterPosDir, isOpenWaterSeal, productName, sqlIP, sqlDatabase, sqlUserId, sqlUserPwd, smsPhone, Convert.ToDouble(yanGanMinInput.text), Convert.ToDouble(yanGanMaxInput.text), Convert.ToDouble(yiYangHuaTanMinInput.text), Convert.ToDouble(yiYangHuaTanMaxInput.text), Convert.ToDouble(yangQiMinInput.text), Convert.ToDouble(yangQiMaxInput.text), Convert.ToInt32(alertWarnValueInput.text), Convert.ToInt32(alertWarnSecondsInput.text));
         Application.Quit();
     }
 }

@@ -67,13 +67,15 @@ public class SMSHelper
         return "[" + model.ProbeName + "]";
     }
 
-    static void SendSMS(string probeName)
+    static void SendSMS(string content)
     {
-        if (string.IsNullOrEmpty(probeName))
+        UnityEngine.Debug.Log("HandleProbeInfo SendSMS content = " + content);
+        if (string.IsNullOrEmpty(content))
         {
             return;
         }
-        string content = string.Format("{0} 小盒子科技 SMS_251132221 {1}", JsonHandleHelper.gameConfig.smsPhone, probeName);
+        string result = string.Format("{0} 小盒子科技 SMS_251132221 {1}", JsonHandleHelper.gameConfig.smsPhone, content);
+        UnityEngine.Debug.Log("HandleProbeInfo result=" + result);
         if (Application.isEditor)
         {
             return;
@@ -83,7 +85,7 @@ public class SMSHelper
         startInfo.RedirectStandardOutput = true;
         startInfo.RedirectStandardError = true;
         startInfo.CreateNoWindow = true;//不显示窗口
-        startInfo.Arguments = content;//向main函数传参数
+        startInfo.Arguments = result;//向main函数传参数
 
         Process p = Process.Start(startInfo);
         //p.WaitForExit();

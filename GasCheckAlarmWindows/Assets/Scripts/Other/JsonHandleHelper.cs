@@ -19,6 +19,8 @@ public struct SGameConfig
     public double yiYangHuaTanMaxValue;
     public double yangQiMinValue;
     public double yangQiMaxValue;
+    public int alertWarnValue;
+    public int alertWarnSeconds;
 }
 
 public class JsonHandleHelper : UIEventHelper
@@ -30,7 +32,7 @@ public class JsonHandleHelper : UIEventHelper
     {
         configPath = Application.persistentDataPath + "/config.txt";
         File.WriteAllText(Application.streamingAssetsPath + "/configPath.txt", configPath);
-
+        Debug.Log(configPath);
         if (File.Exists(configPath))
         {
             string content = File.ReadAllText(configPath);
@@ -54,6 +56,8 @@ public class JsonHandleHelper : UIEventHelper
             gameConfig.yiYangHuaTanMaxValue = 100;
             gameConfig.yangQiMinValue = 5;
             gameConfig.yangQiMaxValue = 100;
+            gameConfig.alertWarnValue = 100;
+            gameConfig.alertWarnSeconds = 20;
             string json = LitJson.JsonMapper.ToJson(gameConfig);
             File.WriteAllText(configPath, json);
         }
@@ -69,7 +73,7 @@ public class JsonHandleHelper : UIEventHelper
         FormatData.gasKindFormat[EGasKind.YangQi].maxValue = Convert.ToSingle(gameConfig.yangQiMaxValue);
     }
 
-    public static void UpdateConfig(bool isLog, bool isEnterPosDir, bool isOpenWaterSeal, string productName, string sqlIP, string sqlDatabase, string sqlUserId, string sqlUserPwd, string smsPhone, double yanGanMinValue, double yanGanMaxValue, double yiYangHuaTanMinValue, double yiYangHuaTanMaxValue, double yangQiMinValue, double yangQiMaxValue)
+    public static void UpdateConfig(bool isLog, bool isEnterPosDir, bool isOpenWaterSeal, string productName, string sqlIP, string sqlDatabase, string sqlUserId, string sqlUserPwd, string smsPhone, double yanGanMinValue, double yanGanMaxValue, double yiYangHuaTanMinValue, double yiYangHuaTanMaxValue, double yangQiMinValue, double yangQiMaxValue, int alertWarnValue, int alertWarnSeconds)
     {
         gameConfig.isEnterPosDir = isEnterPosDir;
         gameConfig.isLog = isLog;
@@ -86,6 +90,8 @@ public class JsonHandleHelper : UIEventHelper
         gameConfig.yiYangHuaTanMaxValue = yiYangHuaTanMaxValue;
         gameConfig.yangQiMinValue = yangQiMinValue;
         gameConfig.yangQiMaxValue = yangQiMaxValue;
+        gameConfig.alertWarnValue = alertWarnValue;
+        gameConfig.alertWarnSeconds = alertWarnSeconds;
         string json = LitJson.JsonMapper.ToJson(gameConfig);
         File.WriteAllText(configPath, json);
     }

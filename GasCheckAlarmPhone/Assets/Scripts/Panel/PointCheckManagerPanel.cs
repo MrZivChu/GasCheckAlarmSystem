@@ -76,7 +76,7 @@ public class PointCheckManagerPanel : UIEventHelper
         if (dateRange.ToDate.HasValue)
             endTime = dateRange.ToDate.Date.AddDays(1).ToString("yyyy-MM-dd");
 
-        List<PointCheckModel> pointCheckModelList = PointCheckDAL.SelectAllPointCheckByCondition(pageIndex, pageSize, input_userName.text, input_deviceName.text, dropdown_deviceType.value, startTime, endTime, out pageCount, out rowCount);
+        List<PointCheckModel> pointCheckModelList = PointCheckDAL.SelectAllPointCheckByCondition(pageIndex, pageSize, input_userName.text, input_deviceName.text, 1, startTime, endTime, out pageCount, out rowCount);
         InitGrid(pointCheckModelList);
         txt_pageCount.text = pageIndex + "/" + pageCount;
     }

@@ -14,7 +14,7 @@ public class PointCheckMenuPanel : UIEventHelper
         {
             RegisterBtnClick<int>(btnList[i], i, OnBtnClick);
         }
-        OnBtnClick(btnList[0], 0);
+        OnBtnClick(btnList[1], 1);
     }
 
     void OnBtnClick(Button btn, int index)

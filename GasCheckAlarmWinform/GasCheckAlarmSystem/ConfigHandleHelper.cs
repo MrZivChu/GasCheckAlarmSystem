@@ -20,6 +20,8 @@ namespace GasCheckAlarmSystem
         public double yiYangHuaTanMaxValue;
         public double yangQiMinValue;
         public double yangQiMaxValue;
+        public float alertWarnValue;
+        public float alertWarnSeconds;
     }
     class ConfigHandleHelper
     {

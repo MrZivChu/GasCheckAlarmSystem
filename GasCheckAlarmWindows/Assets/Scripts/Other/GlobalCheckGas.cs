@@ -47,6 +47,7 @@ public class GlobalCheckGas : MonoBehaviour
             List<ProbeModel> result = ProbeDAL.SelectIDCheckTimeGasValueGasKindMachineID();
             HandleRealtimeData(result);
             SMSHelper.HandleProbeInfo(result);
+            AlertHelper.HandleProbeInfo(result);
             EventManager.Instance.DisPatch(NotifyType.UpdateRealtimeDataList, result);
         }
         tempDeleteHistoryDataTime += Time.deltaTime;
@@ -56,7 +57,7 @@ public class GlobalCheckGas : MonoBehaviour
             HistoryDataDAL.DeleteHistoryDataBeforeWeek();
         }
     }
-
+    
     void HandleRealtimeData(List<ProbeModel> list)
     {
         int abnormalCount = 0;
