@@ -2,8 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 
 public class CameraPanel : UIEventHelper
@@ -12,6 +15,7 @@ public class CameraPanel : UIEventHelper
     public Dropdown dropDown;
     public GameObject itemRes;
     public Transform contentTrans;
+    public GameObject addCameraPanel;
     readonly string publicIp_ = "106.14.213.225";
 
     private void Awake()
@@ -20,80 +24,87 @@ public class CameraPanel : UIEventHelper
         dropDown.onValueChanged.AddListener(OnDropdownValueChanged);
     }
 
-    void OnDropdownValueChanged(int value)
-    {
-        InitGrid();
-    }
-
     void Start()
     {
         RegisterBtnClick(addBtn, OnAdd);
-        EventManager.Instance.AddEventListener(NotifyType.EditorCameraParams, EditorCameraParamsEvent);
+        EventManager.Instance.AddEventListener(NotifyType.AddCamera, AddCameraEvent);
+        EventManager.Instance.AddEventListener(NotifyType.EditorCamera, EditorCameraEvent);
     }
 
     void OnDestroy()
     {
         CHCNetSDK.NET_DVR_Cleanup();
-        EventManager.Instance.DeleteEventListener(NotifyType.EditorCameraParams, EditorCameraParamsEvent);
+        EventManager.Instance.DeleteEventListener(NotifyType.AddCamera, AddCameraEvent);
+        EventManager.Instance.DeleteEventListener(NotifyType.EditorCamera, EditorCameraEvent);
     }
 
-    void EditorCameraParamsEvent(object data)
+    void OnDropdownValueChanged(int value)
     {
-        GameObject item = (GameObject)data;
-        CameraItem cameraItem = item.GetComponent<CameraItem>();
-        CameraDAL.EditCameraByID(cameraItem.model_.ID, cameraItem.model_.IP, cameraItem.model_.Port, cameraItem.model_.UserName, cameraItem.model_.UserPwd);
+        InitGrid(cameraModelList_);
+    }
 
-        ReRunFrp();
-        cameraItem.Connect(cameraItem.model_, publicIp_, dropDown.value == 1);
+    void AddCameraEvent(object data)
+    {
+        Debug.Log("增加摄像机数据回调");
+        cameraModelList_ = CameraDAL.SelectAllCameras();
+        ReRunFrp(cameraModelList_);
+        InitGrid(cameraModelList_);
+    }
+
+    void EditorCameraEvent(object data)
+    {
+        Debug.Log("修改摄像机数据回调");
+        cameraModelList_ = CameraDAL.SelectAllCameras();
+        ReRunFrp(cameraModelList_);
+        InitGrid(cameraModelList_);
     }
 
     void OnAdd(Button btn)
     {
-        int id = CameraDAL.InsertCamera("", "", "", "");
-        CameraModel model = new CameraModel();
-        model.ID = id;
-        model.UserName = "admin";
-        GameObject currentObj = InstanceItem();
-        currentObj.transform.SetParent(contentTrans);
-        CameraItem item = currentObj.GetComponent<CameraItem>();
-        item.Connect(model, publicIp_, dropDown.value == 1);
-        currentObj.SetActive(true);
+        addCameraPanel.SetActive(true);
     }
 
+    List<CameraModel> cameraModelList_;
     private void OnEnable()
     {
-        ReRunFrp();
-        InitGrid();
+        Debug.Log("初始化数据");
+        cameraModelList_ = CameraDAL.SelectAllCameras();
+        InitDropDownList(cameraModelList_);
+        ReRunFrp(cameraModelList_);
+        InitGrid(cameraModelList_);
     }
 
-    void InitGrid()
+    void InitGrid(List<CameraModel> list)
     {
-        List<CameraModel> list = CameraDAL.SelectAllCameras();
         GameUtils.SpawnCellForTable<CameraModel>(contentTrans, list, (go, data, isSpawn, index) =>
         {
             GameObject currentObj = go;
             if (isSpawn)
             {
-                currentObj = InstanceItem();
+                currentObj = Instantiate(itemRes) as GameObject;
+                currentObj.transform.SetParent(contentTrans);
+                currentObj.transform.localScale = Vector3.one;
+                currentObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
             }
             CameraItem item = currentObj.GetComponent<CameraItem>();
-            item.Connect(data, publicIp_, dropDown.value == 1);
+            item.Connect(data, publicIp_, IsUsePublicNetWork());
             currentObj.SetActive(true);
         }, false);
     }
 
-    GameObject InstanceItem()
+    void ReRunFrp(List<CameraModel> list)
     {
-        GameObject currentObj = Instantiate(itemRes) as GameObject;
-        currentObj.transform.SetParent(contentTrans);
-        currentObj.transform.localScale = Vector3.one;
-        currentObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
-        return currentObj;
-    }
+        bool isIn = IsInSameNetworkPcWithCamera(list);
+        if (isIn)
+        {
+            Debug.Log("此电脑和摄像头在同一个局域网，需要开启frp服务");
+        }
+        else
+        {
+            Debug.Log("此电脑和摄像头不在同一个局域网，不需要开启frp服务");
+            return;
+        }
 
-    void ReRunFrp()
-    {
-        List<CameraModel> list = CameraDAL.SelectAllCameras();
         CSharpUtils.KillProcess("frpc");
         StringBuilder sb = new StringBuilder();
         sb.AppendLine("[common]");
@@ -118,5 +129,56 @@ public class CameraPanel : UIEventHelper
         string fileName = string.Format("{0}/frpc.exe", Application.streamingAssetsPath);
         string arguments = string.Format("-c {0}/frpc.ini", Application.streamingAssetsPath);
         CSharpUtils.StartProcess(fileName, arguments);
+    }
+
+    void InitDropDownList(List<CameraModel> list)
+    {
+        dropDown.options.Clear();
+        if (list == null || list.Count == 0)
+        {
+            return;
+        }
+        bool isIn = IsInSameNetworkPcWithCamera(list);
+        if (isIn)
+        {
+            List<string> strList = new List<string>() { "局域网访问", "广域网访问" };
+            dropDown.AddOptions(strList);
+        }
+        else
+        {
+            List<string> strList = new List<string>() { "广域网访问" };
+            dropDown.AddOptions(strList);
+        }
+        dropDown.value = 0;
+    }
+
+    bool IsUsePublicNetWork()
+    {
+        bool isIn = IsInSameNetworkPcWithCamera(cameraModelList_);
+        if (isIn)
+        {
+            return dropDown.value == 1;
+        }
+        else
+        {
+            return dropDown.value == 0;
+        }
+    }
+
+    bool IsInSameNetworkPcWithCamera(List<CameraModel> list)
+    {
+        if (list == null || list.Count <= 0)
+        {
+            return false;
+        }
+        string localIP = GameUtils.GetIP();
+        int lastIndex1 = localIP.LastIndexOf('.');
+        string deviceIP = list[0].IP;
+        int lastIndex2 = deviceIP.LastIndexOf('.');
+        if (deviceIP.Substring(0, lastIndex1) != localIP.Substring(0, lastIndex2))
+        {
+            return false;
+        }
+        return true;
     }
 }

@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System;
 using HighlightingSystem;
 using UnityEngine.Networking;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 
 public static class GameUtils
 {
@@ -350,5 +352,24 @@ public static class GameUtils
             }
         }
         return null;
+    }
+
+    public static string GetIP()
+    {
+        foreach (NetworkInterface item in NetworkInterface.GetAllNetworkInterfaces())
+        {
+            foreach (UnicastIPAddressInformation ip in item.GetIPProperties().UnicastAddresses)
+            {
+                if (ip.Address.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    if (ip.Address.ToString().StartsWith("192.168."))
+                    {
+                        Debug.Log("本机IP地址：" + ip.Address.ToString());
+                        return ip.Address.ToString();
+                    }
+                }
+            }
+        }
+        return string.Empty;
     }
 }

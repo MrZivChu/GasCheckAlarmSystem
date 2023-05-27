@@ -20,17 +20,18 @@ public class CameraItem : MonoBehaviour
         EventTriggerListener.Get(gameObject).onEnter += OnEnter;
         EventTriggerListener.Get(gameObject).onExit += onExit;
 
-        EventTriggerListener.Get(connectBtn.gameObject).onClick += OnClickConnect;
+        EventTriggerListener.Get(connectBtn.gameObject).onClick += OnClickEditorConnect;
         EventTriggerListener.Get(deletBtn.gameObject).onClick += OnClickDelete;
     }
 
-    void OnClickConnect(GameObject go, object data = null)
+    void OnClickEditorConnect(GameObject go, object data = null)
     {
         model_.IP = ipInput.text;
         model_.Port = portInput.text;
         model_.UserName = userNameInput.text;
         model_.UserPwd = userPwdInput.text;
-        EventManager.Instance.DisPatch(NotifyType.EditorCameraParams, gameObject);
+        CameraDAL.EditCameraByID(model_.ID, model_.IP, model_.Port, model_.UserName, model_.UserPwd);
+        EventManager.Instance.DisPatch(NotifyType.EditorCamera, gameObject);
     }
 
     void OnClickDelete(GameObject go, object data = null)
@@ -50,7 +51,7 @@ public class CameraItem : MonoBehaviour
         root.SetActive(false);
     }
 
-    public void Connect(CameraModel model, string publicIP, bool isPublicNetwork)
+    public void Connect(CameraModel model, string publicIP, bool isUsePublicNetwork)
     {
         model_ = model;
         ipInput.text = model.IP;
@@ -58,6 +59,6 @@ public class CameraItem : MonoBehaviour
         userNameInput.text = model.UserName;
         userPwdInput.text = model.UserPwd;
         yuvRender.DisConnect();
-        yuvRender.Connect(isPublicNetwork ? publicIP : model_.IP, isPublicNetwork ? model_.Port : "8000", model_.UserName, model_.UserPwd);
+        yuvRender.Connect(isUsePublicNetwork ? publicIP : model_.IP, isUsePublicNetwork ? model_.Port : "8000", model_.UserName, model_.UserPwd);
     }
 }
