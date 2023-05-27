@@ -229,4 +229,26 @@ public class CSharpUtils
 
         }
     }
+
+    public static void StartProcess(string fileName, string arguments)
+    {
+        ProcessStartInfo startInfo;
+        if (string.IsNullOrEmpty(arguments))
+        {
+            startInfo = new ProcessStartInfo(fileName);
+        }
+        else
+        {
+            startInfo = new ProcessStartInfo(fileName, arguments);
+        }
+        startInfo.UseShellExecute = false;
+        startInfo.RedirectStandardOutput = true;
+        startInfo.RedirectStandardError = true;
+        startInfo.CreateNoWindow = true;//不显示窗口
+
+        Process.Start(startInfo);
+        //p.WaitForExit();
+        //string output = p.StandardOutput.ReadToEnd();
+        //UnityEngine.Debug.Log("输出的成功信息为 = " + output);
+    }
 }

@@ -35,7 +35,7 @@ public class MessageBox : UIEventHelper
     public Text leftBtnText;
     public Text rightBtnText;
 
-    public void PopOK(string tip, Action callback, string btnText)
+    public void PopOK(string tip, Action callback = null, string btnText = "确定")
     {
         leftBtn.gameObject.SetActive(false);
         rightBtn.gameObject.SetActive(true);

@@ -80,17 +80,7 @@ public class SMSHelper
         {
             return;
         }
-        ProcessStartInfo startInfo = new ProcessStartInfo(smsFilePath);
-        startInfo.UseShellExecute = false;
-        startInfo.RedirectStandardOutput = true;
-        startInfo.RedirectStandardError = true;
-        startInfo.CreateNoWindow = true;//不显示窗口
-        startInfo.Arguments = result;//向main函数传参数
-
-        Process p = Process.Start(startInfo);
-        //p.WaitForExit();
-        //string output = p.StandardOutput.ReadToEnd();
-        //UnityEngine.Debug.Log("输出的成功信息为 = " + output);
+        CSharpUtils.StartProcess(smsFilePath, result);
     }
 
 }

@@ -134,3 +134,14 @@ public class WaterSealModel
     //扩展字段
     public bool isCheck = false;
 }
+
+
+[System.Serializable]
+public class CameraModel
+{
+    public int ID;
+    public string IP;
+    public string Port;
+    public string UserName;
+    public string UserPwd;
+}
