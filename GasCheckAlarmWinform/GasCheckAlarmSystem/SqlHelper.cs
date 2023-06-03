@@ -15,25 +15,16 @@ public class SqlHelper
     public static int ExecuteNonQuery(string cmdText,
         params SqlParameter[] parameters)
     {
-        try
+        using (SqlConnection conn = new SqlConnection(connectionString))
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            conn.Open();
+            using (SqlCommand cmd = conn.CreateCommand())
             {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
-                {
-                    cmd.CommandText = cmdText;
-                    if (parameters != null && parameters.Length > 0)
-                        cmd.Parameters.AddRange(parameters);
-                    return cmd.ExecuteNonQuery();
-                }
+                cmd.CommandText = cmdText;
+                if (parameters != null && parameters.Length > 0)
+                    cmd.Parameters.AddRange(parameters);
+                return cmd.ExecuteNonQuery();
             }
-        }
-        catch (System.Exception ex)
-        {
-            string filePath = AppDomain.CurrentDomain.BaseDirectory + "\\ExecuteNonQuery.txt";
-            File.WriteAllText(filePath, "ExecuteNonQuery=" + ex.Message);
-            return 0;
         }
     }
 
@@ -56,30 +47,21 @@ public class SqlHelper
     public static DataTable ExecuteDataTable(string cmdText,
         params SqlParameter[] parameters)
     {
-        try
+        using (SqlConnection conn = new SqlConnection(connectionString))
         {
-            using (SqlConnection conn = new SqlConnection(connectionString))
+            conn.Open();
+            using (SqlCommand cmd = conn.CreateCommand())
             {
-                conn.Open();
-                using (SqlCommand cmd = conn.CreateCommand())
+                cmd.CommandText = cmdText;
+                if (parameters != null && parameters.Length > 0)
+                    cmd.Parameters.AddRange(parameters);
+                using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
                 {
-                    cmd.CommandText = cmdText;
-                    if (parameters != null && parameters.Length > 0)
-                        cmd.Parameters.AddRange(parameters);
-                    using (SqlDataAdapter adapter = new SqlDataAdapter(cmd))
-                    {
-                        DataTable dt = new DataTable();
-                        adapter.Fill(dt);
-                        return dt;
-                    }
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+                    return dt;
                 }
             }
-        }
-        catch (System.Exception ex)
-        {
-            string filePath = AppDomain.CurrentDomain.BaseDirectory + "\\ExecuteDataTable.txt";
-            File.WriteAllText(filePath, "ExecuteDataTable=" + ex.Message);
-            return null;
         }
     }
 
@@ -158,27 +140,19 @@ public class SqlHelper
     //批量插入
     public static void BulkInsert(DataTable dt, string tabelName)
     {
-        try
+        if (dt != null && dt.Rows.Count != 0 && !string.IsNullOrEmpty(tabelName))
         {
-            if (dt != null && dt.Rows.Count != 0 && !string.IsNullOrEmpty(tabelName))
+            using (SqlConnection conn = new SqlConnection(connectionString))
             {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                conn.Open();
+                using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
                 {
-                    conn.Open();
-                    using (SqlBulkCopy bulkCopy = new SqlBulkCopy(conn))
-                    {
-                        bulkCopy.DestinationTableName = tabelName;
-                        bulkCopy.BulkCopyTimeout = 10;
-                        bulkCopy.BatchSize = dt.Rows.Count;
-                        bulkCopy.WriteToServer(dt);
-                    }
+                    bulkCopy.DestinationTableName = tabelName;
+                    bulkCopy.BulkCopyTimeout = 10;
+                    bulkCopy.BatchSize = dt.Rows.Count;
+                    bulkCopy.WriteToServer(dt);
                 }
             }
-        }
-        catch (System.Exception ex)
-        {
-            string filePath = AppDomain.CurrentDomain.BaseDirectory + "\\BulkInsert.txt";
-            File.WriteAllText(filePath, "BulkInsert=" + ex.Message);
         }
     }
 }

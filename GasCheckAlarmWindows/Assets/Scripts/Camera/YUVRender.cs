@@ -69,8 +69,7 @@ public class YUVRender : MonoBehaviour
         {
             return;
         }
-        //左
-        if (Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.LeftArrow))
         {
             if (realHandle_ >= 0)
             {
@@ -81,7 +80,7 @@ public class YUVRender : MonoBehaviour
                 CHCNetSDK.NET_DVR_PTZControlWithSpeed_Other(userID_, channelID_, CHCNetSDK.PAN_LEFT, 0, 4);
             }
         }
-        if (Input.GetKeyUp(KeyCode.A))
+        if (Input.GetKeyUp(KeyCode.LeftArrow))
         {
             if (realHandle_ >= 0)
             {
@@ -92,8 +91,7 @@ public class YUVRender : MonoBehaviour
                 CHCNetSDK.NET_DVR_PTZControlWithSpeed_Other(userID_, channelID_, CHCNetSDK.PAN_LEFT, 1, 4);
             }
         }
-        //上
-        if (Input.GetKey(KeyCode.W))
+        if (Input.GetKey(KeyCode.UpArrow))
         {
             if (realHandle_ >= 0)
             {
@@ -104,7 +102,7 @@ public class YUVRender : MonoBehaviour
                 CHCNetSDK.NET_DVR_PTZControlWithSpeed_Other(userID_, channelID_, CHCNetSDK.TILT_UP, 0, 4);
             }
         }
-        if (Input.GetKeyUp(KeyCode.W))
+        if (Input.GetKeyUp(KeyCode.UpArrow))
         {
             if (realHandle_ >= 0)
             {
@@ -115,8 +113,7 @@ public class YUVRender : MonoBehaviour
                 CHCNetSDK.NET_DVR_PTZControlWithSpeed_Other(userID_, channelID_, CHCNetSDK.TILT_UP, 1, 4);
             }
         }
-        // 右
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.RightArrow))
         {
             if (realHandle_ >= 0)
             {
@@ -127,7 +124,7 @@ public class YUVRender : MonoBehaviour
                 CHCNetSDK.NET_DVR_PTZControlWithSpeed_Other(userID_, channelID_, CHCNetSDK.PAN_RIGHT, 0, 4);
             }
         }
-        if (Input.GetKeyUp(KeyCode.D))
+        if (Input.GetKeyUp(KeyCode.RightArrow))
         {
             if (realHandle_ >= 0)
             {
@@ -138,8 +135,7 @@ public class YUVRender : MonoBehaviour
                 CHCNetSDK.NET_DVR_PTZControlWithSpeed_Other(userID_, channelID_, CHCNetSDK.PAN_RIGHT, 1, 4);
             }
         }
-        //下
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.DownArrow))
         {
             if (realHandle_ >= 0)
             {
@@ -150,7 +146,7 @@ public class YUVRender : MonoBehaviour
                 CHCNetSDK.NET_DVR_PTZControlWithSpeed_Other(userID_, channelID_, CHCNetSDK.TILT_DOWN, 0, 4);
             }
         }
-        if (Input.GetKeyUp(KeyCode.S))
+        if (Input.GetKeyUp(KeyCode.DownArrow))
         {
             if (realHandle_ >= 0)
             {

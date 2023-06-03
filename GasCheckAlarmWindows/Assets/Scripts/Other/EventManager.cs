@@ -14,8 +14,6 @@ public enum NotifyType
     DeleteDeviceTag,
     UpdatePos2D,
     OffLine,
-    EditorCamera,
-    AddCamera,
 }
 
 public class EventManager
