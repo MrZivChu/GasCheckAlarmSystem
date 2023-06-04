@@ -144,4 +144,7 @@ public class CameraModel
     public string Port;
     public string UserName;
     public string UserPwd;
+    public string MachineAddress;
+    public string GasInfos;
+    public string GasValues;
 }

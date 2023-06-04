@@ -16,28 +16,34 @@ public class CameraDAL
         return result >= 1 ? true : false;
     }
 
-    public static bool EditCameraByID(int id, string ip, string port, string userName, string userPwd)
+    public static bool EditCameraByID(int id, string ip, string port, string userName, string userPwd, string machineAddress, string gasInfos, string gasValues)
     {
-        string sql = @"update Camera set IP=@IP,Port=@Port,UserName=@UserName,UserPwd=@UserPwd where ID=@ID";
+        string sql = @"update Camera set IP=@IP,Port=@Port,UserName=@UserName,UserPwd=@UserPwd,MachineAddress=@MachineAddress,GasInfos=@GasInfos,GasValues=@GasValues where ID=@ID";
         SqlParameter[] parameter = new SqlParameter[] {
                  new SqlParameter("@ID",id),
                  new SqlParameter("@IP",ip),
                  new SqlParameter("@Port",port),
                  new SqlParameter("@UserName",userName),
-                 new SqlParameter("@UserPwd",userPwd)
+                 new SqlParameter("@UserPwd",userPwd),
+                 new SqlParameter("@MachineAddress",machineAddress),
+                 new SqlParameter("@GasInfos",gasInfos),
+                 new SqlParameter("@GasValues",gasValues)
             };
         int result = SqlHelper.ExecuteNonQuery(sql, parameter);
         return result >= 1 ? true : false;
     }
 
-    public static int InsertCamera(string ip, string port, string userName, string userPwd)
+    public static int InsertCamera(string ip, string port, string userName, string userPwd, string machineAddress, string gasInfos, string gasValues)
     {
-        string sql = @"insert into Camera (IP,Port,UserName,UserPwd)values(@IP,@Port,@UserName,@UserPwd) SELECT @@IDENTITY AS ID;";
+        string sql = @"insert into Camera (IP,Port,UserName,UserPwd,MachineAddress,GasInfos,GasValues)values(@IP,@Port,@UserName,@UserPwd,@MachineAddress,@GasInfos,@GasValues) SELECT @@IDENTITY AS ID;";
         SqlParameter[] parameter = new SqlParameter[] {
                  new SqlParameter("@IP",ip),
                  new SqlParameter("@Port",port),
                  new SqlParameter("@UserName",userName),
-                 new SqlParameter("@UserPwd",userPwd)
+                 new SqlParameter("@UserPwd",userPwd),
+                 new SqlParameter("@MachineAddress",machineAddress),
+                 new SqlParameter("@GasInfos",gasInfos),
+                 new SqlParameter("@GasValues",gasValues)
             };
         DataTable dt = SqlHelper.ExecuteDataTable(sql, parameter);
         int insertIndex = Convert.ToInt32(dt.Rows[0][0]);
@@ -59,6 +65,9 @@ public class CameraDAL
                 model.Port = dt.Rows[i]["Port"].ToString();
                 model.UserName = dt.Rows[i]["UserName"].ToString();
                 model.UserPwd = dt.Rows[i]["UserPwd"].ToString();
+                model.MachineAddress = dt.Rows[i]["MachineAddress"].ToString();
+                model.GasInfos = dt.Rows[i]["GasInfos"].ToString();
+                model.GasValues = dt.Rows[i]["GasValues"].ToString();
                 modelList.Add(model);
             }
         }

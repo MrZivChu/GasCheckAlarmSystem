@@ -51,7 +51,8 @@ class HexHelper
         string sendBuf = strSendNoComma2.Replace("0X", "");   //去掉0X
 
         byte[] crcbuf = StrToHexByte(sendBuf);//将16进制字符串转换成字节
-        string crcString = CRCForModbus(crcbuf).ToString("X4");//获得校验码
+        Int16 int16 = CRCForModbus(crcbuf);
+        string crcString = int16.ToString("X4");//获得校验码
         return data + " " + crcString;//返回数据+校验码
     }
     /// <summary>
@@ -107,7 +108,9 @@ class HexHelper
             hexString += " ";
         byte[] returnBytes = new byte[hexString.Length / 2];
         for (int i = 0; i < returnBytes.Length; i++)
+        {
             returnBytes[i] = Convert.ToByte(hexString.Substring(i * 2, 2).Replace(" ", ""), 16);
+        }
         return returnBytes;
     }
 }
