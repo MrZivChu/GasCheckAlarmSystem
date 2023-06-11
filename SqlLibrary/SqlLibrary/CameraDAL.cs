@@ -6,48 +6,78 @@ using System.Data.SqlClient;
 
 public class CameraDAL
 {
-    public static bool DeleteCameraByID(string idList)
+    public static int InsertCameraBaseData(string androidID, string ip, string port, string userName, string userPwd)
     {
-        string sql = @"exec('delete from Camera where ID in ('+@ID+')')";
+        string sql = "select ID from Camera where AndroidID=@AndroidID";
         SqlParameter[] parameter = new SqlParameter[] {
-                 new SqlParameter("@ID",idList)
-            };
-        int result = SqlHelper.ExecuteNonQuery(sql, parameter);
-        return result >= 1 ? true : false;
-    }
-
-    public static bool EditCameraByID(int id, string ip, string port, string userName, string userPwd, string machineAddress, string gasInfos, string gasValues)
-    {
-        string sql = @"update Camera set IP=@IP,Port=@Port,UserName=@UserName,UserPwd=@UserPwd,MachineAddress=@MachineAddress,GasInfos=@GasInfos,GasValues=@GasValues where ID=@ID";
-        SqlParameter[] parameter = new SqlParameter[] {
-                 new SqlParameter("@ID",id),
-                 new SqlParameter("@IP",ip),
-                 new SqlParameter("@Port",port),
-                 new SqlParameter("@UserName",userName),
-                 new SqlParameter("@UserPwd",userPwd),
-                 new SqlParameter("@MachineAddress",machineAddress),
-                 new SqlParameter("@GasInfos",gasInfos),
-                 new SqlParameter("@GasValues",gasValues)
-            };
-        int result = SqlHelper.ExecuteNonQuery(sql, parameter);
-        return result >= 1 ? true : false;
-    }
-
-    public static int InsertCamera(string ip, string port, string userName, string userPwd, string machineAddress, string gasInfos, string gasValues)
-    {
-        string sql = @"insert into Camera (IP,Port,UserName,UserPwd,MachineAddress,GasInfos,GasValues)values(@IP,@Port,@UserName,@UserPwd,@MachineAddress,@GasInfos,@GasValues) SELECT @@IDENTITY AS ID;";
-        SqlParameter[] parameter = new SqlParameter[] {
-                 new SqlParameter("@IP",ip),
-                 new SqlParameter("@Port",port),
-                 new SqlParameter("@UserName",userName),
-                 new SqlParameter("@UserPwd",userPwd),
-                 new SqlParameter("@MachineAddress",machineAddress),
-                 new SqlParameter("@GasInfos",gasInfos),
-                 new SqlParameter("@GasValues",gasValues)
+                 new SqlParameter("@AndroidID",androidID)
             };
         DataTable dt = SqlHelper.ExecuteDataTable(sql, parameter);
-        int insertIndex = Convert.ToInt32(dt.Rows[0][0]);
-        return insertIndex;
+        if (dt != null && dt.Rows.Count > 0)
+        {
+            sql = @"update Camera set IP=@IP,Port=@Port,UserName=@UserName,UserPwd=@UserPwd where AndroidID=@AndroidID";
+            parameter = new SqlParameter[] {
+                 new SqlParameter("@AndroidID",androidID),
+                 new SqlParameter("@IP",ip),
+                 new SqlParameter("@Port",port),
+                 new SqlParameter("@UserName",userName),
+                 new SqlParameter("@UserPwd",userPwd)
+            };
+            return SqlHelper.ExecuteNonQuery(sql, parameter);
+        }
+        else
+        {
+            sql = @"insert into Camera (AndroidID,IP,Port,UserName,UserPwd)values(@AndroidID,@IP,@Port,@UserName,@UserPwd) SELECT @@IDENTITY AS ID;";
+            parameter = new SqlParameter[] {
+                 new SqlParameter("@AndroidID",androidID),
+                 new SqlParameter("@IP",ip),
+                 new SqlParameter("@Port",port),
+                 new SqlParameter("@UserName",userName),
+                 new SqlParameter("@UserPwd",userPwd)
+            };
+            dt = SqlHelper.ExecuteDataTable(sql, parameter);
+            return Convert.ToInt32(dt.Rows[0][0]);
+        }
+    }
+
+    public static int InsertGasBaseData(string androidID, string machineID, string gases)
+    {
+        string sql = "select ID from Camera where AndroidID=@AndroidID";
+        SqlParameter[] parameter = new SqlParameter[] {
+                 new SqlParameter("@AndroidID",androidID)
+            };
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, parameter);
+        if (dt != null && dt.Rows.Count > 0)
+        {
+            sql = @"update Camera set MachineAddress=@MachineAddress,GasInfos=@GasInfos where AndroidID=@AndroidID";
+            parameter = new SqlParameter[] {
+                 new SqlParameter("@AndroidID",androidID),
+                 new SqlParameter("@MachineAddress",machineID),
+                 new SqlParameter("@GasInfos",gases)
+            };
+            return SqlHelper.ExecuteNonQuery(sql, parameter);
+        }
+        else
+        {
+            sql = @"insert into Camera (AndroidID,MachineAddress,GasInfos)values(@AndroidID,@MachineAddress,@GasInfos) SELECT @@IDENTITY AS ID;";
+            parameter = new SqlParameter[] {
+                 new SqlParameter("@AndroidID",androidID),
+                 new SqlParameter("@MachineAddress",machineID),
+                 new SqlParameter("@GasInfos",gases)
+            };
+            dt = SqlHelper.ExecuteDataTable(sql, parameter);
+            return Convert.ToInt32(dt.Rows[0][0]);
+        }
+    }
+
+    public static int UpdateRealtimeGasData(string androidID, string gasValues)
+    {
+        string sql = @"update Camera set GasValues=@GasValues where AndroidID=@AndroidID";
+        SqlParameter[] parameter = new SqlParameter[] {
+                 new SqlParameter("@AndroidID",androidID),
+                 new SqlParameter("@GasValues",gasValues)
+            };
+        return SqlHelper.ExecuteNonQuery(sql, parameter);
     }
 
     public static List<CameraModel> SelectAllCameras()
