@@ -251,4 +251,19 @@ public class CSharpUtils
         //string output = p.StandardOutput.ReadToEnd();
         //UnityEngine.Debug.Log("输出的成功信息为 = " + output);
     }
+
+    public static int GetTimeStamp(DateTime time)
+    {
+        return (int)((time.ToUniversalTime().Ticks - 621355968000000000) / 10000000);
+    }
+
+    public static DateTime TimeStampToDateTime(long timeStamp)
+    {
+        long begtime = timeStamp * 10000000;
+        UnityEngine.Debug.Log(timeStamp + "=" + begtime);
+        DateTime dt_1970 = new DateTime(1970, 1, 1, 8, 0, 0);
+        long tricks_1970 = dt_1970.Ticks;//1970年1月1日刻度
+        long time_tricks = tricks_1970 + begtime;//日志日期刻度
+        return new DateTime(time_tricks);//转化为DateTime
+    }
 }

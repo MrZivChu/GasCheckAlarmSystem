@@ -159,14 +159,17 @@ public class YUVRender : MonoBehaviour
         }
     }
 
-    public void Connect(string ip, string port, string userName, string passWord)
+    public void Init()
     {
         if (rawImage.material == rawImage.defaultMaterial)
         {
             Material mm = Resources.Load("YUVMaitial") as Material;
             rawImage.material = Instantiate(mm);
         }
+    }
 
+    public void Connect(string ip, string port, string userName, string passWord)
+    {
         if (string.IsNullOrEmpty(ip) || string.IsNullOrEmpty(port) || string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(passWord))
         {
             return;

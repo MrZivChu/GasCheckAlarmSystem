@@ -140,11 +140,20 @@ public class WaterSealModel
 public class CameraModel
 {
     public int ID;
+    public string AndroidID;
     public string IP;
     public string Port;
     public string UserName;
     public string UserPwd;
     public string MachineAddress;
     public string GasInfos;
+    public string GasValues;
+}
+
+public class CameraHistoryModel
+{
+    public int ID;
+    public string AndroidID;
+    public int TimeStamp;
     public string GasValues;
 }

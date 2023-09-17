@@ -11,42 +11,33 @@ using UnityEngine.UI;
 
 public class CameraPanel : UIEventHelper
 {
-    public GameObject itemRes;
-    public Transform contentTrans;
-    readonly string serverIP = "106.14.213.225";
-
-    private void Awake()
+    public List<Button> btnList;
+    public List<GameObject> panelList;
+    void Start()
     {
-        CHCNetSDK.NET_DVR_Init();
-    }
-
-    void OnDestroy()
-    {
-        CHCNetSDK.NET_DVR_Cleanup();
-    }
-
-    private void OnEnable()
-    {
-        List<CameraModel> list = CameraDAL.SelectAllCameras();
-        InitGrid(list);
-    }
-
-    void InitGrid(List<CameraModel> list)
-    {
-        GameUtils.SpawnCellForTable<CameraModel>(contentTrans, list, (go, data, isSpawn, index) =>
+        for (int i = 0; i < btnList.Count; i++)
         {
-            GameObject currentObj = go;
-            if (isSpawn)
+            RegisterBtnClick<int>(btnList[i], i, OnClick);
+        }
+        OnClick(btnList[0], 0);
+    }
+
+    void OnClick(Button btn, int index)
+    {
+        for (int i = 0; i < panelList.Count; i++)
+        {
+            if (i == index)
             {
-                currentObj = Instantiate(itemRes) as GameObject;
-                currentObj.transform.SetParent(contentTrans);
-                currentObj.transform.localScale = Vector3.one;
-                currentObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
+                panelList[i].SetActive(true);
+                btnList[i].GetComponent<Image>().color = new Color(1, 1, 1);
+                btnList[i].transform.GetChild(0).GetComponent<Text>().color = new Color(41 / 255.0f, 141 / 255.0f, 125 / 255.0f);
             }
-            CameraItem item = currentObj.GetComponent<CameraItem>();
-            data.IP = serverIP;
-            item.Connect(data);
-            currentObj.SetActive(true);
-        }, false);
+            else
+            {
+                panelList[i].SetActive(false);
+                btnList[i].GetComponent<Image>().color = new Color(5 / 255.0f, 147 / 255.0f, 122 / 255.0f);
+                btnList[i].transform.GetChild(0).GetComponent<Text>().color = new Color(1, 1, 1);
+            }
+        }
     }
 }

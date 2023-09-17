@@ -80,9 +80,9 @@ public class CameraDAL
         return SqlHelper.ExecuteNonQuery(sql, parameter);
     }
 
-    public static List<CameraModel> SelectAllCameras()
+    public static List<CameraModel> SelectAllCameraBaseData()
     {
-        string sql = "select * from Camera ";
+        string sql = "select ID,IP,Port,UserName,UserPwd,GasInfos from Camera ";
         List<CameraModel> modelList = new List<CameraModel>();
         DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
         if (dt.Rows.Count > 0)
@@ -95,8 +95,43 @@ public class CameraDAL
                 model.Port = dt.Rows[i]["Port"].ToString();
                 model.UserName = dt.Rows[i]["UserName"].ToString();
                 model.UserPwd = dt.Rows[i]["UserPwd"].ToString();
-                model.MachineAddress = dt.Rows[i]["MachineAddress"].ToString();
                 model.GasInfos = dt.Rows[i]["GasInfos"].ToString();
+                modelList.Add(model);
+            }
+        }
+        return modelList;
+    }
+
+    public static List<CameraModel> SelectCameraInfoForHistory()
+    {
+        string sql = "select AndroidID,IP,GasInfos from Camera ";
+        List<CameraModel> modelList = new List<CameraModel>();
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
+        if (dt.Rows.Count > 0)
+        {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                CameraModel model = new CameraModel();
+                model.AndroidID = dt.Rows[i]["AndroidID"].ToString();
+                model.IP = dt.Rows[i]["IP"].ToString();
+                model.GasInfos = dt.Rows[i]["GasInfos"].ToString();
+                modelList.Add(model);
+            }
+        }
+        return modelList;
+    }
+
+    public static List<CameraModel> SelectAllCameraRealtimeData()
+    {
+        string sql = "select ID,GasValues from Camera ";
+        List<CameraModel> modelList = new List<CameraModel>();
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
+        if (dt.Rows.Count > 0)
+        {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                CameraModel model = new CameraModel();
+                model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
                 model.GasValues = dt.Rows[i]["GasValues"].ToString();
                 modelList.Add(model);
             }

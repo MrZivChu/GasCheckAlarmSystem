@@ -45,6 +45,7 @@
     <Compile Include="DataModel.cs" />
     <Compile Include="DeviceTagDAL.cs" />
     <Compile Include="FactoryDAL.cs" />
+    <Compile Include="CameraHistoryDAL.cs" />
     <Compile Include="HistoryDataDAL.cs" />
     <Compile Include="MachineDAL.cs" />
     <Compile Include="PointCheckDAL.cs" />
