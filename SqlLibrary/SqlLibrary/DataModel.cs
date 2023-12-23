@@ -15,14 +15,9 @@ public enum EProtocolType
     DZ40Old,
     Standard,
     HaiWan,
-    WeiTai
-}
-
-public enum EGasKind
-{
-    YanGan,
-    YiYangHuaTan,
-    YangQi,
+    WeiTai,
+    KB9000,
+    HanWei
 }
 
 public enum EAuthority
@@ -57,7 +52,7 @@ public class HistoryDataModel
     public int MachineID;
 
     //扩展字段
-    public EGasKind gasKind;
+    public int gasKind;
     public EWarningLevel warningLevel;
     public string probeName;
 }
@@ -94,7 +89,7 @@ public class ProbeModel
     public int ID;
     public string MailAddress;
     public string ProbeName;
-    public EGasKind GasKind;
+    public int GasKind;
     public int MachineID;
     public string Pos3D;
     public string Pos2D;
@@ -133,6 +128,25 @@ public class WaterSealModel
 
     //扩展字段
     public bool isCheck = false;
+}
+
+[System.Serializable]
+public class GasTypesModel
+{
+    public int ID;
+    public string GasName;
+    public double MinValue;
+    public double MaxValue;
+}
+
+[System.Serializable]
+public class SWinformConfig
+{
+    public bool isLog;
+    public string sqlIP;
+    public string sqlDatabase;
+    public string sqlUserId;
+    public string sqlUserPwd;
 }
 
 

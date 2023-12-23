@@ -38,6 +38,9 @@
     <Reference Include="LitJson">
       <HintPath>dll\LitJson.dll</HintPath>
     </Reference>
+    <Reference Include="SqlLibrary">
+      <HintPath>dll\SqlLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Management" />
@@ -60,8 +63,10 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="HaiWanProtocol.cs" />
+    <Compile Include="HanWeiProtocol.cs" />
     <Compile Include="HexHelper.cs" />
     <Compile Include="HistoryDataDAL.cs" />
+    <Compile Include="KB9000Protocol.cs" />
     <Compile Include="LogHelper.cs" />
     <Compile Include="MachineDAL.cs" />
     <Compile Include="ProbeDAL.cs" />

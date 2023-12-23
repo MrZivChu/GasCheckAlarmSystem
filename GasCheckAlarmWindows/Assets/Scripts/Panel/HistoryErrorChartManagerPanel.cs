@@ -6,9 +6,14 @@ using UnityEngine.UI;
 using XCharts;
 using XCharts.Runtime;
 
-public class ChartManagerPanel : UIEventHelper
+public class ChartSeriesModel
 {
-    public SimplifiedLineChart simplifiedLineChart;
+    public string checkTime;
+    public double gasValue;
+}
+
+public class HistoryErrorChartManagerPanel : UIEventHelper
+{
     public PieChart pieChart;
     public ScatterChart scatterChart;
     public UI.Dates.DatePicker datePicker;
@@ -18,19 +23,14 @@ public class ChartManagerPanel : UIEventHelper
 
     private void Start()
     {
-        Title title = simplifiedLineChart.GetChartComponent<Title>();
-        title.text = "探头历史数据折线图";
-        title.subText = "只显示低报和高报时间点，其他时间点均为正常";
-        simplifiedLineChart.RemoveAllSerie();
-
         Title title2 = pieChart.GetChartComponent<Title>();
-        title2.text = "探头历史数据饼图";
-        title2.subText = "只显示低报和高报数据占比";
+        title2.text = "探头历史异常数据饼图";
+        title2.subText = "只显示异常数据占比";
         pieChart.RemoveAllSerie();
 
         Title title3 = scatterChart.GetChartComponent<Title>();
-        title3.text = "探头历史数据散点图";
-        title3.subText = "只显示低报和高报数据";
+        title3.text = "探头历史异常数据散点图";
+        title3.subText = "只显示异常数据时的时间点，其他时间点的数据均为正常";
         scatterChart.RemoveAllSerie();
 
         RegisterBtnClick(btn_search, OnSearch);
@@ -44,9 +44,6 @@ public class ChartManagerPanel : UIEventHelper
 
     private void OnDisable()
     {
-        simplifiedLineChart.RemoveAllSerie();
-        simplifiedLineChart.ClearData();
-        simplifiedLineChart.SetAllDirty();
         pieChart.RemoveAllSerie();
         pieChart.ClearData();
         pieChart.SetAllDirty();
@@ -87,10 +84,10 @@ public class ChartManagerPanel : UIEventHelper
             string startTime = datePicker.VisibleDate.Date.ToString("yyyy-MM-dd 00:00:01");
             string endTime = datePicker.VisibleDate.Date.ToString("yyyy-MM-dd 23:59:59");
             int machineID = machineList_[dropdown_machine.value].ID;
-            probeList_ = ProbeDAL.SelectIDProbeNameGasKindWithMachineID(machineID);
+            probeList_ = ProbeDAL.SelectIDProbeNameGasKindByMachineID(machineID);
             if (probeList_.Count > 0)
             {
-                float firstAlarmValue = FormatData.gasKindFormat[probeList_[0].GasKind].minValue;
+                float firstAlarmValue = Convert.ToSingle(FormatData.gasKindFormat[probeList_[0].GasKind].MinValue);
                 historyDataList_ = HistoryDataDAL.SelectHistoryDataForChart(machineID, firstAlarmValue, startTime, endTime);
                 historyDataList_.ForEach(it =>
                 {
@@ -110,18 +107,13 @@ public class ChartManagerPanel : UIEventHelper
         if (probeList_ == null || probeList_.Count == 0 || historyDataList_ == null || historyDataList_.Count == 0)
             return;
         int index = dropdown_chart.value;
-        simplifiedLineChart.gameObject.SetActive(index == 0);
-        pieChart.gameObject.SetActive(index == 1);
-        scatterChart.gameObject.SetActive(index == 2);
+        pieChart.gameObject.SetActive(index == 0);
+        scatterChart.gameObject.SetActive(index == 1);
         if (index == 0)
-        {
-            InitSimplifiedLineChart();
-        }
-        if (index == 1)
         {
             InitPieChart();
         }
-        if (index == 2)
+        if (index == 1)
         {
             InitScatterChart();
         }
@@ -157,79 +149,7 @@ public class ChartManagerPanel : UIEventHelper
         pieChart.AddChartComponentWhenNoExist<Legend>();
     }
 
-    float validDataSpanMinutes = 10;//10分钟
-    void InitSimplifiedLineChart()
-    {
-        simplifiedLineChart.RemoveAllSerie();
-        simplifiedLineChart.ClearData();
-        Dictionary<string, List<ChartSeriesModel>> probeNameValue = new Dictionary<string, List<ChartSeriesModel>>();
-        probeList_.ForEach((it) =>
-        {
-            if (!probeNameValue.ContainsKey(it.ProbeName))
-            {
-                probeNameValue[it.ProbeName] = new List<ChartSeriesModel>();
-            }
-        });
-
-        List<string> timeList = new List<string>();
-        timeList.Add(datePicker.VisibleDate.Date.ToString("MM-dd 00:00"));
-        DateTime preTime = historyDataList_[0].CheckTime;
-        historyDataList_.ForEach((it) =>
-        {
-            if (probeNameValue.ContainsKey(it.probeName))
-            {
-                if ((it.CheckTime - preTime).TotalMinutes >= validDataSpanMinutes)
-                {
-                    preTime = it.CheckTime;
-                    ChartSeriesModel model = new ChartSeriesModel();
-                    model.checkTime = it.CheckTime.ToString("MM-dd HH:mm");
-                    model.gasValue = it.GasValue;
-                    probeNameValue[it.probeName].Add(model);
-                    if (!timeList.Contains(it.CheckTime.ToString("MM-dd HH:mm")))
-                    {
-                        timeList.Add(it.CheckTime.ToString("MM-dd HH:mm"));
-                    }
-                }
-            }
-        });
-        timeList.Add(datePicker.VisibleDate.Date.ToString("MM-dd 23:59"));
-        timeList.Sort();
-        XAxis xAxis = simplifiedLineChart.GetChartComponent<XAxis>();
-        xAxis.ClearData();
-        timeList.ForEach((it) =>
-        {
-            xAxis.AddData(it);
-        });
-
-        double maxValue = 0;
-        foreach (var item in probeNameValue)
-        {
-            SimplifiedLine simplifiedLine = simplifiedLineChart.AddSerie<SimplifiedLine>(item.Key);
-            for (int i = 0; i < timeList.Count; i++)
-            {
-                SerieData serieData = new SerieData();
-                ChartSeriesModel model = item.Value.Find(temp =>
-                {
-                    return temp.checkTime.Equals(timeList[i]);
-                });
-                double value = model == null ? 0 : model.gasValue;
-                value = value > 2000 ? 2000 : value;
-                serieData.data = new List<double>() { i, value };
-                //simplifiedLine.show = false;
-                simplifiedLine.AddSerieData(serieData);
-                if (value > maxValue)
-                {
-                    maxValue = value;
-                }
-            }
-        }
-        YAxis yAxis = simplifiedLineChart.GetChartComponent<YAxis>();
-        yAxis.minMaxType = Axis.AxisMinMaxType.Custom;
-        yAxis.min = 0;
-        yAxis.max = maxValue;
-        simplifiedLineChart.AddChartComponentWhenNoExist<Legend>();
-    }
-
+    float validDataSpanMinutes = 10;//10分钟    
     void InitScatterChart()
     {
         scatterChart.RemoveAllSerie();
@@ -304,10 +224,4 @@ public class ChartManagerPanel : UIEventHelper
         yAxis.max = maxValue;
         scatterChart.AddChartComponentWhenNoExist<Legend>();
     }
-}
-
-public class ChartSeriesModel
-{
-    public string checkTime;
-    public double gasValue;
 }

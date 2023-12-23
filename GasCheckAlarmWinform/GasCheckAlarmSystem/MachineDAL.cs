@@ -4,16 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
-public enum EProtocolType
-{
-    StandardOne,
-    DZ40New,
-    DZ40Old,
-    Standard,
-    HaiWan,
-    WeiTai
-}
-
 public class ProbeSerialPortInfo
 {
     public int ProbeID;
@@ -62,7 +52,7 @@ public class MachineDAL
             if (list != null && list.Count > 0)
             {
                 int firstProbeDecAddress = Convert.ToInt32(list[0].ProbeAddress);
-                int endProbeDecAddress = firstProbeDecAddress;
+                int endProbeDecAddress = list.Count;
                 if (list.Count > 1)
                 {
                     for (int j = 1; j < list.Count; j++)

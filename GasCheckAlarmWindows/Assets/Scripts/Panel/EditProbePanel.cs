@@ -37,7 +37,16 @@ public class EditProbePanel : UIEventHelper
 
             int dd = dropdown_machine.value;
             MachineModel model = machineList[dd];
-            ProbeDAL.EditProbeByID(currentModel.ID, address, probeName, model.ID, dropdown_gasKind.value, dropdown_deviceTag.captionText.text, serialNumber);
+            int gaskindID = 0;
+            foreach (var item in FormatData.gasKindFormat)
+            {
+                if (item.Value.GasName == dropdown_gasKind.captionText.text)
+                {
+                    gaskindID = item.Value.ID;
+                    break;
+                }
+            }
+            ProbeDAL.EditProbeByID(currentModel.ID, address, probeName, model.ID, gaskindID, dropdown_deviceTag.captionText.text, serialNumber);
             MessageBox.Instance.PopOK("修改成功", () =>
             {
                 EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
@@ -62,12 +71,19 @@ public class EditProbePanel : UIEventHelper
     void InitGasKind(ProbeModel model)
     {
         dropdown_gasKind.ClearOptions();
+        int selectIndex = 0;
+        int index = 0;
         foreach (var item in FormatData.gasKindFormat)
         {
-            Dropdown.OptionData data = new Dropdown.OptionData(item.Value.name);
+            Dropdown.OptionData data = new Dropdown.OptionData(item.Value.GasName);
             dropdown_gasKind.options.Add(data);
+            if (item.Value.ID == model.GasKind)
+            {
+                selectIndex = index;
+            }
+            index++;
         }
-        dropdown_gasKind.value = (int)model.GasKind;
+        dropdown_gasKind.value = selectIndex;
         dropdown_gasKind.RefreshShownValue();
     }
 
@@ -87,7 +103,7 @@ public class EditProbePanel : UIEventHelper
             }
             dropdown_machine.AddOptions(optionList);
             dropdown_machine.value = selectIndex;
-            dropdown_gasKind.RefreshShownValue();
+            dropdown_machine.RefreshShownValue();
         }
     }
 
@@ -114,7 +130,7 @@ public class EditProbePanel : UIEventHelper
             }
             dropdown_deviceTag.AddOptions(optionList);
             dropdown_deviceTag.value = selectIndex;
-            dropdown_gasKind.RefreshShownValue();
+            dropdown_deviceTag.RefreshShownValue();
         }
     }
 }

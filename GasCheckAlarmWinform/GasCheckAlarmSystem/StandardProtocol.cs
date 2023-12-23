@@ -30,10 +30,15 @@ namespace GasCheckAlarmSystem
                 LogHelper.AddLog("数据校验没通过");
                 return false;
             }
-
+            if (ConfigHandleHelper.GetConfig().isLog)
+            {
+                string content = string.Empty;
+                stageByteList_.ForEach(it => content += it + "-");
+                LogHelper.AddLog("接收数据:{0}", content);
+            }
             //数据解析处理
-            int index = 3;
-            if (index + 1 >= stageByteList_.Count)
+            int index = 1 * 2 + 1;
+            if (stageByteList_.Count <= index + 1)
                 return false;
 
             byte highByte = stageByteList_[index];
@@ -44,7 +49,6 @@ namespace GasCheckAlarmSystem
             HistoryDataDAL.AddHistoryData(probeSerialPortInfo_.ProbeID, decValue, probeSerialPortInfo_.MachineID);
             //更新实时数据
             ProbeDAL.EditRealtimeDataByID(probeSerialPortInfo_.ProbeID, DateTime.Now, decValue);
-            LogHelper.AddLog("probeID:{0} highByte:{1} lowByte:{2} decvalue:{3}", probeSerialPortInfo_.ProbeID, highByte, lowByte, decValue);
             return true;
         }
 
@@ -64,14 +68,14 @@ namespace GasCheckAlarmSystem
             string endHex = "000001";
 
             StringBuilder sb = new StringBuilder();
-            sb.Append(machineSerialPortInfo_.MachineAddress).Append(machineSerialPortInfo_.command).Append(firstHex).Append(endHex);
+            sb.Append(Convert.ToInt32(machineSerialPortInfo_.MachineAddress).ToString("X2")).Append(machineSerialPortInfo_.command).Append(firstHex).Append(endHex);
             sendContent = HexHelper.GetTxtSendText(sb.ToString());
-            readAllByteLength_ = 3 + 2 + 2;
+            readAllByteLength_ = 3 + 2 * 1 + 2;
             tempReadAllByteLength_ = 0;
             stageByteList_.Clear();
             readProbeIndex_++;
-            
-            LogHelper.AddLog("SendData:{0} readAllByteLength:{1} FirstProbeDecAddress:{2} EndProbeDecAddress:{3}", sendContent, readAllByteLength_, machineSerialPortInfo_.FirstProbeDecAddress, machineSerialPortInfo_.EndProbeDecAddress);
+
+            LogHelper.AddLog("发送数据:{0} 应该读取的数据总量:{1}", sendContent, readAllByteLength_);
         }
 
         public override bool IsHandleOver()

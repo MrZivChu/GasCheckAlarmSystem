@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace GasCheckAlarmSystem
@@ -45,6 +46,11 @@ namespace GasCheckAlarmSystem
         private void saveLogBtn_Click(object sender, EventArgs e)
         {
             LogHelper.SaveLog();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(HexHelper.GetTxtSendText(textBox1.Text));
         }
     }
 }

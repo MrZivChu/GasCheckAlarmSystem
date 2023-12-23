@@ -62,8 +62,8 @@ public class ExcelAccess
                     HistoryDataModel model = datalist[i];
                     worksheet.Cells["A" + (i + 2)].Value = model.gasKind;
                     worksheet.Cells["B" + (i + 2)].Value = model.GasValue;
-                    worksheet.Cells["C" + (i + 2)].Value = FormatData.gasKindFormat[model.gasKind].minValue;
-                    worksheet.Cells["D" + (i + 2)].Value = FormatData.gasKindFormat[model.gasKind].maxValue;
+                    worksheet.Cells["C" + (i + 2)].Value = FormatData.gasKindFormat[model.gasKind].MinValue;
+                    worksheet.Cells["D" + (i + 2)].Value = FormatData.gasKindFormat[model.gasKind].MaxValue;
                     worksheet.Cells["E" + (i + 2)].Value = model.CheckTime.ToString("yyyy-MM-dd HH:mm:ss");
                 }
                 package.Save();

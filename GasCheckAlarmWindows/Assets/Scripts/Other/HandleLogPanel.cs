@@ -9,6 +9,9 @@ public class HandleLogPanel : UIEventHelper
 {
     public Button btn_ok;
     public Button btn_cancel;
+    public Button gasBtn;
+
+    public GameObject gasTypesPanel;
 
     public Toggle isLogTog;
     public Toggle isOpenWaterSealTog;
@@ -21,18 +24,16 @@ public class HandleLogPanel : UIEventHelper
     public InputField sqlPwdInput;
     public InputField smsPhoneInput;
 
-    public InputField yanGanMinInput;
-    public InputField yanGanMaxInput;
-    public InputField yiYangHuaTanMinInput;
-    public InputField yiYangHuaTanMaxInput;
-    public InputField yangQiMinInput;
-    public InputField yangQiMaxInput;
+    public Text configPath;
+
     public InputField alertWarnValueInput;
     public InputField alertWarnSecondsInput;
     void Start()
     {
+        configPath.text = "配置文件路径：" + Application.persistentDataPath;
         RegisterBtnClick(btn_cancel, OnCancel);
         RegisterBtnClick(btn_ok, OnOk);
+        RegisterBtnClick(gasBtn, OnGasTypes);
     }
 
     private void OnEnable()
@@ -48,14 +49,13 @@ public class HandleLogPanel : UIEventHelper
         sqlPwdInput.text = JsonHandleHelper.gameConfig.sqlUserPwd;
         smsPhoneInput.text = JsonHandleHelper.gameConfig.smsPhone;
 
-        yanGanMinInput.text = JsonHandleHelper.gameConfig.yanGanMinValue.ToString();
-        yanGanMaxInput.text = JsonHandleHelper.gameConfig.yanGanMaxValue.ToString();
-        yiYangHuaTanMinInput.text = JsonHandleHelper.gameConfig.yiYangHuaTanMinValue.ToString();
-        yiYangHuaTanMaxInput.text = JsonHandleHelper.gameConfig.yiYangHuaTanMaxValue.ToString();
-        yangQiMinInput.text = JsonHandleHelper.gameConfig.yangQiMinValue.ToString();
-        yangQiMaxInput.text = JsonHandleHelper.gameConfig.yangQiMaxValue.ToString();
         alertWarnValueInput.text = JsonHandleHelper.gameConfig.alertWarnValue.ToString();
         alertWarnSecondsInput.text = JsonHandleHelper.gameConfig.alertWarnSeconds.ToString();
+    }
+
+    void OnGasTypes(Button btn)
+    {
+        gasTypesPanel.SetActive(true);
     }
 
     void OnCancel(Button btn)
@@ -75,7 +75,7 @@ public class HandleLogPanel : UIEventHelper
         string sqlUserPwd = sqlPwdInput.text;
         string smsPhone = smsPhoneInput.text;
 
-        JsonHandleHelper.UpdateConfig(isLog, isEnterPosDir, isOpenWaterSeal, productName, sqlIP, sqlDatabase, sqlUserId, sqlUserPwd, smsPhone, Convert.ToDouble(yanGanMinInput.text), Convert.ToDouble(yanGanMaxInput.text), Convert.ToDouble(yiYangHuaTanMinInput.text), Convert.ToDouble(yiYangHuaTanMaxInput.text), Convert.ToDouble(yangQiMinInput.text), Convert.ToDouble(yangQiMaxInput.text), Convert.ToInt32(alertWarnValueInput.text), Convert.ToInt32(alertWarnSecondsInput.text));
+        JsonHandleHelper.UpdateConfig(isLog, isEnterPosDir, isOpenWaterSeal, productName, sqlIP, sqlDatabase, sqlUserId, sqlUserPwd, smsPhone, Convert.ToInt32(alertWarnValueInput.text), Convert.ToInt32(alertWarnSecondsInput.text));
         Application.Quit();
     }
 }

@@ -10,7 +10,9 @@ public class ProbeManagerPanel : UIEventHelper
     public Button btn_add;
     public Button btn_delete;
     public Button btn_edit;
+    public Button btn_search;
     public Toggle wholeToggle;
+    public InputField probeName;
 
     public GameObject addProbePanel;
     public GameObject editProbePanel;
@@ -19,6 +21,7 @@ public class ProbeManagerPanel : UIEventHelper
     public Object itemRes;
     private void Start()
     {
+        RegisterBtnClick(btn_search, OnSearch);
         RegisterBtnClick(btn_add, OnAddProbe);
         RegisterBtnClick(btn_delete, OnDeleteProbe);
         RegisterBtnClick(btn_edit, OnEditProbe);
@@ -33,7 +36,12 @@ public class ProbeManagerPanel : UIEventHelper
 
     void UpdateProbeListEvent(object data)
     {
-        InitData();
+        OnEnable();
+    }
+
+    void OnSearch(Button btn)
+    {
+        OnEnable();
     }
 
     void OnAddProbe(Button btn)
@@ -120,14 +128,14 @@ public class ProbeManagerPanel : UIEventHelper
 
     private void OnEnable()
     {
-        InitData();
+        List<ProbeModel> list = ProbeDAL.SelectAllProbeByCondition(probeName.text);
+        InitData(list);
     }
 
     List<ProbeItem> probeItemList = new List<ProbeItem>();
-    void InitData()
+    void InitData(List<ProbeModel> list)
     {
         probeItemList.Clear();
-        List<ProbeModel> list = ProbeDAL.SelectAllProbeByCondition();
         GameUtils.SpawnCellForTable<ProbeModel>(contentTrans, list, (go, data, isSpawn, index) =>
         {
             GameObject currentObj = go;

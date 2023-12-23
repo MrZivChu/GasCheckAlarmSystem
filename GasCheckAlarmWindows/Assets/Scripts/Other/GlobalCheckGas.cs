@@ -23,7 +23,7 @@ public class GlobalCheckGas : MonoBehaviour
         EventManager.Instance.DeleteEventListener(NotifyType.UpdateProbeList, UpdateProbeListEvent);
     }
 
-    Dictionary<int, ProbeModel> baseInfoDic_ = new Dictionary<int, ProbeModel>();
+    public static Dictionary<int, ProbeModel> baseInfoDic_ = new Dictionary<int, ProbeModel>();
     void UpdateProbeListEvent(object data)
     {
         baseInfoDic_.Clear();
@@ -57,7 +57,7 @@ public class GlobalCheckGas : MonoBehaviour
             HistoryDataDAL.DeleteHistoryDataBeforeWeek();
         }
     }
-    
+
     void HandleRealtimeData(List<ProbeModel> list)
     {
         int abnormalCount = 0;
@@ -76,17 +76,15 @@ public class GlobalCheckGas : MonoBehaviour
             }
             else
             {
-                if (model.GasKind == EGasKind.YangQi)
+                if (FormatData.gasKindFormat[model.GasKind].GasName == "氧气" || FormatData.gasKindFormat[model.GasKind].GasName == "天然气" || FormatData.gasKindFormat[model.GasKind].GasName == "石油气" || FormatData.gasKindFormat[model.GasKind].GasName == "可燃气")
                 {
                     model.GasValue = model.GasValue / 10.0f;
-                    if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].maxValue)
+                }
+                if (MachineFactoryDataManager.GetMachineData(model.MachineID).ProtocolType == EProtocolType.HaiWan)
+                {
+                    if (model.GasValue == 1)
                     {
                         model.warningLevel = EWarningLevel.SecondAlarm;
-                        abnormalCount++;
-                    }
-                    else if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].minValue)
-                    {
-                        model.warningLevel = EWarningLevel.FirstAlarm;
                         abnormalCount++;
                     }
                     else
@@ -96,11 +94,16 @@ public class GlobalCheckGas : MonoBehaviour
                 }
                 else
                 {
-                    if (MachineFactoryDataManager.GetMachineData(model.MachineID).ProtocolType == EProtocolType.HaiWan)
+                    if (FormatData.gasKindFormat[model.GasKind].GasName == "氧气")
                     {
-                        if (model.GasValue == 1)
+                        if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].MaxValue)
                         {
                             model.warningLevel = EWarningLevel.SecondAlarm;
+                            abnormalCount++;
+                        }
+                        else if (model.GasValue <= FormatData.gasKindFormat[model.GasKind].MinValue)
+                        {
+                            model.warningLevel = EWarningLevel.FirstAlarm;
                             abnormalCount++;
                         }
                         else
@@ -110,12 +113,12 @@ public class GlobalCheckGas : MonoBehaviour
                     }
                     else
                     {
-                        if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].maxValue)
+                        if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].MaxValue)
                         {
                             model.warningLevel = EWarningLevel.SecondAlarm;
                             abnormalCount++;
                         }
-                        else if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].minValue)
+                        else if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].MinValue)
                         {
                             model.warningLevel = EWarningLevel.FirstAlarm;
                             abnormalCount++;

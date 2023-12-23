@@ -40,9 +40,9 @@ public class EditProbeForGraphPanel : UIEventHelper
     {
         currentModel = model;
         txt_name.text = currentModel.ProbeName;
-        txt_gasKind.text = FormatData.gasKindFormat[currentModel.GasKind].name;
+        txt_gasKind.text = FormatData.gasKindFormat[currentModel.GasKind].GasName;
         txt_gasValue.text = model.GasValue.ToString();
-        txt_firstValue.text = FormatData.gasKindFormat[model.GasKind].minValue.ToString();
-        txt_secondValue.text = FormatData.gasKindFormat[model.GasKind].maxValue.ToString();
+        txt_firstValue.text = FormatData.gasKindFormat[model.GasKind].MinValue.ToString();
+        txt_secondValue.text = FormatData.gasKindFormat[model.GasKind].MaxValue.ToString();
     }
 }

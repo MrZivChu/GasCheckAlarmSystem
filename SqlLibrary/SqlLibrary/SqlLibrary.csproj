@@ -46,6 +46,7 @@
     <Compile Include="DeviceTagDAL.cs" />
     <Compile Include="FactoryDAL.cs" />
     <Compile Include="CameraHistoryDAL.cs" />
+    <Compile Include="GasTypesDAL.cs" />
     <Compile Include="HistoryDataDAL.cs" />
     <Compile Include="MachineDAL.cs" />
     <Compile Include="PointCheckDAL.cs" />
@@ -61,6 +62,7 @@
     <PostBuildEvent>copy $(TargetPath) $(SolutionDir)\..\GasCheckAlarmPhone\Assets\Plugins\
 copy $(TargetPath) $(SolutionDir)\..\GasCheckAlarmServer\Bin\
 copy $(TargetPath) $(SolutionDir)\..\GasCheckAlarmWindows\Assets\Plugins\
-copy $(TargetPath) $(SolutionDir)\..\GasCheckAlarmWeb\Assets\Plugins\</PostBuildEvent>
+copy $(TargetPath) $(SolutionDir)\..\GasCheckAlarmWeb\Assets\Plugins\
+copy $(TargetPath) $(SolutionDir)\..\GasCheckAlarmWinform\GasCheckAlarmSystem\dll\</PostBuildEvent>
   </PropertyGroup>
 </Project>

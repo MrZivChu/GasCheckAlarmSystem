@@ -27,6 +27,8 @@ public class MainPanel : UIEventHelper
     public Toggle tog_openShakeWarning;
     public Toggle tog_closeShakeWarning;
 
+    public RealtimeChartManagerPanel realtimeChartManagerPanel;
+
     void Start()
     {
         for (int i = 0; i < togList.Count; i++)
@@ -48,11 +50,13 @@ public class MainPanel : UIEventHelper
         RegisterTogClick(tog_openShakeWarning, OnTogOpenShakeWarning);
         RegisterTogClick(tog_closeShakeWarning, OnTogCloseShaketWarning);
         EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
+        EventManager.Instance.AddEventListener(NotifyType.UpdateRealtimeDataList, realtimeChartManagerPanel.UpdateProbeListEvent);
     }
 
     private void OnDestroy()
     {
         EventManager.Instance.DeleteEventListener(NotifyType.UpdateRealtimeDataList, UpdateRealtimeDataListEvent);
+        EventManager.Instance.DeleteEventListener(NotifyType.UpdateRealtimeDataList, realtimeChartManagerPanel.UpdateProbeListEvent);
     }
 
     void OnTogClick(Toggle tog, bool isOn, int index)

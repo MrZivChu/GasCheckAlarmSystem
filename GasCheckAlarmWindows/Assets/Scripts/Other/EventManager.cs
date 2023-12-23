@@ -14,6 +14,8 @@ public enum NotifyType
     DeleteDeviceTag,
     UpdatePos2D,
     OffLine,
+    DeleteGasTypes,
+    InsertGasTypes
 }
 
 public class EventManager

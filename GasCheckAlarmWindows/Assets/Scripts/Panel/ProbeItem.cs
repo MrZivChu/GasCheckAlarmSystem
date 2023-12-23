@@ -25,10 +25,10 @@ public class ProbeItem : UIEventHelper
         txt_probeName.text = model.ProbeName;
         txt_machineName.text = MachineFactoryDataManager.GetMachineData(model.MachineID).MachineName;
         txt_probeAddress.text = model.MailAddress;
-        txt_gasKind.text = FormatData.gasKindFormat[currentModel.GasKind].name;
+        txt_gasKind.text = FormatData.gasKindFormat[currentModel.GasKind].GasName;
         txt_tagName.text = model.TagName;
-        txt_firstAlarmValue.text = FormatData.gasKindFormat[model.GasKind].minValue.ToString();
-        txt_secondAlarmValue.text = FormatData.gasKindFormat[model.GasKind].maxValue.ToString();
+        txt_firstAlarmValue.text = FormatData.gasKindFormat[model.GasKind].MinValue.ToString();
+        txt_secondAlarmValue.text = FormatData.gasKindFormat[model.GasKind].MaxValue.ToString();
     }
 
     public void SetToggle(bool isOn)

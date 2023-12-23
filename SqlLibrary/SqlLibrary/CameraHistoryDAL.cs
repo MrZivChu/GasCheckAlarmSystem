@@ -11,17 +11,6 @@ public class CameraHistoryDAL
     {
         pageCount = 0;
         rowCount = 0;
-        StringBuilder sb1 = new StringBuilder();
-        StringBuilder sb2 = new StringBuilder();
-        sb1.Append(@"select @RowCount=count(*),@pageCount=ceiling((count(*)+0.0)/@pageSize) 
-		from (
-		select AndroidID,TimeStamp,GasValues    
-        from CameraHistory) temp_row  
-        where 1=1 ");
-
-        sb2.Append(@"select top (select @pageSize) *   
-	from (select row_number() over(order by TimeStamp desc) as rownumber,ID,AndroidID,TimeStamp,GasValues from CameraHistory) temp_row 
-	where 1=1 and rownumber>(@pageIndex-1)*@pageSize ");
 
         List<SqlParameter> para = new List<SqlParameter>()
         {
@@ -30,8 +19,12 @@ public class CameraHistoryDAL
             new SqlParameter("@pageCount",pageCount),
             new SqlParameter("@rowCount",rowCount),
         };
-        sb1.Append(" and temp_row.TimeStamp >= @StartCheckTime and temp_row.TimeStamp <= @EndCheckTime and temp_row.AndroidID = @AndroidID ");
-        sb2.Append(" and temp_row.TimeStamp >= @StartCheckTime and temp_row.TimeStamp <= @EndCheckTime and temp_row.AndroidID = @AndroidID ");
+
+        StringBuilder sb1 = new StringBuilder();
+        StringBuilder sb2 = new StringBuilder();
+        sb1.Append(@"select @RowCount=count(*),@pageCount=ceiling((count(*)+0.0)/@pageSize) from (select ID from CameraHistory where TimeStamp >= @StartCheckTime and TimeStamp <= @EndCheckTime and AndroidID = @AndroidID) temp_row ");
+        sb2.Append(@"select top (select @pageSize) * from (select row_number() over(order by TimeStamp desc) as rownumber,ID,AndroidID,TimeStamp,GasValues from CameraHistory where TimeStamp >= @StartCheckTime and TimeStamp <= @EndCheckTime and AndroidID = @AndroidID ) temp_row where rownumber>(@pageIndex-1)*@pageSize ");
+
         para.Add(new SqlParameter("@StartCheckTime", startTime));
         para.Add(new SqlParameter("@EndCheckTime", endTime));
         para.Add(new SqlParameter("@AndroidID", androidID));

@@ -127,7 +127,7 @@ public class GlobalImagePanel : UIEventHelper
         currentObj.transform.SetParent(probeContentTrans);
         currentObj.transform.localScale = Vector3.one;
         currentObj.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
-        CubeInfoItem cubeInfoItem = currentObj.GetComponentInChildren<CubeInfoItem>();
+        GlobalImageProbeInfoItem cubeInfoItem = currentObj.GetComponentInChildren<GlobalImageProbeInfoItem>();
         cubeInfoItem.InitData(model);
         currentObj.SetActive(true);
     }

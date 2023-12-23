@@ -1,1 +1,1 @@
-C:/Users/45471/AppData/LocalLow/dongzhao/GasCheckAlarmSystem/config.txt
+{"isLog":false,"sqlIP":"hds16173015.my3w.com","sqlDatabase":"hds16173015_db","sqlUserId":"hds16173015","sqlUserPwd":"!@#Dz123"}

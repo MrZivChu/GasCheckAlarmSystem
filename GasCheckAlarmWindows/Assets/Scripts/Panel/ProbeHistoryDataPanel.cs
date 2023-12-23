@@ -15,15 +15,25 @@ public class ProbeHistoryDataPanel : UIEventHelper
     public Button btn_prePage;
     public Button btn_nextPage;
     public Text txt_pageCount;
+    public InputField input_probeName;
     int pageIndex = 1;
     int pageCount = 1;
     int rowCount = 1;
     int pageSize = 13;
+    int probeID = 0;
 
-    public UI.Dates.DatePicker_DateRange dateRange;
+    public Text startTime;
+    public Text endTime;
 
     public Transform contentTrans;
     public UnityEngine.Object itemRes;
+
+    private void Awake()
+    {
+        startTime.text = DateTime.Now.ToString("yyyy-MM-dd 00:00:00");
+        endTime.text = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+    }
+
     private void Start()
     {
         RegisterBtnClick(btn_search, OnSearch);
@@ -68,6 +78,14 @@ public class ProbeHistoryDataPanel : UIEventHelper
 
     void OnSearch(Button btn)
     {
+        if (!string.IsNullOrEmpty(input_probeName.text))
+        {
+            probeID = ProbeDAL.SelectProbeIDByProbeName(input_probeName.text);
+        }
+        else
+        {
+            probeID = 0;
+        }
         pageIndex = 1;
         InitData();
     }
@@ -75,9 +93,7 @@ public class ProbeHistoryDataPanel : UIEventHelper
     List<HistoryDataModel> historyDataModelList;
     private void InitData()
     {
-        string startTime = dateRange.FromDate.HasValue ? dateRange.FromDate.Date.ToString("yyyy-MM-dd") : string.Empty; ;
-        string endTime = dateRange.ToDate.HasValue ? dateRange.ToDate.Date.AddDays(1).ToString("yyyy-MM-dd") : string.Empty; ;
-        historyDataModelList = HistoryDataDAL.SelectAllHistoryDataByCondition(pageIndex, pageSize, startTime, endTime, out pageCount, out rowCount);
+        historyDataModelList = HistoryDataDAL.SelectAllHistoryDataByCondition(pageIndex, pageSize, startTime.text, endTime.text, probeID, out pageCount, out rowCount);
         foreach (var item in historyDataModelList)
         {
             ProbeModel model = baseInfoList_.Find(it => it.ID == item.ProbeID);
@@ -87,6 +103,11 @@ public class ProbeHistoryDataPanel : UIEventHelper
                 item.probeName = model.ProbeName;
                 item.gasKind = model.GasKind;
                 item.MachineID = model.MachineID;
+
+                if (FormatData.gasKindFormat[model.GasKind].GasName == "氧气" || FormatData.gasKindFormat[model.GasKind].GasName == "天然气" || FormatData.gasKindFormat[model.GasKind].GasName == "石油气" || FormatData.gasKindFormat[model.GasKind].GasName == "可燃气")
+                {
+                    item.GasValue = model.GasValue / 10.0f;
+                }
             }
         }
         txt_pageCount.text = pageIndex + "/" + pageCount;
@@ -125,11 +146,6 @@ public class ProbeHistoryDataPanel : UIEventHelper
             {
                 if (!string.IsNullOrEmpty(sfd.FileName))
                 {
-                    System.DateTime startTime = System.DateTime.MinValue, endTime = System.DateTime.MinValue;
-                    if (dateRange.FromDate.HasValue)
-                        startTime = dateRange.FromDate.Date;
-                    if (dateRange.ToDate.HasValue)
-                        endTime = dateRange.ToDate.Date;
                     ExcelAccess.WriteExcel(sfd.FileName, "sheet1", historyDataModelList);
                     MessageBox.Instance.PopOK("保存成功", null, "确定");
                 }

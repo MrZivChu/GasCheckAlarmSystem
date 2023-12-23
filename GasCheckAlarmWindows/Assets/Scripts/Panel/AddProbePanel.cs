@@ -66,7 +66,16 @@ public class AddProbePanel : UIEventHelper
         string serialNumber = input_serialNumber.text;
         MachineModel model = machineList[dropdown_machine.value];
         string pos3D = position.x.ToString("0.00") + "," + position.y.ToString("0.00") + "," + position.z.ToString("0.00") + ";" + direction.x.ToString("0.00") + "," + direction.y.ToString("0.00") + "," + direction.z.ToString("0.00");
-        ProbeDAL.InsertProbe(address, probeName, dropdown_gasKind.value, model.ID, pos3D, dropdown_deviceTag.captionText.text, serialNumber);
+        int gaskindID = 0;
+        foreach (var item in FormatData.gasKindFormat)
+        {
+            if (item.Value.GasName == dropdown_gasKind.captionText.text)
+            {
+                gaskindID = item.Value.ID;
+                break;
+            }
+        }
+        ProbeDAL.InsertProbe(address, probeName, gaskindID, model.ID, pos3D, dropdown_deviceTag.captionText.text, serialNumber);
         MessageBox.Instance.PopOK("新增成功", () =>
         {
             EventManager.Instance.DisPatch(NotifyType.UpdateProbeList);
@@ -124,7 +133,7 @@ public class AddProbePanel : UIEventHelper
         dropdown_gasKind.ClearOptions();
         foreach (var item in FormatData.gasKindFormat)
         {
-            Dropdown.OptionData data = new Dropdown.OptionData(item.Value.name);
+            Dropdown.OptionData data = new Dropdown.OptionData(item.Value.GasName);
             dropdown_gasKind.options.Add(data);
         }
         dropdown_gasKind.RefreshShownValue();

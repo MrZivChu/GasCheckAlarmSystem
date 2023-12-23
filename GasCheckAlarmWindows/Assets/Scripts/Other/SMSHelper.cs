@@ -69,13 +69,13 @@ public class SMSHelper
 
     static void SendSMS(string content)
     {
-        UnityEngine.Debug.Log("HandleProbeInfo SendSMS content = " + content);
+        //UnityEngine.Debug.Log("HandleProbeInfo SendSMS content = " + content);
         if (string.IsNullOrEmpty(content))
         {
             return;
         }
         string result = string.Format("{0} 小盒子科技 SMS_251132221 {1}", JsonHandleHelper.gameConfig.smsPhone, content);
-        UnityEngine.Debug.Log("HandleProbeInfo result=" + result);
+        //UnityEngine.Debug.Log("HandleProbeInfo result=" + result);
         if (Application.isEditor)
         {
             return;

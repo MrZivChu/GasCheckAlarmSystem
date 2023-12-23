@@ -171,6 +171,16 @@ namespace GasCheckAlarmSystem
                         protocol_ = new WeiTaiProtocol();
                         LogHelper.AddLog("######使用惟泰协议######");
                     }
+                    else if (currentData_.ProtocolType == EProtocolType.KB9000)
+                    {
+                        protocol_ = new KB9000Protocol();
+                        LogHelper.AddLog("######使用KB9000协议######");
+                    }
+                    else if (currentData_.ProtocolType == EProtocolType.HanWei)
+                    {
+                        protocol_ = new HanWeiProtocol();
+                        LogHelper.AddLog("######使用汉威协议######");
+                    }
                 }
                 string sendContent = string.Empty;
                 protocol_.HandleSendData(currentData_, out sendContent);

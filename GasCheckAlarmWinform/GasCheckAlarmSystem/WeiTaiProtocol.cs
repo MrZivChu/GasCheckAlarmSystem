@@ -30,13 +30,19 @@ namespace GasCheckAlarmSystem
                 LogHelper.AddLog("数据校验没通过");
                 return false;
             }
+            if (ConfigHandleHelper.GetConfig().isLog)
+            {
+                string content = string.Empty;
+                stageByteList_.ForEach(it => content += it + "-");
+                LogHelper.AddLog("接收数据:{0}", content);
+            }
             for (int j = 0; j < machineSerialPortInfo_.list.Count; j++)
             {
                 //数据解析处理
                 ProbeSerialPortInfo probeSerialPortInfo = machineSerialPortInfo_.list[j];
 
                 int index = Convert.ToInt32(probeSerialPortInfo.ProbeAddress) * 2 + 1;
-                if (index + 1 >= stageByteList_.Count)
+                if (stageByteList_.Count <= index + 1)
                     continue;
 
                 byte highByte = stageByteList_[index];
@@ -47,7 +53,6 @@ namespace GasCheckAlarmSystem
                 HistoryDataDAL.AddHistoryData(probeSerialPortInfo.ProbeID, decValue, probeSerialPortInfo.MachineID);
                 //更新实时数据
                 ProbeDAL.EditRealtimeDataByID(probeSerialPortInfo.ProbeID, DateTime.Now, decValue);
-                LogHelper.AddLog("probeID:{0} highByte:{1} lowByte:{2} decvalue:{3}", probeSerialPortInfo.ProbeID, highByte, lowByte, decValue);
             }
             return true;
         }
@@ -70,7 +75,7 @@ namespace GasCheckAlarmSystem
             tempReadAllByteLength_ = 0;
             stageByteList_.Clear();
 
-            LogHelper.AddLog("SendData:{0} readAllByteLength:{1} FirstProbeDecAddress:{2} EndProbeDecAddress:{3}", sendContent, readAllByteLength_, machineSerialPortInfo_.FirstProbeDecAddress, machineSerialPortInfo_.EndProbeDecAddress);
+            LogHelper.AddLog("发送数据:{0} 应该读取的数据总量:{1}", sendContent, readAllByteLength_);
         }
     }
 }

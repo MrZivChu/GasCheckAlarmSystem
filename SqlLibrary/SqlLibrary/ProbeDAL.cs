@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text;
 
 public class ProbeDAL
 {
@@ -24,7 +25,7 @@ public class ProbeDAL
                 model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
                 model.MailAddress = dt.Rows[i]["MailAddress"].ToString();
                 model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
-                model.GasKind = (EGasKind)(dt.Rows[i]["GasKind"]);
+                model.GasKind = Convert.ToInt32(dt.Rows[i]["GasKind"]);
                 model.MachineID = Convert.ToInt32(dt.Rows[i]["MachineID"]);
                 model.Pos3D = dt.Rows[i]["Pos3D"].ToString();
                 model.Pos2D = dt.Rows[i]["Pos2D"].ToString();
@@ -51,7 +52,7 @@ public class ProbeDAL
                 model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
                 model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
                 model.Pos3D = dt.Rows[i]["Pos3D"].ToString();
-                model.GasKind = (EGasKind)(dt.Rows[i]["GasKind"]);
+                model.GasKind = Convert.ToInt32(dt.Rows[i]["GasKind"]);
                 modelList.Add(model);
             }
         }
@@ -71,7 +72,7 @@ public class ProbeDAL
                 model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
                 model.CheckTime = Convert.ToDateTime(dt.Rows[i]["CheckTime"]);
                 model.GasValue = Convert.ToSingle(dt.Rows[i]["GasValue"]);
-                model.GasKind = (EGasKind)(dt.Rows[i]["GasKind"]);
+                model.GasKind = Convert.ToInt32(dt.Rows[i]["GasKind"]);
                 model.MachineID = Convert.ToInt32(dt.Rows[i]["MachineID"]);
                 modelList.Add(model);
             }
@@ -81,7 +82,7 @@ public class ProbeDAL
 
     public static List<ProbeModel> SelectIDProbeNameTagName()
     {
-        string sql = @"select ID,ProbeName,TagName from Probe";
+        string sql = @"select ID,ProbeName,TagName,GasKind from Probe";
         List<ProbeModel> modelList = new List<ProbeModel>();
         DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
         if (dt.Rows.Count > 0)
@@ -92,6 +93,7 @@ public class ProbeDAL
                 model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
                 model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
                 model.TagName = dt.Rows[i]["TagName"].ToString();
+                model.GasKind = Convert.ToInt32(dt.Rows[i]["GasKind"]);
                 modelList.Add(model);
             }
         }
@@ -110,7 +112,7 @@ public class ProbeDAL
                 ProbeModel model = new ProbeModel();
                 model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
                 model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
-                model.GasKind = (EGasKind)(dt.Rows[i]["GasKind"]);
+                model.GasKind = Convert.ToInt32(dt.Rows[i]["GasKind"]);
                 model.MachineID = Convert.ToInt32(dt.Rows[i]["MachineID"]);
                 modelList.Add(model);
             }
@@ -170,7 +172,7 @@ public class ProbeDAL
             model.ID = Convert.ToInt32(dt.Rows[0]["ID"]);
             model.MailAddress = dt.Rows[0]["MailAddress"].ToString();
             model.ProbeName = dt.Rows[0]["ProbeName"].ToString();
-            model.GasKind = (EGasKind)(dt.Rows[0]["GasKind"]);
+            model.GasKind = Convert.ToInt32(dt.Rows[0]["GasKind"]);
             model.MachineID = Convert.ToInt32(dt.Rows[0]["MachineID"]);
             model.Pos3D = dt.Rows[0]["Pos3D"].ToString();
             model.Pos2D = dt.Rows[0]["Pos2D"].ToString();
@@ -195,7 +197,7 @@ public class ProbeDAL
             model.ID = Convert.ToInt32(dt.Rows[0]["ID"]);
             model.MailAddress = dt.Rows[0]["MailAddress"].ToString();
             model.ProbeName = dt.Rows[0]["ProbeName"].ToString();
-            model.GasKind = (EGasKind)(dt.Rows[0]["GasKind"]);
+            model.GasKind = Convert.ToInt32(dt.Rows[0]["GasKind"]);
             model.MachineID = Convert.ToInt32(dt.Rows[0]["MachineID"]);
             model.Pos3D = dt.Rows[0]["Pos3D"].ToString();
             model.Pos2D = dt.Rows[0]["Pos2D"].ToString();
@@ -258,7 +260,7 @@ public class ProbeDAL
         return insertIndex;
     }
 
-    public static List<ProbeModel> SelectIDProbeNameGasKindWithMachineID(int machineID)
+    public static List<ProbeModel> SelectIDProbeNameGasKindByMachineID(int machineID)
     {
         string sql = @"select ID,ProbeName,GasKind from Probe where MachineID=@MachineID ";
         List<SqlParameter> parameter = new List<SqlParameter>{
@@ -273,11 +275,50 @@ public class ProbeDAL
                 ProbeModel model = new ProbeModel();
                 model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
                 model.ProbeName = dt.Rows[i]["ProbeName"].ToString();
-                model.GasKind = (EGasKind)(dt.Rows[i]["GasKind"]);
+                model.GasKind = Convert.ToInt32(dt.Rows[i]["GasKind"]);
                 modelList.Add(model);
             }
         }
         return modelList;
+    }
+
+    public static int SelectCountByMachineID(int machineID)
+    {
+        string sql = @"select count(*) from Probe where MachineID=@MachineID ";
+        List<SqlParameter> parameter = new List<SqlParameter>{
+                 new SqlParameter("@MachineID",machineID),
+            };
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, parameter.ToArray());
+        if (dt.Rows.Count > 0)
+        {
+            return Convert.ToInt32(dt.Rows[0][0]);
+        }
+        return 0;
+    }
+
+    public static int SelectProbeIDByProbeName(string probeName)
+    {
+        string sql = @"select ID from Probe where ProbeName like '%" + probeName + "%'";
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
+        if (dt.Rows.Count > 0)
+        {
+            return Convert.ToInt32(dt.Rows[0]["ID"]);
+        }
+        return 0;
+    }
+
+    public static ProbeModel SelectProbeIDProbeNameByProbeName(string probeName)
+    {
+        ProbeModel model = null;
+        string sql = @"select ID,ProbeName from Probe where ProbeName like '%" + probeName + "%'";
+        DataTable dt = SqlHelper.ExecuteDataTable(sql, null);
+        if (dt.Rows.Count > 0)
+        {
+            model = new ProbeModel();
+            model.ID = Convert.ToInt32(dt.Rows[0]["ID"]);
+            model.ProbeName = dt.Rows[0]["ProbeName"].ToString();
+        }
+        return model;
     }
 
     public static bool EditProbePos2DByID(int id, string pos2D)
@@ -299,6 +340,26 @@ public class ProbeDAL
             };
         int result = SqlHelper.ExecuteNonQuery(sql, parameter);
         return result >= 1 ? true : false;
+    }
+
+    public static List<ProbeModel> SelectRealtimeDataForChart()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.Append(@"select ID,GasValue,CheckTime from Probe order by CheckTime desc");
+        DataTable dt = SqlHelper.ExecuteDataTable(sb.ToString(), null);
+        List<ProbeModel> modelList = new List<ProbeModel>();
+        if (dt != null && dt.Rows.Count > 0)
+        {
+            for (int i = 0; i < dt.Rows.Count; i++)
+            {
+                ProbeModel model = new ProbeModel();
+                model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
+                model.GasValue = Convert.ToSingle(dt.Rows[i]["GasValue"]);
+                model.CheckTime = Convert.ToDateTime(dt.Rows[i]["CheckTime"]);
+                modelList.Add(model);
+            }
+        }
+        return modelList;
     }
 
 }

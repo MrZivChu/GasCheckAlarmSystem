@@ -13,12 +13,6 @@ public struct SGameConfig
     public string sqlUserId;
     public string sqlUserPwd;
     public string smsPhone;
-    public double yanGanMinValue;
-    public double yanGanMaxValue;
-    public double yiYangHuaTanMinValue;
-    public double yiYangHuaTanMaxValue;
-    public double yangQiMinValue;
-    public double yangQiMaxValue;
     public int alertWarnValue;
     public int alertWarnSeconds;
 }
@@ -31,12 +25,19 @@ public class JsonHandleHelper : UIEventHelper
     void Awake()
     {
         configPath = Application.persistentDataPath + "/config.txt";
-        File.WriteAllText(Application.streamingAssetsPath + "/configPath.txt", configPath);
         Debug.Log(configPath);
         if (File.Exists(configPath))
         {
             string content = File.ReadAllText(configPath);
-            gameConfig = LitJson.JsonMapper.ToObject<SGameConfig>(content);
+            try
+            {
+                gameConfig = LitJson.JsonMapper.ToObject<SGameConfig>(content);
+            }
+            catch (Exception ex)
+            {
+                File.Delete(configPath);
+                Application.Quit();
+            }
         }
         else
         {
@@ -50,12 +51,6 @@ public class JsonHandleHelper : UIEventHelper
             gameConfig.productName = "钢铁有限责任公司\n气体监控系统";
             gameConfig.isOpenWaterSeal = false;
             gameConfig.smsPhone = string.Empty;
-            gameConfig.yanGanMinValue = 5;
-            gameConfig.yanGanMaxValue = 15;
-            gameConfig.yiYangHuaTanMinValue = 24;
-            gameConfig.yiYangHuaTanMaxValue = 100;
-            gameConfig.yangQiMinValue = 5;
-            gameConfig.yangQiMaxValue = 100;
             gameConfig.alertWarnValue = 100;
             gameConfig.alertWarnSeconds = 20;
             string json = LitJson.JsonMapper.ToJson(gameConfig);
@@ -65,15 +60,16 @@ public class JsonHandleHelper : UIEventHelper
         isRemoteServer = gameConfig.sqlIP != "127.0.0.1";
         Debug.unityLogger.logEnabled = Application.isEditor ? true : gameConfig.isLog;
 
-        FormatData.gasKindFormat[EGasKind.YanGan].minValue = Convert.ToSingle(gameConfig.yanGanMinValue);
-        FormatData.gasKindFormat[EGasKind.YanGan].maxValue = Convert.ToSingle(gameConfig.yanGanMaxValue);
-        FormatData.gasKindFormat[EGasKind.YiYangHuaTan].minValue = Convert.ToSingle(gameConfig.yiYangHuaTanMinValue);
-        FormatData.gasKindFormat[EGasKind.YiYangHuaTan].maxValue = Convert.ToSingle(gameConfig.yiYangHuaTanMaxValue);
-        FormatData.gasKindFormat[EGasKind.YangQi].minValue = Convert.ToSingle(gameConfig.yangQiMinValue);
-        FormatData.gasKindFormat[EGasKind.YangQi].maxValue = Convert.ToSingle(gameConfig.yangQiMaxValue);
+        SWinformConfig winformConfig = new SWinformConfig();
+        winformConfig.isLog = gameConfig.isLog;
+        winformConfig.sqlIP = gameConfig.sqlIP;
+        winformConfig.sqlDatabase = gameConfig.sqlDatabase;
+        winformConfig.sqlUserId = gameConfig.sqlUserId;
+        winformConfig.sqlUserPwd = gameConfig.sqlUserPwd;
+        File.WriteAllText(Application.streamingAssetsPath + "/configPath.txt", LitJson.JsonMapper.ToJson(winformConfig));//给Winform使用的配置文件
     }
 
-    public static void UpdateConfig(bool isLog, bool isEnterPosDir, bool isOpenWaterSeal, string productName, string sqlIP, string sqlDatabase, string sqlUserId, string sqlUserPwd, string smsPhone, double yanGanMinValue, double yanGanMaxValue, double yiYangHuaTanMinValue, double yiYangHuaTanMaxValue, double yangQiMinValue, double yangQiMaxValue, int alertWarnValue, int alertWarnSeconds)
+    public static void UpdateConfig(bool isLog, bool isEnterPosDir, bool isOpenWaterSeal, string productName, string sqlIP, string sqlDatabase, string sqlUserId, string sqlUserPwd, string smsPhone, int alertWarnValue, int alertWarnSeconds)
     {
         gameConfig.isEnterPosDir = isEnterPosDir;
         gameConfig.isLog = isLog;
@@ -84,12 +80,6 @@ public class JsonHandleHelper : UIEventHelper
         gameConfig.productName = productName;
         gameConfig.isOpenWaterSeal = isOpenWaterSeal;
         gameConfig.smsPhone = smsPhone;
-        gameConfig.yanGanMinValue = yanGanMinValue;
-        gameConfig.yanGanMaxValue = yanGanMaxValue;
-        gameConfig.yiYangHuaTanMinValue = yiYangHuaTanMinValue;
-        gameConfig.yiYangHuaTanMaxValue = yiYangHuaTanMaxValue;
-        gameConfig.yangQiMinValue = yangQiMinValue;
-        gameConfig.yangQiMaxValue = yangQiMaxValue;
         gameConfig.alertWarnValue = alertWarnValue;
         gameConfig.alertWarnSeconds = alertWarnSeconds;
         string json = LitJson.JsonMapper.ToJson(gameConfig);

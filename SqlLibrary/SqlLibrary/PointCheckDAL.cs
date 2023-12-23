@@ -11,17 +11,8 @@ public class PointCheckDAL
     {
         pageCount = 0;
         rowCount = 0;
-        StringBuilder sb1 = new StringBuilder();
-        StringBuilder sb2 = new StringBuilder();
-        sb1.Append(@"select @RowCount=count(*),@pageCount=ceiling((count(*)+0.0)/@pageSize) 
-		from (
-		select ID,DeviceID,DeviceName,DeviceType,UserName,QrCodePath,CheckTime,Description,Result
-        from PointCheck) temp_row  
-        where 1=1 ");
-
-        sb2.Append(@"select top (select @pageSize) *   
-	from (select row_number() over(order by CheckTime desc) as rownumber,ID,DeviceID,DeviceName,DeviceType,UserName,QrCodePath,CheckTime,Description,Result from PointCheck) temp_row 
-	where 1=1 and rownumber>(@pageIndex-1)*@pageSize ");
+        string whereStr1 = string.Empty;
+        string whereStr2 = string.Empty;
 
         List<SqlParameter> para = new List<SqlParameter>()
         {
@@ -30,28 +21,35 @@ public class PointCheckDAL
             new SqlParameter("@pageCount",pageCount),
             new SqlParameter("@rowCount",rowCount),
         };
-        sb1.Append(" and temp_row.DeviceType = @DeviceType ");
-        sb2.Append(" and temp_row.DeviceType = @DeviceType ");
+
+        whereStr1 += " and DeviceType = @DeviceType ";
+        whereStr2 += " and DeviceType = @DeviceType ";
         para.Add(new SqlParameter("@DeviceType", deviceType));
         if (!string.IsNullOrEmpty(deviceName))
         {
-            sb1.Append(" and temp_row.DeviceName = @DeviceName ");
-            sb2.Append(" and temp_row.DeviceName = @DeviceName ");
+            whereStr1 += " and DeviceName = @DeviceName ";
+            whereStr2 += " and DeviceName = @DeviceName ";
             para.Add(new SqlParameter("@DeviceName", deviceName));
         }
         if (!string.IsNullOrEmpty(userName))
         {
-            sb1.Append(" and temp_row.UserName = @UserName ");
-            sb2.Append(" and temp_row.UserName = @UserName ");
+            whereStr1 += " and UserName = @UserName ";
+            whereStr2 += " and UserName = @UserName ";
             para.Add(new SqlParameter("@UserName", userName));
         }
         if (!string.IsNullOrEmpty(startTime) && !string.IsNullOrEmpty(endTime))
         {
-            sb1.Append(" and temp_row.CheckTime >= @StartCheckTime and temp_row.CheckTime <= @EndCheckTime ");
-            sb2.Append(" and temp_row.CheckTime >= @StartCheckTime and temp_row.CheckTime <= @EndCheckTime ");
+            whereStr1 += " and CheckTime >= @StartCheckTime and CheckTime <= @EndCheckTime ";
+            whereStr2 += " and CheckTime >= @StartCheckTime and CheckTime <= @EndCheckTime ";
             para.Add(new SqlParameter("@StartCheckTime", startTime));
             para.Add(new SqlParameter("@EndCheckTime", endTime));
         }
+
+        StringBuilder sb1 = new StringBuilder();
+        StringBuilder sb2 = new StringBuilder();
+        sb1.Append(@"select @RowCount=count(*),@pageCount=ceiling((count(*)+0.0)/@pageSize) from (select ID from PointCheck where 1=1 " + whereStr1 + ") temp_row ");
+        sb2.Append(@"select top (select @pageSize) * from (select row_number() over(order by CheckTime desc) as rownumber,ID,DeviceID,DeviceName,DeviceType,UserName,QrCodePath,CheckTime,Description,Result from PointCheck where 1=1 " + whereStr2 + ") temp_row where rownumber>(@pageIndex-1)*@pageSize ");
+
         StringBuilder sql = sb1.Append(sb2);
         DataTable dt = SqlHelper.ExecProcPage(sql.ToString(), out pageCount, out rowCount, para);
         List<PointCheckModel> modelList = new List<PointCheckModel>();
