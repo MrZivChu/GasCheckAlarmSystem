@@ -68,7 +68,6 @@ public class RealtimeChartManagerPanel : UIEventHelper
     {
         lock (dic_)
         {
-            realtimeDataList = ProbeDAL.SelectRealtimeDataForChart();
             if (realtimeDataList != null && realtimeDataList.Count > 0)
             {
                 if (!string.IsNullOrEmpty(minutesInput.text))
@@ -114,6 +113,8 @@ public class RealtimeChartManagerPanel : UIEventHelper
         }
     }
 
+
+    Dictionary<string, bool> simplifiedLineStatus = new Dictionary<string, bool>();
     YAxis yAxis = null;
     XAxis xAxis = null;
     double maxGasValue = 0;
@@ -122,10 +123,19 @@ public class RealtimeChartManagerPanel : UIEventHelper
     {
         if (dic_.Count > 0 && gameObject.activeSelf)
         {
+            List<Serie> list = simplifiedLineChart.series;
+            for (int j = 0; j < list.Count; j++)
+            {
+                simplifiedLineStatus[list[j].serieName] = list[j].show;
+            }
             simplifiedLineChart.RemoveAllSerie();
             foreach (var item in dic_)
             {
                 SimplifiedLine simplifiedLine = simplifiedLineChart.AddSerie<SimplifiedLine>(item.Key);
+                if (simplifiedLineStatus.ContainsKey(item.Key))
+                {
+                    simplifiedLine.show = simplifiedLineStatus[item.Key];
+                }
                 simplifiedLine.AnimationEnable(false);
                 for (int i = 0; i < item.Value.Count; i++)
                 {

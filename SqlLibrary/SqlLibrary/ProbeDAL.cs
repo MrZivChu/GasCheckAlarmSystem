@@ -342,24 +342,4 @@ public class ProbeDAL
         return result >= 1 ? true : false;
     }
 
-    public static List<ProbeModel> SelectRealtimeDataForChart()
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.Append(@"select ID,GasValue,CheckTime from Probe order by CheckTime desc");
-        DataTable dt = SqlHelper.ExecuteDataTable(sb.ToString(), null);
-        List<ProbeModel> modelList = new List<ProbeModel>();
-        if (dt != null && dt.Rows.Count > 0)
-        {
-            for (int i = 0; i < dt.Rows.Count; i++)
-            {
-                ProbeModel model = new ProbeModel();
-                model.ID = Convert.ToInt32(dt.Rows[i]["ID"]);
-                model.GasValue = Convert.ToSingle(dt.Rows[i]["GasValue"]);
-                model.CheckTime = Convert.ToDateTime(dt.Rows[i]["CheckTime"]);
-                modelList.Add(model);
-            }
-        }
-        return modelList;
-    }
-
 }
