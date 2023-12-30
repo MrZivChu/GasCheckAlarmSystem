@@ -106,7 +106,7 @@ public class ProbeHistoryDataPanel : UIEventHelper
 
                 if (FormatData.gasKindFormat[model.GasKind].GasName == "氧气" || FormatData.gasKindFormat[model.GasKind].GasName == "天然气" || FormatData.gasKindFormat[model.GasKind].GasName == "石油气" || FormatData.gasKindFormat[model.GasKind].GasName == "可燃气")
                 {
-                    item.GasValue = model.GasValue / 10.0f;
+                    item.GasValue = item.GasValue / 10.0f;
                 }
             }
         }

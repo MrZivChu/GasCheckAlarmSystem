@@ -102,13 +102,13 @@ public class RealtimeChartManagerPanel : UIEventHelper
                             {
                                 dic_[model.ProbeName] = new List<ProbeModel>();
                             }
-                            maxGasValue = it.GasValue > maxGasValue ? it.GasValue : maxGasValue;
-                            minGasValue = it.GasValue < minGasValue ? it.GasValue : minGasValue;
                             it.CheckTime = sameTime;
                             dic_[model.ProbeName].Add(it);
                         }
                     }
                 });
+
+
             }
         }
     }
@@ -129,6 +129,8 @@ public class RealtimeChartManagerPanel : UIEventHelper
                 simplifiedLineStatus[list[j].serieName] = list[j].show;
             }
             simplifiedLineChart.RemoveAllSerie();
+            maxGasValue = 0;
+            minGasValue = 0;
             foreach (var item in dic_)
             {
                 SimplifiedLine simplifiedLine = simplifiedLineChart.AddSerie<SimplifiedLine>(item.Key);
@@ -139,6 +141,8 @@ public class RealtimeChartManagerPanel : UIEventHelper
                 simplifiedLine.AnimationEnable(false);
                 for (int i = 0; i < item.Value.Count; i++)
                 {
+                    maxGasValue = item.Value[i].GasValue > maxGasValue ? item.Value[i].GasValue : maxGasValue;
+                    minGasValue = item.Value[i].GasValue < minGasValue ? item.Value[i].GasValue : minGasValue;
                     SerieData serieData = new SerieData();
                     serieData.data = new List<double>() { i, item.Value[i].GasValue };
                     //simplifiedLine.show = false;
