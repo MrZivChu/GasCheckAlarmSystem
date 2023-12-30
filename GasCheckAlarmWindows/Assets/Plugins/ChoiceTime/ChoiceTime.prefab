@@ -922,14 +922,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f25ce5ce9255fdf42b8d4701b1d4db00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dateType: 0
-  _itemNum: 1
-  _updateLength: 0
-  _itemObj: {fileID: 667295641239130427}
-  _itemParent: {fileID: 6012158303033365998}
-  myGroup: {fileID: 0}
+  choiceTime_: {fileID: 1936199708986058416}
   upBtn: {fileID: 8401719562899963306}
   downBtn: {fileID: 7447432391108126429}
+  dateType_: 0
+  itemNum_: 1
+  itemObj_: {fileID: 667295641239130427}
+  itemParent_: {fileID: 6012158303033365998}
 --- !u!114 &667295641239130433
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1183,14 +1182,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f25ce5ce9255fdf42b8d4701b1d4db00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dateType: 3
-  _itemNum: 1
-  _updateLength: 0
-  _itemObj: {fileID: 667295641239130451}
-  _itemParent: {fileID: 3295162488239372816}
-  myGroup: {fileID: 0}
+  choiceTime_: {fileID: 1936199708986058416}
   upBtn: {fileID: 7966685555851820795}
   downBtn: {fileID: 4650955168407163787}
+  dateType_: 3
+  itemNum_: 1
+  itemObj_: {fileID: 667295641239130451}
+  itemParent_: {fileID: 3295162488239372816}
 --- !u!114 &667295641239130440
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1296,14 +1294,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f25ce5ce9255fdf42b8d4701b1d4db00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dateType: 2
-  _itemNum: 1
-  _updateLength: 0
-  _itemObj: {fileID: 667295641239130452}
-  _itemParent: {fileID: 576910376702035508}
-  myGroup: {fileID: 0}
+  choiceTime_: {fileID: 1936199708986058416}
   upBtn: {fileID: 1218225178547089895}
   downBtn: {fileID: 2872109636553143390}
+  dateType_: 2
+  itemNum_: 1
+  itemObj_: {fileID: 667295641239130452}
+  itemParent_: {fileID: 576910376702035508}
 --- !u!114 &667295641239130442
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1409,14 +1406,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f25ce5ce9255fdf42b8d4701b1d4db00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dateType: 4
-  _itemNum: 1
-  _updateLength: 0
-  _itemObj: {fileID: 667295641239130450}
-  _itemParent: {fileID: 8061040271610540415}
-  myGroup: {fileID: 0}
+  choiceTime_: {fileID: 1936199708986058416}
   upBtn: {fileID: 8242945058232913589}
   downBtn: {fileID: 2713741331869551956}
+  dateType_: 4
+  itemNum_: 1
+  itemObj_: {fileID: 667295641239130450}
+  itemParent_: {fileID: 8061040271610540415}
 --- !u!114 &667295641239130445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1522,14 +1518,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f25ce5ce9255fdf42b8d4701b1d4db00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dateType: 5
-  _itemNum: 1
-  _updateLength: 0
-  _itemObj: {fileID: 667295641239130449}
-  _itemParent: {fileID: 7973275609392480723}
-  myGroup: {fileID: 0}
+  choiceTime_: {fileID: 1936199708986058416}
   upBtn: {fileID: 5069708622799797272}
   downBtn: {fileID: 7509963475915916387}
+  dateType_: 5
+  itemNum_: 1
+  itemObj_: {fileID: 667295641239130449}
+  itemParent_: {fileID: 7973275609392480723}
 --- !u!114 &667295641239130448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2252,14 +2247,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f25ce5ce9255fdf42b8d4701b1d4db00, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _dateType: 1
-  _itemNum: 1
-  _updateLength: 0
-  _itemObj: {fileID: 667295641239130453}
-  _itemParent: {fileID: 7670187269789219051}
-  myGroup: {fileID: 0}
+  choiceTime_: {fileID: 1936199708986058416}
   upBtn: {fileID: 4854620303042265278}
   downBtn: {fileID: 3607252677162703484}
+  dateType_: 1
+  itemNum_: 1
+  itemObj_: {fileID: 667295641239130453}
+  itemParent_: {fileID: 7670187269789219051}
 --- !u!114 &667295641239130436
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2816,7 +2810,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4958921050502251648}
-  - component: {fileID: 5044862685089247918}
   m_Layer: 5
   m_Name: Time
   m_TagString: Untagged
@@ -2849,25 +2842,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &5044862685089247918
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4143165960447184594}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d4bc48da58bf0b54c8ab2ce0106245e1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _datePickerList:
-  - {fileID: 3956827935250195751}
-  - {fileID: 3658619985127809629}
-  - {fileID: 8611973242659053821}
-  - {fileID: 1399882784715826105}
-  - {fileID: 7603326286178630960}
-  - {fileID: 6208553579985395588}
 --- !u!1 &5473333815553643579
 GameObject:
   m_ObjectHideFlags: 0
@@ -3155,6 +3129,13 @@ MonoBehaviour:
   ShowText: {fileID: 667295641239130419}
   ChoiceTimeObj: {fileID: 2973976466323184924}
   ChoiceBtn: {fileID: 667295641239130422}
+  _datePickerList:
+  - {fileID: 3956827935250195751}
+  - {fileID: 3658619985127809629}
+  - {fileID: 8611973242659053821}
+  - {fileID: 1399882784715826105}
+  - {fileID: 7603326286178630960}
+  - {fileID: 6208553579985395588}
 --- !u!1 &6183259325222478886
 GameObject:
   m_ObjectHideFlags: 0

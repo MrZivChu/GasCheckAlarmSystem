@@ -3,75 +3,37 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-/// <summary>
-/// 当选择日期的委托
-/// </summary>
-public delegate void OnDateUpdate();
-
 public enum DateType
 {
-    _year, _month, _day,
-    _hour, _minute, _second
+    year,
+    month,
+    day,
+    hour,
+    minute,
+    second
 }
-/// <summary>
-/// 日期选择器
-/// </summary>
 public class DatePicker : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    /// <summary>
-    /// 日期类型 （年月日时分秒）
-    /// </summary>
-    public DateType _dateType;
-    /// <summary>
-    /// 子节点数量（奇数）
-    /// </summary>
-    public int _itemNum = 5;
-    [HideInInspector]
-    /// <summary>
-    /// 更新选择的目标值
-    /// </summary>
-    public float _updateLength;
-    /// <summary>
-    /// 子节点预制体
-    /// </summary>
-    public GameObject _itemObj;
-    /// <summary>
-    /// 子节点容器对象
-    /// </summary>
-    public Transform _itemParent;
-    /// <summary>
-    /// 我属于的日期选择组
-    /// </summary>
-    [HideInInspector]
-    public DatePickerGroup myGroup;
-    /// <summary>
-    /// 当选择日期的委托事件
-    /// </summary>
-    public event OnDateUpdate _onDateUpdate;
-    void Awake()
-    {
-        _itemObj.SetActive(false);
-        _updateLength = _itemObj.GetComponent<RectTransform>().sizeDelta.y;
-    }
-
+    public ChoiceTime choiceTime_;
     public Button upBtn;
     public Button downBtn;
+    public DateType dateType_;
+    public int itemNum_ = 1;
+    public GameObject itemObj_;
+    public Transform itemParent_;
 
-    /// <summary>
-    /// 初始化时间选择器
-    /// </summary>
-    public void Init()
+    private float updateLength_;
+    void Awake()
     {
-        for (int i = 0; i < _itemNum; i++)
-        {
-            //计算真实位置
-            int real_i = -(_itemNum / 2) + i;
-            SpawnItem(real_i);
-        }
-        RefreshDateList();
-
+        itemObj_.SetActive(false);
+        updateLength_ = itemObj_.GetComponent<RectTransform>().sizeDelta.y;
         upBtn.onClick.AddListener(OnUpTime);
         downBtn.onClick.AddListener(OnDownTime);
+        for (int i = 0; i < itemNum_; i++)
+        {
+            int real_i = -(itemNum_ / 2) + i;
+            SpawnItem(real_i);
+        }
     }
 
     void OnUpTime()
@@ -84,66 +46,21 @@ public class DatePicker : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
         UpdateTime(1);
     }
 
-    void UpdateTime(int num)
+    void SpawnItem(float real_i)
     {
-        DateTime _data = new DateTime();
-        if (_dateType == DateType._year)
-        {
-            _data = myGroup._selectDate.AddYears(num);
-        }
-        else if (_dateType == DateType._month)
-        {
-            _data = myGroup._selectDate.AddMonths(num);
-        }
-        else if (_dateType == DateType._day)
-        {
-            _data = myGroup._selectDate.AddDays(num);
-        }
-        else if (_dateType == DateType._hour)
-        {
-            _data = myGroup._selectDate.AddHours(num);
-        }
-        else if (_dateType == DateType._minute)
-        {
-            _data = myGroup._selectDate.AddMinutes(num);
-        }
-        else if (_dateType == DateType._second)
-        {
-            _data = myGroup._selectDate.AddSeconds(num);
-        }
-        if (IsInDate(_data, myGroup._minDate, myGroup._maxDate))
-        {
-            myGroup._selectDate = _data;
-            _onDateUpdate();
-        }
-    }
-
-    /// <summary>
-    /// 生成子对象
-    /// </summary>
-    /// <param name="dataNum">对应日期</param>
-    /// <param name="real_i">真实位置</param>
-    /// <returns></returns>
-    GameObject SpawnItem(float real_i)
-    {
-        GameObject _item = Instantiate(_itemObj);
-        _item.SetActive(true);
-        _item.transform.SetParent(_itemParent);
-        _item.transform.localScale = new Vector3(1, 1, 1);
-        _item.transform.localEulerAngles = Vector3.zero;
-        _item.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
+        GameObject item = Instantiate(itemObj_);
+        item.SetActive(true);
+        item.transform.SetParent(itemParent_);
+        item.transform.localScale = Vector3.one;
+        item.transform.localEulerAngles = Vector3.zero;
+        item.GetComponent<RectTransform>().anchoredPosition3D = Vector3.zero;
         if (real_i != 0)
         {
-            _item.GetComponent<Text>().color = new Color(1, 1, 1, 1 - 0.2f - (Mathf.Abs(real_i) / (_itemNum / 2 + 1)));
+            item.GetComponent<Text>().color = new Color(1, 1, 1, 1 - 0.2f - (Mathf.Abs(real_i) / (itemNum_ / 2 + 1)));
         }
-        return _item;
     }
 
     Vector3 oldDragPos;
-    /// <summary>
-    /// 当开始拖拽
-    /// </summary>
-    /// <param name="eventData"></param>
     public void OnBeginDrag(PointerEventData eventData)
     {
         oldDragPos = eventData.position;
@@ -151,141 +68,81 @@ public class DatePicker : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     public void OnDrag(PointerEventData eventData)
     {
-        //Debug.Log("拖拽");
-        UpdateSelectDate(eventData);
+        if (Mathf.Abs(eventData.position.y - oldDragPos.y) >= updateLength_)
+        {
+            oldDragPos = eventData.position;
+            UpdateTime(eventData.position.y > oldDragPos.y ? 1 : -1);
+        }
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        _itemParent.localPosition = Vector3.zero;
+        itemParent_.localPosition = Vector3.zero;
     }
 
-    /// <summary>
-    /// 更新选择的时间
-    /// </summary>
-    /// <param name="eventData"></param>
-    void UpdateSelectDate(PointerEventData eventData)
+    void UpdateTime(int num)
     {
-        //判断拖拽的长度是否大于目标值
-        if (Mathf.Abs(eventData.position.y - oldDragPos.y) >= _updateLength)
+        DateTime data = new DateTime();
+        if (dateType_ == DateType.year)
         {
-            int num;
-            //判断加减
-            if (eventData.position.y > oldDragPos.y)
-            {
-                //+
-                num = 1;
-            }
-            else
-            {
-                //-
-                num = -1;
-            }
-            DateTime _data = new DateTime();
-            switch (_dateType)
-            {
-                case DateType._year:
-                    _data = myGroup._selectDate.AddYears(num);
-                    break;
-                case DateType._month:
-                    _data = myGroup._selectDate.AddMonths(num);
-                    break;
-                case DateType._day:
-                    _data = myGroup._selectDate.AddDays(num);
-                    break;
-                case DateType._hour:
-                    _data = myGroup._selectDate.AddHours(num);
-                    break;
-                case DateType._minute:
-                    _data = myGroup._selectDate.AddMinutes(num);
-                    break;
-                case DateType._second:
-                    _data = myGroup._selectDate.AddSeconds(num);
-                    break;
-            }
-            //判断是否属于时间段
-            if (IsInDate(_data, myGroup._minDate, myGroup._maxDate))
-            {
-                myGroup._selectDate = _data;
-                oldDragPos = eventData.position;
-                _onDateUpdate();
-            }
-            //   _itemParent.localPosition = Vector3.zero;
+            data = choiceTime_.selectDate_.AddYears(num);
         }
-        else
+        else if (dateType_ == DateType.month)
         {
-            //_itemParent.localPosition = new Vector3(0, (eventData.position.y - oldDragPos.y), 0);
+            data = choiceTime_.selectDate_.AddMonths(num);
+        }
+        else if (dateType_ == DateType.day)
+        {
+            data = choiceTime_.selectDate_.AddDays(num);
+        }
+        else if (dateType_ == DateType.hour)
+        {
+            data = choiceTime_.selectDate_.AddHours(num);
+        }
+        else if (dateType_ == DateType.minute)
+        {
+            data = choiceTime_.selectDate_.AddMinutes(num);
+        }
+        else if (dateType_ == DateType.second)
+        {
+            data = choiceTime_.selectDate_.AddSeconds(num);
+        }
+        if (IsInDate(data, choiceTime_.minDate_, choiceTime_.maxDate_))
+        {
+            choiceTime_.selectDate_ = data;
+            choiceTime_.OnSelectedTime();
         }
     }
 
-    /// <summary>
-    /// 刷新时间列表
-    /// </summary>
     public void RefreshDateList()
     {
-        DateTime _data = new DateTime();
-        for (int i = 0; i < _itemNum; i++)
+        for (int i = 0; i < itemNum_; i++)
         {
-            //计算真实位置
-            int real_i = -(_itemNum / 2) + i;
-            switch (_dateType)
+            switch (dateType_)
             {
-                case DateType._year:
-                    _data = myGroup._selectDate.AddYears(real_i);
+                case DateType.year:
+                    itemParent_.GetChild(i).GetComponent<Text>().text = choiceTime_.selectDate_.ToString("yyyy");
                     break;
-                case DateType._month:
-                    _data = myGroup._selectDate.AddMonths(real_i);
+                case DateType.month:
+                    itemParent_.GetChild(i).GetComponent<Text>().text = choiceTime_.selectDate_.ToString("MM");
                     break;
-                case DateType._day:
-                    _data = myGroup._selectDate.AddDays(real_i);
+                case DateType.day:
+                    itemParent_.GetChild(i).GetComponent<Text>().text = choiceTime_.selectDate_.ToString("dd");
                     break;
-                case DateType._hour:
-                    _data = myGroup._selectDate.AddHours(real_i);
+                case DateType.hour:
+                    itemParent_.GetChild(i).GetComponent<Text>().text = choiceTime_.selectDate_.ToString("HH");
                     break;
-                case DateType._minute:
-                    _data = myGroup._selectDate.AddMinutes(real_i);
+                case DateType.minute:
+                    itemParent_.GetChild(i).GetComponent<Text>().text = choiceTime_.selectDate_.ToString("mm");
                     break;
-                case DateType._second:
-                    _data = myGroup._selectDate.AddSeconds(real_i);
+                case DateType.second:
+                    itemParent_.GetChild(i).GetComponent<Text>().text = choiceTime_.selectDate_.ToString("ss");
                     break;
             }
-            string str = "";
-            if (IsInDate(_data, myGroup._minDate, myGroup._maxDate))
-            {
-                switch (_dateType)
-                {
-                    case DateType._year:
-                        str = _data.Year.ToString();
-                        break;
-                    case DateType._month:
-                        str = _data.Month.ToString();
-                        break;
-                    case DateType._day:
-                        str = _data.Day.ToString();
-                        break;
-                    case DateType._hour:
-                        str = _data.Hour.ToString();
-                        break;
-                    case DateType._minute:
-                        str = _data.Minute.ToString();
-                        break;
-                    case DateType._second:
-                        str = _data.Second.ToString();
-                        break;
-                }
-            }
-            _itemParent.GetChild(i).GetComponent<Text>().text = str;
         }
-
     }
-    /// <summary> 
-    /// 判断某个日期是否在某段日期范围内，返回布尔值
-    /// </summary> 
-    /// <param name="dt">要判断的日期</param> 
-    /// <param name="dt_min">开始日期</param> 
-    /// <param name="dt_max">结束日期</param> 
-    /// <returns></returns>  
-    public bool IsInDate(DateTime dt, DateTime dt_min, DateTime dt_max)
+
+    bool IsInDate(DateTime dt, DateTime dt_min, DateTime dt_max)
     {
         return dt.CompareTo(dt_min) >= 0 && dt.CompareTo(dt_max) <= 0;
     }
