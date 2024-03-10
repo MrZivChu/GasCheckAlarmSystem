@@ -193,8 +193,7 @@ END";
     //查看分区表的数据情况：select * from FenQuTable where $PARTITION.fenquhanshu(checktime)=1
     public static bool RelateTable(string tableName, string columnName)
     {
-        //一定要删除此表的ID主键！！！！！！
-        string sql = @"
+        string sql = @"ALTER TABLE HistoryData DROP constraint PK_HistoryData;
 IF not EXISTS (SELECT 1 FROM sys.indexes WHERE object_id=OBJECT_ID('" + tableName + @"', N'U') and NAME='newIndex')
 BEGIN
     CREATE CLUSTERED INDEX newIndex ON " + tableName + @"(" + columnName + @")
