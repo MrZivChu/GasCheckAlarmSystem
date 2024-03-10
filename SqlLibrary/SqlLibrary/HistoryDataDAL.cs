@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -66,9 +66,9 @@ public class HistoryDataDAL
         return result >= 1 ? true : false;
     }
 
-    public static bool DeleteHistoryDataBeforeWeek()
+    public static bool DeleteHistoryDataBeforeDays(int days)
     {
-        DateTime date = DateTime.Now.AddDays(-3);
+        DateTime date = DateTime.Now.AddDays(-days);
         string sql = @"delete from HistoryData where CheckTime <= @CheckTime";
         SqlParameter[] parameter = new SqlParameter[] {
                  new SqlParameter("@CheckTime",date)
@@ -99,6 +99,7 @@ public class HistoryDataDAL
             para.Add(new SqlParameter("@StartCheckTime", startTime));
             para.Add(new SqlParameter("@EndCheckTime", endTime));
         }
+        sb.Append(" order by CheckTime desc ");
         DataTable dt = SqlHelper.ExecuteDataTable(sb.ToString(), para.ToArray());
         List<HistoryDataModel> modelList = new List<HistoryDataModel>();
         if (dt != null && dt.Rows.Count > 0)
@@ -126,6 +127,7 @@ public class HistoryDataDAL
             new SqlParameter("@StartCheckTime",startTime),
             new SqlParameter("@EndCheckTime",endTime),
         };
+        sb.Append(" order by CheckTime desc ");
         DataTable dt = SqlHelper.ExecuteDataTable(sb.ToString(), para.ToArray());
         List<HistoryDataModel> modelList = new List<HistoryDataModel>();
         if (dt != null && dt.Rows.Count > 0)
@@ -140,5 +142,65 @@ public class HistoryDataDAL
             }
         }
         return modelList;
+    }
+
+    public static bool TableFenQu(string dateTime, string fileDir, string database)
+    {
+        string groupNameBefore = "group" + dateTime + "before";
+        string fileNameBefore = "file" + dateTime + "before";
+        string filePathBefore = fileDir + "\\" + fileNameBefore + ".ndf";
+
+        string groupName = "group" + dateTime;
+        string fileName = "file" + dateTime;
+        string filePath = fileDir + "\\" + fileName + ".ndf";
+
+        string sql = @"
+--判断分区函数是否存在
+IF EXISTS (SELECT 1 FROM sys.partition_functions WHERE name = 'fenquhanshu')
+BEGIN
+	--创建文件组
+	alter database " + database + @" add filegroup " + groupName + @"
+	--创建文件
+	alter database " + database + @" add file(name='" + fileName + @"',filename='" + filePath + @"',size=1mb, filegrowth=1mb) to filegroup " + groupName + @";
+    --定义下一个扩展分区方案
+	ALTER PARTITION SCHEME fenqufangan NEXT USED " + groupName + @"
+	--修改分区函数，追加一个分区，对应的分区方案就是上面新加的扩展分区方案
+	alter PARTITION FUNCTION fenquhanshu()
+	SPLIT RANGE ('" + dateTime + @"')
+END
+ELSE
+BEGIN
+	--创建文件组
+	alter database " + database + @" add filegroup " + groupNameBefore + @"
+	--创建文件
+	alter database " + database + @" add file(name='" + fileNameBefore + @"',filename='" + filePathBefore + @"',size=1mb, filegrowth=1mb) to filegroup " + groupNameBefore + @";
+	--创建文件组
+	alter database " + database + @" add filegroup " + groupName + @"
+	--创建文件
+	alter database " + database + @" add file(name='" + fileName + @"',filename='" + filePath + @"',size=1mb, filegrowth=1mb) to filegroup " + groupName + @";
+	--创建分区函数
+	CREATE PARTITION FUNCTION fenquhanshu (datetime)
+	AS RANGE RIGHT FOR VALUES ('" + dateTime + @"')
+	--创建分区方案
+	CREATE PARTITION SCHEME fenqufangan
+	AS PARTITION fenquhanshu
+	TO (" + groupNameBefore + @"," + groupName + @")
+END";
+        int result = SqlHelper.ExecuteNonQuery(sql, null);
+        return result >= 1 ? true : false;
+    }
+
+    //查看分区表的数据情况：select * from FenQuTable where $PARTITION.fenquhanshu(checktime)=1
+    public static bool RelateTable(string tableName, string columnName)
+    {
+        //一定要删除此表的ID主键！！！！！！
+        string sql = @"
+IF not EXISTS (SELECT 1 FROM sys.indexes WHERE object_id=OBJECT_ID('" + tableName + @"', N'U') and NAME='newIndex')
+BEGIN
+    CREATE CLUSTERED INDEX newIndex ON " + tableName + @"(" + columnName + @")
+                    ON fenqufangan(" + columnName + @")
+END";
+        int result = SqlHelper.ExecuteNonQuery(sql, null);
+        return result >= 1 ? true : false;
     }
 }

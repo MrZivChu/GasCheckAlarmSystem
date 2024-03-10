@@ -9,8 +9,6 @@ public class GlobalCheckGas : MonoBehaviour
     {
         MachineFactoryDataManager.Init();
         UpdateProbeListEvent(null);
-        //程序启动执行一次删除历史数据的操作
-        HistoryDataDAL.DeleteHistoryDataBeforeWeek();
     }
 
     private void Start()
@@ -36,8 +34,6 @@ public class GlobalCheckGas : MonoBehaviour
 
     float refreshTime = 1;//1秒
     float tempRefreshTime = 0;
-    float tempDeleteHistoryDataTime = 0;
-    float deleteHistoryDataTime = 60 * 60 * 24 * 1;
     private void Update()
     {
         tempRefreshTime += Time.deltaTime;
@@ -49,12 +45,6 @@ public class GlobalCheckGas : MonoBehaviour
             SMSHelper.HandleProbeInfo(result);
             AlertHelper.HandleProbeInfo(result);
             EventManager.Instance.DisPatch(NotifyType.UpdateRealtimeDataList, result);
-        }
-        tempDeleteHistoryDataTime += Time.deltaTime;
-        if (tempDeleteHistoryDataTime >= deleteHistoryDataTime)
-        {
-            tempDeleteHistoryDataTime = 0;
-            HistoryDataDAL.DeleteHistoryDataBeforeWeek();
         }
     }
 
