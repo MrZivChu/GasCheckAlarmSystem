@@ -26,6 +26,18 @@ public class LoginPanel : UIEventHelper
 
     void OnLogin(Button btn)
     {
+        List<GasTypesModel> gasTypesList = GasTypesDAL.SelectAllGasTypes();
+        if (gasTypesList == null || gasTypesList.Count == 0)
+        {
+            MessageBox.Instance.PopOK("气体类型为空，请在Windows平台添加气体类型", null, "确定");
+            return;
+        }
+        for (int j = 0; j < gasTypesList.Count; j++)
+        {
+            GasTypesModel model = gasTypesList[j];
+            FormatData.gasKindFormat[model.ID] = model;
+        }
+
         string userName = input_name.text;
         string userPwd = input_pwd.text;
         if (string.IsNullOrEmpty(userName) || string.IsNullOrEmpty(userPwd))

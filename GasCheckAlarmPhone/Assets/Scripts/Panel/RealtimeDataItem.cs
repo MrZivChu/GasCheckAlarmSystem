@@ -21,10 +21,10 @@ public class RealtimeDataItem : UIEventHelper
         currentModel = model;
         txt_probeName.text = model.ProbeName;
         txt_machineName.text = MachineFactoryDataManager.GetMachineData(model.MachineID).MachineName;
-        txt_gasKind.text = FormatData.gasKindFormat[currentModel.GasKind].name;
+        txt_gasKind.text = FormatData.gasKindFormat[currentModel.GasKind].GasName;
         txt_gasValue.text = currentModel.GasValue.ToString();
-        txt_firstAlarmValue.text = FormatData.gasKindFormat[currentModel.GasKind].minValue.ToString();
-        txt_secondAlarmValue.text = FormatData.gasKindFormat[currentModel.GasKind].maxValue.ToString();
+        txt_firstAlarmValue.text = FormatData.gasKindFormat[currentModel.GasKind].MinValue.ToString();
+        txt_secondAlarmValue.text = FormatData.gasKindFormat[currentModel.GasKind].MaxValue.ToString();
     }
 
     public void SetBackgroundColor(Color color)

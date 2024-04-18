@@ -38,8 +38,8 @@ public class MainRealtimeDataItem : UIEventHelper
         currentModel = model;
         txt_probeName.text = model.ProbeName;
         txt_gasValue.text = model.GasValue.ToString();
-        txt_firstAlarmValue.text = FormatData.gasKindFormat[model.GasKind].minValue.ToString();
-        txt_secondAlarmValue.text = FormatData.gasKindFormat[model.GasKind].maxValue.ToString();
+        txt_firstAlarmValue.text = FormatData.gasKindFormat[model.GasKind].MinValue.ToString();
+        txt_secondAlarmValue.text = FormatData.gasKindFormat[model.GasKind].MaxValue.ToString();
     }
 
     public void SetBackgroundColor(Color color)

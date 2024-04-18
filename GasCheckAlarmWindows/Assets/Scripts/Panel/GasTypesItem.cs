@@ -10,12 +10,14 @@ public class GasTypesItem : UIEventHelper
     public InputField gasName;
     public InputField gasMinvalue;
     public InputField gasMaxvalue;
+    public InputField expression;
     public Button deleteBtn;
 
     private void Start()
     {
         RegisterBtnClick(deleteBtn, OnDelete);
         RegisterInputFieldOnEndEdit(gasName, OnInputFieldEnd);
+        RegisterInputFieldOnEndEdit(expression, OnInputFieldEnd);
         RegisterInputFieldOnEndEdit(gasMinvalue, OnInputFieldEnd);
         RegisterInputFieldOnEndEdit(gasMaxvalue, OnInputFieldEnd);
     }
@@ -28,7 +30,7 @@ public class GasTypesItem : UIEventHelper
 
     void OnInputFieldEnd(InputField input, string content)
     {
-        GasTypesDAL.EditGasTypeByID(currentModel.ID, gasName.text, Convert.ToSingle(gasMinvalue.text), Convert.ToSingle(gasMaxvalue.text));
+        GasTypesDAL.EditGasTypeByID(currentModel.ID, gasName.text, Convert.ToSingle(gasMinvalue.text), Convert.ToSingle(gasMaxvalue.text), expression.text);
     }
 
     public void InitInfo(GasTypesModel model)
@@ -37,6 +39,7 @@ public class GasTypesItem : UIEventHelper
         gasName.text = model.GasName;
         gasMinvalue.text = model.MinValue.ToString();
         gasMaxvalue.text = model.MaxValue.ToString();
+        expression.text = model.Expression;
     }
 
 }

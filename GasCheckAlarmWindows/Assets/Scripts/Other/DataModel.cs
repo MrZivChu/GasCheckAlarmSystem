@@ -17,6 +17,7 @@ public class FormatData
     };
 
     public static Dictionary<int, GasTypesModel> gasKindFormat = new Dictionary<int, GasTypesModel>();
+    public static Dictionary<int, ExpressionHelper> gasExpression = new Dictionary<int, ExpressionHelper>();
 
 
     public static Dictionary<int, string> haiwanDic = new Dictionary<int, string>() {

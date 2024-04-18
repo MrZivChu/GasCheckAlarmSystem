@@ -9,6 +9,7 @@ public class AddGasTypesPanel : UIEventHelper
     public InputField gasName;
     public InputField gasMinvalue;
     public InputField gasMaxvalue;
+    public InputField expression;
     public Button btn_cancel;
     public Button btn_add;
     public Text tipText;
@@ -24,6 +25,7 @@ public class AddGasTypesPanel : UIEventHelper
         gasName.text = string.Empty;
         gasMinvalue.text = string.Empty;
         gasMaxvalue.text = string.Empty;
+        expression.text = string.Empty;
         tipText.text = string.Empty;
     }
 
@@ -41,7 +43,7 @@ public class AddGasTypesPanel : UIEventHelper
             tipText.text = "最大值不能小于等于最小值";
             return;
         }
-        GasTypesDAL.InsertGasType(gasName.text, min, max);
+        GasTypesDAL.InsertGasType(gasName.text, min, max, expression.text);
         EventManager.Instance.DisPatch(NotifyType.InsertGasTypes);
         gameObject.SetActive(false);
     }

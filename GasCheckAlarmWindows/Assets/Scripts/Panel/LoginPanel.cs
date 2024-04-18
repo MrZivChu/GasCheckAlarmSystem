@@ -32,10 +32,19 @@ public class LoginPanel : UIEventHelper
             MessageBox.Instance.PopOK("请先添加气体类型，按F5即可设置", null, "确定");
             return;
         }
-        for (int j = 0; j < gasTypesList.Count; j++)
+        try
         {
-            GasTypesModel model = gasTypesList[j];
-            FormatData.gasKindFormat[model.ID] = model;
+            for (int j = 0; j < gasTypesList.Count; j++)
+            {
+                GasTypesModel model = gasTypesList[j];
+                FormatData.gasKindFormat[model.ID] = model;
+                FormatData.gasExpression[model.ID] = new ExpressionHelper(model.Expression);
+            }
+        }
+        catch (System.Exception ex)
+        {
+            productNameText.text = ex.Message;
+            return;
         }
 
         string userName = input_name.text;

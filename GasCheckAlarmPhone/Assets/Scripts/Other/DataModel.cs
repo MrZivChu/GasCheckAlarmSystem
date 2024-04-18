@@ -13,6 +13,7 @@ public class GasKindInfo
 
 public class FormatData
 {
+
     public static Dictionary<EProtocolType, string> protocolTypeFormat = new Dictionary<EProtocolType, string>() {
         { EProtocolType.StandardOne,"标1协议" },
         { EProtocolType.DZ40New,"DZ-40-New" },
@@ -21,11 +22,7 @@ public class FormatData
         { EProtocolType.HaiWan,"海湾" },
     };
 
-    public static Dictionary<EGasKind, GasKindInfo> gasKindFormat = new Dictionary<EGasKind, GasKindInfo>() {
-        { EGasKind.YanGan, new GasKindInfo(){ name="烟感", unit="%OBS/M", minValue=5, maxValue=15} },
-        { EGasKind.YiYangHuaTan, new GasKindInfo(){ name="一氧化碳", unit="ppm", minValue=24, maxValue=100} },
-        { EGasKind.YangQi, new GasKindInfo(){ name="氧气", unit="O₂", minValue=5, maxValue=100} },
-    };
+    public static Dictionary<int, GasTypesModel> gasKindFormat = new Dictionary<int, GasTypesModel>();
 
     public static Dictionary<int, string> haiwanDic = new Dictionary<int, string>() {
         {0,"无事件应答" },{1,"火警" },{2,"故障" },{3,"动作" },{4,"恢复" },{5,"启动" },{6,"停动" },{7,"隔离" },{8,"释放" },{9,"主电备电恢复" }
@@ -51,9 +48,9 @@ public class FormatData
         UserName = "--"
     };
 
-    public static string GetGasValue(EProtocolType protocolType, EGasKind gasKind, float gasValue)
+    public static string GetGasValue(EProtocolType protocolType, int gasKind, float gasValue)
     {
-        if (gasKind == EGasKind.YangQi)
+        if (FormatData.gasKindFormat[gasKind].GasName == "氧气" || FormatData.gasKindFormat[gasKind].GasName == "天然气" || FormatData.gasKindFormat[gasKind].GasName == "石油气" || FormatData.gasKindFormat[gasKind].GasName == "可燃气")
         {
             gasValue = gasValue / 10.0f;
 

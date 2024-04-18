@@ -20,16 +20,22 @@ public class PointCheckManagerPanel : UIEventHelper
     public InputField input_deviceName;
     public InputField input_userName;
     public Dropdown dropdown_deviceType;
-    public UI.Dates.DatePicker_DateRange dateRange;
+
+    public ChoiceTime startTime;
+    public ChoiceTime endTime;
 
     public Transform contentTrans;
     public UnityEngine.Object itemRes;
+
     private void Start()
     {
         RegisterBtnClick(btn_search, OnSearch);
         RegisterBtnClick(btn_prePage, OnPrePagel);
         RegisterBtnClick(btn_nextPage, OnNextPage);
         RegisterDropDownOnValueChanged(dropdown_deviceType, OnDropdownChanged);
+        startTime.SetTime(DateTime.Now.AddDays(-7));
+        endTime.SetTime(DateTime.Now);
+        OnEnable();
     }
 
     void OnSearch(Button btn)
@@ -69,14 +75,7 @@ public class PointCheckManagerPanel : UIEventHelper
 
     void InitData()
     {
-        string startTime = string.Empty;
-        if (dateRange.FromDate.HasValue)
-            startTime = dateRange.FromDate.Date.ToString("yyyy-MM-dd");
-        string endTime = string.Empty;
-        if (dateRange.ToDate.HasValue)
-            endTime = dateRange.ToDate.Date.AddDays(1).ToString("yyyy-MM-dd");
-
-        List<PointCheckModel> pointCheckModelList = PointCheckDAL.SelectAllPointCheckByCondition(pageIndex, pageSize, input_userName.text, input_deviceName.text, 1, startTime, endTime, out pageCount, out rowCount);
+        List<PointCheckModel> pointCheckModelList = PointCheckDAL.SelectAllPointCheckByCondition(pageIndex, pageSize, input_userName.text, input_deviceName.text, 1, startTime.ShowText.text, endTime.ShowText.text, out pageCount, out rowCount);
         InitGrid(pointCheckModelList);
         txt_pageCount.text = pageIndex + "/" + pageCount;
     }

@@ -99,7 +99,7 @@ public class AddProbePanel : UIEventHelper
     {
         foreach (var item in FormatData.gasKindFormat)
         {
-            Dropdown.OptionData data = new Dropdown.OptionData(item.Value.name);
+            Dropdown.OptionData data = new Dropdown.OptionData(item.Value.GasName);
             dropdown_gasKind.options.Add(data);
         }
         dropdown_gasKind.value = 0;

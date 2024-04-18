@@ -137,6 +137,7 @@ public class GasTypesModel
     public string GasName;
     public double MinValue;
     public double MaxValue;
+    public string Expression;
 }
 
 [System.Serializable]

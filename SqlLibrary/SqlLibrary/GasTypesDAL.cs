@@ -21,6 +21,7 @@ public class GasTypesDAL
                 model.GasName = dt.Rows[i]["GasName"].ToString();
                 model.MinValue = Convert.ToSingle(dt.Rows[i]["MinValue"]);
                 model.MaxValue = Convert.ToSingle(dt.Rows[i]["MaxValue"]);
+                model.Expression = dt.Rows[i]["Expression"].ToString();
                 list.Add(model);
             }
         }
@@ -34,26 +35,28 @@ public class GasTypesDAL
         return result >= 1 ? true : false;
     }
 
-    public static bool EditGasTypeByID(int id, string gasName, float minValue, float maxValue)
+    public static bool EditGasTypeByID(int id, string gasName, float minValue, float maxValue, string expression)
     {
-        string sql = @"update GasTypes set GasName=@GasName,MinValue=@MinValue,MaxValue=@MaxValue where ID=@ID;";
+        string sql = @"update GasTypes set GasName=@GasName,MinValue=@MinValue,MaxValue=@MaxValue,Expression=@Expression where ID=@ID;";
         SqlParameter[] parameter = new SqlParameter[] {
                  new SqlParameter("@ID",id),
                  new SqlParameter("@GasName",gasName),
                  new SqlParameter("@MinValue",minValue),
                  new SqlParameter("@MaxValue",maxValue),
+                 new SqlParameter("@Expression",expression),
             };
         int result = SqlHelper.ExecuteNonQuery(sql, parameter);
         return result >= 1 ? true : false;
     }
 
-    public static bool InsertGasType(string gasName, float minValue, float maxValue)
+    public static bool InsertGasType(string gasName, float minValue, float maxValue, string expression)
     {
-        string sql = @"insert into GasTypes (GasName,MinValue,MaxValue)values(@GasName,@MinValue,@MaxValue)";
+        string sql = @"insert into GasTypes (GasName,MinValue,MaxValue,Expression)values(@GasName,@MinValue,@MaxValue,@Expression)";
         SqlParameter[] parameter = new SqlParameter[] {
                  new SqlParameter("@GasName",gasName),
                  new SqlParameter("@MinValue",minValue),
                  new SqlParameter("@MaxValue",maxValue),
+                 new SqlParameter("@Expression",expression),
             };
         int result = SqlHelper.ExecuteNonQuery(sql, parameter);
         return result >= 1 ? true : false;

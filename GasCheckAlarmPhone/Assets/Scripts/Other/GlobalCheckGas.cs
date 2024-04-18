@@ -9,8 +9,6 @@ public class GlobalCheckGas : MonoBehaviour
     {
         MachineFactoryDataManager.Init();
         UpdateProbeListEvent(null);
-        //程序启动执行一次删除历史数据的操作
-        HistoryDataDAL.DeleteHistoryDataBeforeWeek();
     }
 
     private void Start()
@@ -36,8 +34,6 @@ public class GlobalCheckGas : MonoBehaviour
 
     float refreshTime = 1;//1秒
     float tempRefreshTime = 0;
-    float tempDeleteHistoryDataTime = 0;
-    float deleteHistoryDataTime = 60 * 60 * 24 * 1;
     private void Update()
     {
         tempRefreshTime += Time.deltaTime;
@@ -47,12 +43,6 @@ public class GlobalCheckGas : MonoBehaviour
             List<ProbeModel> result = ProbeDAL.SelectIDCheckTimeGasValueGasKindMachineID();
             HandleRealtimeData(result);
             EventManager.Instance.DisPatch(NotifyType.UpdateRealtimeDataList, result);
-        }
-        tempDeleteHistoryDataTime += Time.deltaTime;
-        if (tempDeleteHistoryDataTime >= deleteHistoryDataTime)
-        {
-            tempDeleteHistoryDataTime = 0;
-            HistoryDataDAL.DeleteHistoryDataBeforeWeek();
         }
     }
 
@@ -74,17 +64,15 @@ public class GlobalCheckGas : MonoBehaviour
             }
             else
             {
-                if (model.GasKind == EGasKind.YangQi)
+                if (FormatData.gasKindFormat[model.GasKind].GasName == "氧气" || FormatData.gasKindFormat[model.GasKind].GasName == "天然气" || FormatData.gasKindFormat[model.GasKind].GasName == "石油气" || FormatData.gasKindFormat[model.GasKind].GasName == "可燃气")
                 {
                     model.GasValue = model.GasValue / 10.0f;
-                    if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].maxValue)
+                }
+                if (MachineFactoryDataManager.GetMachineData(model.MachineID).ProtocolType == EProtocolType.HaiWan)
+                {
+                    if (model.GasValue == 1)
                     {
                         model.warningLevel = EWarningLevel.SecondAlarm;
-                        abnormalCount++;
-                    }
-                    else if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].minValue)
-                    {
-                        model.warningLevel = EWarningLevel.FirstAlarm;
                         abnormalCount++;
                     }
                     else
@@ -94,11 +82,16 @@ public class GlobalCheckGas : MonoBehaviour
                 }
                 else
                 {
-                    if (MachineFactoryDataManager.GetMachineData(model.MachineID).ProtocolType == EProtocolType.HaiWan)
+                    if (FormatData.gasKindFormat[model.GasKind].GasName == "氧气")
                     {
-                        if (model.GasValue == 1)
+                        if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].MaxValue)
                         {
                             model.warningLevel = EWarningLevel.SecondAlarm;
+                            abnormalCount++;
+                        }
+                        else if (model.GasValue <= FormatData.gasKindFormat[model.GasKind].MinValue)
+                        {
+                            model.warningLevel = EWarningLevel.FirstAlarm;
                             abnormalCount++;
                         }
                         else
@@ -108,12 +101,12 @@ public class GlobalCheckGas : MonoBehaviour
                     }
                     else
                     {
-                        if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].maxValue)
+                        if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].MaxValue)
                         {
                             model.warningLevel = EWarningLevel.SecondAlarm;
                             abnormalCount++;
                         }
-                        else if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].minValue)
+                        else if (model.GasValue >= FormatData.gasKindFormat[model.GasKind].MinValue)
                         {
                             model.warningLevel = EWarningLevel.FirstAlarm;
                             abnormalCount++;

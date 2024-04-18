@@ -1,1 +1,1 @@
-{"isLog":false,"sqlIP":"127.0.0.1","sqlDatabase":"GasCheckAlarm","sqlUserId":"sa","sqlUserPwd":"1"}
+{"isLog":true,"sqlIP":"hds16173015.my3w.com","sqlDatabase":"hds16173015_db","sqlUserId":"hds16173015","sqlUserPwd":"!@#Dz123"}
