@@ -66,9 +66,9 @@ public class GlobalCheckGas : MonoBehaviour
             }
             else
             {
-                if (FormatData.gasExpression.ContainsKey(model.GasKind))
+                if (FormatData.gasKindFormat.ContainsKey(model.GasKind))
                 {
-                    model.GasValue = FormatData.gasExpression[model.GasKind].Compute(model.GasValue);
+                    model.GasValue = FormatData.GetGasValuie(model.GasKind, model.GasValue);
                 }
                 if (MachineFactoryDataManager.GetMachineData(model.MachineID).ProtocolType == EProtocolType.HaiWan)
                 {

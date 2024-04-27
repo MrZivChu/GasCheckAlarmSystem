@@ -10,7 +10,7 @@ public class KeyMouseHelper : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F5))
         {
-            HandleLogPanel.SetActive(true);
+            HandleLogPanel.SetActive(!HandleLogPanel.activeSelf);
         }
     }
 }

@@ -17,7 +17,17 @@ public class FormatData
     };
 
     public static Dictionary<int, GasTypesModel> gasKindFormat = new Dictionary<int, GasTypesModel>();
-    public static Dictionary<int, ExpressionHelper> gasExpression = new Dictionary<int, ExpressionHelper>();
+
+
+    public static double GetGasValuie(int gaskind, double gasValue)
+    {
+        int micifang = 0;
+        if (int.TryParse(gasKindFormat[gaskind].Expression, out micifang))
+        {
+            gasValue = gasValue / Math.Pow(10, micifang);
+        }
+        return gasValue;
+    }
 
 
     public static Dictionary<int, string> haiwanDic = new Dictionary<int, string>() {

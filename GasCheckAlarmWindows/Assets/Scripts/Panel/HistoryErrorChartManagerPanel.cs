@@ -174,7 +174,8 @@ public class HistoryErrorChartManagerPanel : UIEventHelper
                 {
                     ChartSeriesModel model = new ChartSeriesModel();
                     model.checkTime = it.CheckTime.ToString("MM-dd HH:mm");
-                    model.gasValue = it.GasValue;
+                    int gaskind = GlobalCheckGas.baseInfoDic_[it.ProbeID].GasKind;
+                    model.gasValue = FormatData.GetGasValuie(gaskind, it.GasValue);
                     probeNameValue[it.probeName].Add(model);
                     if (!timeList.Contains(it.CheckTime.ToString("MM-dd HH:mm")))
                     {

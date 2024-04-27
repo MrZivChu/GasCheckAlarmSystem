@@ -43,7 +43,14 @@ public class AddGasTypesPanel : UIEventHelper
             tipText.text = "最大值不能小于等于最小值";
             return;
         }
-        GasTypesDAL.InsertGasType(gasName.text, min, max, expression.text);
+
+        int micifang = 0;
+        if (!int.TryParse(expression.text, out micifang))
+        {
+            tipText.text = "输入的小数位数不合法";
+            return;
+        }
+        GasTypesDAL.InsertGasType(gasName.text, min, max, micifang.ToString());
         EventManager.Instance.DisPatch(NotifyType.InsertGasTypes);
         gameObject.SetActive(false);
     }

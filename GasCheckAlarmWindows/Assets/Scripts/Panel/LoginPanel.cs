@@ -1,4 +1,5 @@
 ﻿using LitJson;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -38,7 +39,6 @@ public class LoginPanel : UIEventHelper
             {
                 GasTypesModel model = gasTypesList[j];
                 FormatData.gasKindFormat[model.ID] = model;
-                FormatData.gasExpression[model.ID] = new ExpressionHelper(model.Expression);
             }
         }
         catch (System.Exception ex)

@@ -103,11 +103,7 @@ public class ProbeHistoryDataPanel : UIEventHelper
                 item.probeName = model.ProbeName;
                 item.gasKind = model.GasKind;
                 item.MachineID = model.MachineID;
-
-                if (FormatData.gasKindFormat[model.GasKind].GasName == "氧气" || FormatData.gasKindFormat[model.GasKind].GasName == "天然气" || FormatData.gasKindFormat[model.GasKind].GasName == "石油气" || FormatData.gasKindFormat[model.GasKind].GasName == "可燃气")
-                {
-                    item.GasValue = item.GasValue / 10.0f;
-                }
+                item.GasValue = FormatData.GetGasValuie(model.GasKind, item.GasValue);
             }
         }
         txt_pageCount.text = pageIndex + "/" + pageCount;

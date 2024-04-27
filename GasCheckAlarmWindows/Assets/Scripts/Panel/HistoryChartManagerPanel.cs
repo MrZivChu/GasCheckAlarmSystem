@@ -89,10 +89,7 @@ public class HistoryChartManagerPanel : UIEventHelper
                 HistoryDataModel model = list[i];
                 double gasValue = model.GasValue;
                 int gaskind = GlobalCheckGas.baseInfoDic_[model.ProbeID].GasKind;
-                if (FormatData.gasKindFormat[gaskind].GasName == "氧气" || FormatData.gasKindFormat[gaskind].GasName == "天然气" || FormatData.gasKindFormat[gaskind].GasName == "石油气" || FormatData.gasKindFormat[gaskind].GasName == "可燃气")
-                {
-                    gasValue = gasValue / 10.0f;
-                }
+                gasValue = FormatData.GetGasValuie(gaskind, gasValue);
                 SerieData serieData = new SerieData();
                 serieData.data = new List<double>() { i, gasValue };
                 //simplifiedLine.show = false;

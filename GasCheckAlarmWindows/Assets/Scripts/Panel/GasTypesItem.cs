@@ -30,7 +30,12 @@ public class GasTypesItem : UIEventHelper
 
     void OnInputFieldEnd(InputField input, string content)
     {
-        GasTypesDAL.EditGasTypeByID(currentModel.ID, gasName.text, Convert.ToSingle(gasMinvalue.text), Convert.ToSingle(gasMaxvalue.text), expression.text);
+        int micifang = 0;
+        if (!int.TryParse(expression.text, out micifang))
+        {
+            return;
+        }
+        GasTypesDAL.EditGasTypeByID(currentModel.ID, gasName.text, Convert.ToSingle(gasMinvalue.text), Convert.ToSingle(gasMaxvalue.text), micifang.ToString());
     }
 
     public void InitInfo(GasTypesModel model)
