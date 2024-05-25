@@ -7,6 +7,8 @@ public struct SGameConfig
     public bool isLog;
     public bool isEnterPosDir;
     public bool isOpenWaterSeal;
+    public bool isOpenCamera;
+    public bool isOpenGlobalImage;
     public string productName;
     public string sqlIP;
     public string sqlDatabase;
@@ -43,6 +45,8 @@ public class JsonHandleHelper : UIEventHelper
         {
             gameConfig = new SGameConfig();
             gameConfig.isEnterPosDir = false;
+            gameConfig.isOpenCamera = false;
+            gameConfig.isOpenGlobalImage = false;
             gameConfig.isLog = false;
             gameConfig.sqlIP = "127.0.0.1";
             gameConfig.sqlDatabase = "GasCheckAlarm";
@@ -60,18 +64,21 @@ public class JsonHandleHelper : UIEventHelper
         isRemoteServer = gameConfig.sqlIP != "127.0.0.1";
         Debug.unityLogger.logEnabled = Application.isEditor ? true : gameConfig.isLog;
 
+        //给Winform使用的配置文件
         SWinformConfig winformConfig = new SWinformConfig();
         winformConfig.isLog = gameConfig.isLog;
         winformConfig.sqlIP = gameConfig.sqlIP;
         winformConfig.sqlDatabase = gameConfig.sqlDatabase;
         winformConfig.sqlUserId = gameConfig.sqlUserId;
         winformConfig.sqlUserPwd = gameConfig.sqlUserPwd;
-        File.WriteAllText(Application.streamingAssetsPath + "/configPath.txt", LitJson.JsonMapper.ToJson(winformConfig));//给Winform使用的配置文件
+        File.WriteAllText(Application.streamingAssetsPath + "/configPath.txt", LitJson.JsonMapper.ToJson(winformConfig));
     }
 
-    public static void UpdateConfig(bool isLog, bool isEnterPosDir, bool isOpenWaterSeal, string productName, string sqlIP, string sqlDatabase, string sqlUserId, string sqlUserPwd, string smsPhone, int alertWarnValue, int alertWarnSeconds)
+    public static void UpdateConfig(bool isLog, bool isEnterPosDir, bool isOpenWaterSeal, string productName, string sqlIP, string sqlDatabase, string sqlUserId, string sqlUserPwd, string smsPhone, int alertWarnValue, int alertWarnSeconds, bool isOpenCamera, bool isOpenGlobalImage)
     {
         gameConfig.isEnterPosDir = isEnterPosDir;
+        gameConfig.isOpenCamera = isOpenCamera;
+        gameConfig.isOpenGlobalImage = isOpenGlobalImage;
         gameConfig.isLog = isLog;
         gameConfig.sqlIP = sqlIP;
         gameConfig.sqlDatabase = sqlDatabase;

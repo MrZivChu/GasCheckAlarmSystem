@@ -16,6 +16,8 @@ public class HandleLogPanel : UIEventHelper
     public Toggle isLogTog;
     public Toggle isOpenWaterSealTog;
     public Toggle isEnterProbePosTog;
+    public Toggle isOpenCamera;
+    public Toggle isGlobalImage;
 
     public InputField productNameInput;
     public InputField sqlIpInput;
@@ -24,13 +26,10 @@ public class HandleLogPanel : UIEventHelper
     public InputField sqlPwdInput;
     public InputField smsPhoneInput;
 
-    public Text configPath;
-
     public InputField alertWarnValueInput;
     public InputField alertWarnSecondsInput;
     void Start()
     {
-        configPath.text = "配置文件路径：" + Application.persistentDataPath;
         RegisterBtnClick(btn_cancel, OnCancel);
         RegisterBtnClick(btn_ok, OnOk);
         RegisterBtnClick(gasBtn, OnGasTypes);
@@ -39,6 +38,8 @@ public class HandleLogPanel : UIEventHelper
     private void OnEnable()
     {
         isLogTog.isOn = JsonHandleHelper.gameConfig.isLog;
+        isOpenCamera.isOn = JsonHandleHelper.gameConfig.isOpenCamera;
+        isGlobalImage.isOn = JsonHandleHelper.gameConfig.isOpenGlobalImage;
         isOpenWaterSealTog.isOn = JsonHandleHelper.gameConfig.isOpenWaterSeal;
         isEnterProbePosTog.isOn = JsonHandleHelper.gameConfig.isEnterPosDir;
 
@@ -65,17 +66,7 @@ public class HandleLogPanel : UIEventHelper
 
     void OnOk(Button btn)
     {
-        bool isLog = isLogTog.isOn;
-        bool isOpenWaterSeal = isOpenWaterSealTog.isOn;
-        bool isEnterPosDir = isEnterProbePosTog.isOn;
-        string productName = productNameInput.text;
-        string sqlIP = sqlIpInput.text;
-        string sqlDatabase = sqlDatabaseInput.text;
-        string sqlUserId = sqlUserIDInput.text;
-        string sqlUserPwd = sqlPwdInput.text;
-        string smsPhone = smsPhoneInput.text;
-
-        JsonHandleHelper.UpdateConfig(isLog, isEnterPosDir, isOpenWaterSeal, productName, sqlIP, sqlDatabase, sqlUserId, sqlUserPwd, smsPhone, Convert.ToInt32(alertWarnValueInput.text), Convert.ToInt32(alertWarnSecondsInput.text));
+        JsonHandleHelper.UpdateConfig(isLogTog.isOn, isEnterProbePosTog.isOn, isOpenWaterSealTog.isOn, productNameInput.text, sqlIpInput.text, sqlDatabaseInput.text, sqlUserIDInput.text, sqlPwdInput.text, smsPhoneInput.text, Convert.ToInt32(alertWarnValueInput.text), Convert.ToInt32(alertWarnSecondsInput.text), isOpenCamera.isOn, isGlobalImage.isOn);
         Application.Quit();
     }
 }

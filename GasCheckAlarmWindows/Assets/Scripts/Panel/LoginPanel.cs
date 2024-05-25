@@ -43,7 +43,7 @@ public class LoginPanel : UIEventHelper
         }
         catch (System.Exception ex)
         {
-            productNameText.text = ex.Message;
+            productNameText.text = "出错了：" + ex.Message;
             return;
         }
 

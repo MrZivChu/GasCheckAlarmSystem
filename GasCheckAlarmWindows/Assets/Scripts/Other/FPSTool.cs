@@ -9,7 +9,6 @@ public class FPSTool : MonoBehaviour
     public bool isShowFps = false;
     private void Start()
     {
-        DontDestroyOnLoad(this);
         Application.targetFrameRate = maxFrameNumber;
     }
 
