@@ -32,9 +32,12 @@ public class EditorDeviceTagPanel : UIEventHelper
 
     void OnDelete(Button btn)
     {
-        DeviceTagDAL.DeleteDeviceTagByID(deleteIDList);
-        EventManager.Instance.DisPatch(NotifyType.DeleteDeviceTag);
-        gameObject.SetActive(false);
+        MessageBox.Instance.PopYesNo("确定删除吗？", () =>
+        {
+            DeviceTagDAL.DeleteDeviceTagByID(deleteIDList);
+            EventManager.Instance.DisPatch(NotifyType.DeleteDeviceTag);
+            gameObject.SetActive(false);
+        }, null, "确定", "取消");
     }
 
     void OnAdd(Button btn)

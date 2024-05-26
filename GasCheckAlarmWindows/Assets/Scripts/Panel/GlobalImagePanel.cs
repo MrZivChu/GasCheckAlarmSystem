@@ -14,6 +14,7 @@ public class GlobalImagePanel : UIEventHelper
     public Transform tagContentTrans;
     public Transform probeContentTrans;
     public Button preStepBtn;
+    public Text tipText;
 
     private void Start()
     {
@@ -31,6 +32,7 @@ public class GlobalImagePanel : UIEventHelper
         if (selectDeviceTagID.Count > 1)
         {
             selectDeviceTagID.RemoveAt(selectDeviceTagID.Count - 1);
+            UpdateRealtimeData(realtimeData_);
         }
     }
 
@@ -56,6 +58,8 @@ public class GlobalImagePanel : UIEventHelper
     {
         dic.Clear();
         List<DeviceTagModel> list = DeviceTagDAL.SelectAllDeviceTag();
+        tipText.gameObject.SetActive(list.Count == 0);
+        preStepBtn.gameObject.SetActive(selectDeviceTagID.Count > 1);
         for (int i = 0; i < list.Count; i++)
         {
             DeviceTagModel deviceTag = list[i];
@@ -76,6 +80,7 @@ public class GlobalImagePanel : UIEventHelper
 
     void InitTagGrid()
     {
+        preStepBtn.gameObject.SetActive(selectDeviceTagID.Count > 1);
         foreach (Transform child in tagContentTrans.transform)
         {
             Destroy(child.gameObject);
@@ -151,6 +156,7 @@ public class GlobalImagePanel : UIEventHelper
     {
         TreeMap treeMap = (TreeMap)data;
         selectDeviceTagID.Add(treeMap.ID);
+        UpdateRealtimeData(realtimeData_);
     }
 
     void GetBottomIDList(List<string> ids, int id)

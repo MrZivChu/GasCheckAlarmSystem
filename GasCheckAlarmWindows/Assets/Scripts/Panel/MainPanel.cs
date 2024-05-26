@@ -40,8 +40,8 @@ public class MainPanel : UIEventHelper
         int selectIndex = FormatData.currentUser.Authority == EAuthority.Admin ? 0 : 2;
         togList[selectIndex].isOn = true;
 
-        togList[5].gameObject.SetActive(JsonHandleHelper.gameConfig.isOpenGlobalImage);
-        togList[6].gameObject.SetActive(JsonHandleHelper.gameConfig.isOpenCamera);
+        togList[6].gameObject.SetActive(JsonHandleHelper.gameConfig.isOpenGlobalImage);
+        togList[7].gameObject.SetActive(JsonHandleHelper.gameConfig.isOpenCamera);
 
         txt_productName.text = JsonHandleHelper.gameConfig.productName;
         txt_userName.text = FormatData.currentUser.UserName + FormatData.authorityFormat[FormatData.currentUser.Authority];

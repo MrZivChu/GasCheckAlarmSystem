@@ -25,6 +25,7 @@ public class DeviceTagManagerPanel : UIEventHelper
     public GameObject panel;
     public Line2DHelper line2DHelperClone;
     public MyButton cloneBtn;
+    public Text tipText;
     void Start()
     {
         EventManager.Instance.AddEventListener(NotifyType.InsertDeviceTag, InsertDeviceTagCallBack);
@@ -52,6 +53,7 @@ public class DeviceTagManagerPanel : UIEventHelper
             Destroy(child.gameObject);
         }
         List<DeviceTagModel> list = DeviceTagDAL.SelectAllDeviceTag();
+        tipText.text = list.Count == 0 ? "请双击空白处添加根标签" : "单击某个标签可以为其添加子标签\n长按某个标签可以移动其位置";
         for (int i = 0; i < list.Count; i++)
         {
             DeviceTagModel deviceTag = list[i];

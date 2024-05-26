@@ -67,6 +67,7 @@ public class HandleLogPanel : UIEventHelper
     void OnOk(Button btn)
     {
         JsonHandleHelper.UpdateConfig(isLogTog.isOn, isEnterProbePosTog.isOn, isOpenWaterSealTog.isOn, productNameInput.text, sqlIpInput.text, sqlDatabaseInput.text, sqlUserIDInput.text, sqlPwdInput.text, smsPhoneInput.text, Convert.ToInt32(alertWarnValueInput.text), Convert.ToInt32(alertWarnSecondsInput.text), isOpenCamera.isOn, isGlobalImage.isOn);
+        CSharpUtils.StartProcess(Application.streamingAssetsPath + "/restart.bat", string.Empty);
         Application.Quit();
     }
 }

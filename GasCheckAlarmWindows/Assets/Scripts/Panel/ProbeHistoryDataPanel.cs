@@ -72,8 +72,11 @@ public class ProbeHistoryDataPanel : UIEventHelper
 
     void OnDeleteAllData(Button btn)
     {
-        HistoryDataDAL.DeleteAllHistoryData();
-        InitData();
+        MessageBox.Instance.PopYesNo("确定要删除所有数据吗？\n请谨慎操作！！！", () =>
+        {
+            HistoryDataDAL.DeleteAllHistoryData();
+            InitData();
+        }, null, "确定", "取消");
     }
 
     void OnSearch(Button btn)
